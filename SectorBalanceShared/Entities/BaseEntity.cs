@@ -1,4 +1,5 @@
 using System;
+using NpgsqlTypes;
 
 namespace SectorBalanceShared
 {
@@ -9,8 +10,10 @@ namespace SectorBalanceShared
             
         }
 
+        [PgName("created_at")]
         public DateTime CreatedAt { get; set; }
 
+        [PgName("updated_at")]
         public DateTime UpdatedAt { get; set; }
 
 
