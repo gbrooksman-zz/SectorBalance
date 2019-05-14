@@ -1,0 +1,69 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj": {}
+  },
+  "projects": {
+    "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj",
+        "projectName": "SectorBalanceAPI",
+        "projectPath": "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj",
+        "packagesPath": "/home/geoff/.nuget/packages/",
+        "outputPath": "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/geoff/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "dependencies": {
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[3.0.0-preview5-19227-01, )"
+            },
+            "Microsoft.NETCore.Platforms": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.0-preview5.19224.8, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": [
+            "Microsoft.AspNetCore.App",
+            "Microsoft.NETCore.App"
+          ]
+        }
+      }
+    }
+  }
+}
