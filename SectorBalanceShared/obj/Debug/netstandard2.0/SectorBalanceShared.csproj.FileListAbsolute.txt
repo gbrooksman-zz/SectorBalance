@@ -7,3 +7,12 @@
 /home/geoff/Projects/SectorBalance/SectorBalanceShared/obj/Debug/netstandard2.0/SectorBalanceShared.AssemblyInfo.cs
 /home/geoff/Projects/SectorBalance/SectorBalanceShared/obj/Debug/netstandard2.0/SectorBalanceShared.dll
 /home/geoff/Projects/SectorBalance/SectorBalanceShared/obj/Debug/netstandard2.0/SectorBalanceShared.pdb
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\bin\Debug\netstandard2.0\SectorBalanceShared.deps.json
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\bin\Debug\netstandard2.0\SectorBalanceShared.dll
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\bin\Debug\netstandard2.0\SectorBalanceShared.pdb
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\obj\Debug\netstandard2.0\SectorBalanceShared.csprojAssemblyReference.cache
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\obj\Debug\netstandard2.0\SectorBalanceShared.csproj.CoreCompileInputs.cache
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\obj\Debug\netstandard2.0\SectorBalanceShared.AssemblyInfoInputs.cache
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\obj\Debug\netstandard2.0\SectorBalanceShared.AssemblyInfo.cs
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\obj\Debug\netstandard2.0\SectorBalanceShared.dll
+C:\Users\geoff\source\repos\sectormodel\SectorBalance\SectorBalanceShared\obj\Debug\netstandard2.0\SectorBalanceShared.pdb

@@ -1,25 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj": {}
+    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj": {}
   },
   "projects": {
-    "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj": {
+    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj",
+        "projectUniqueName": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj",
         "projectName": "SectorBalanceAPI",
-        "projectPath": "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/SectorBalanceAPI.csproj",
-        "packagesPath": "/home/geoff/.nuget/packages/",
-        "outputPath": "/home/geoff/Projects/SectorBalance/SectorBalanceAPI/obj/",
+        "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj",
+        "packagesPath": "C:\\Users\\geoff\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/home/geoff/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\geoff\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {},
           "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
           "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
@@ -30,7 +35,11 @@
         },
         "frameworks": {
           "netcoreapp3.0": {
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj": {
+                "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
@@ -55,6 +64,10 @@
               "target": "Package",
               "version": "[3.0.0-preview5.19224.8, )",
               "autoReferenced": true
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[4.0.6, )"
             }
           },
           "imports": [
@@ -66,6 +79,68 @@
             "Microsoft.AspNetCore.App",
             "Microsoft.NETCore.App"
           ]
+        }
+      }
+    },
+    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj",
+        "projectName": "SectorBalanceShared",
+        "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj",
+        "packagesPath": "C:\\Users\\geoff\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\geoff\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json": {},
+          "https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "dependencies": {
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[4.0.6, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
         }
       }
     }

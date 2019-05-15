@@ -1,4 +1,5 @@
 using System;
+using NpgsqlTypes;
 
 namespace SectorBalanceShared
 {
@@ -10,12 +11,16 @@ namespace SectorBalanceShared
             
         }
 
+        [PgName("symbol")]
         public string Symbol { get; set; }
 
+         [PgName("price")]
         public decimal Price { get; set; }
 
+         [PgName("date")]
         public DateTime Date { get; set; }
 
+         [PgName("volume")]
         public int Volume { get; set; }
 
     }

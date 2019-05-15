@@ -1,5 +1,5 @@
 {
-  "FilePath": "/home/geoff/Projects/SectorBalance/SectorBalanceClient/SectorBalanceClient.csproj",
+  "FilePath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj",
   "Configuration": {
     "ConfigurationName": "Default",
     "LanguageVersion": "3.0",
@@ -7721,8 +7721,8 @@
   "RootNamespace": "SectorBalanceClient",
   "Documents": [
     {
-      "FilePath": "Pages/Index.razor",
-      "TargetPath": "Pages/Index.razor",
+      "FilePath": "Pages\\Index.razor",
+      "TargetPath": "Pages\\Index.razor",
       "FileKind": "component"
     },
     {
@@ -7731,39 +7731,39 @@
       "FileKind": "component"
     },
     {
-      "FilePath": "Pages/FetchData.razor",
-      "TargetPath": "Pages/FetchData.razor",
-      "FileKind": "component"
-    },
-    {
-      "FilePath": "Pages/_Imports.razor",
-      "TargetPath": "Pages/_Imports.razor",
+      "FilePath": "Pages\\_Imports.razor",
+      "TargetPath": "Pages\\_Imports.razor",
       "FileKind": "componentImport"
     },
     {
-      "FilePath": "Shared/MainLayout.razor",
-      "TargetPath": "Shared/MainLayout.razor",
+      "FilePath": "Shared\\SurveyPrompt.razor",
+      "TargetPath": "Shared\\SurveyPrompt.razor",
       "FileKind": "component"
     },
     {
-      "FilePath": "Shared/SurveyPrompt.razor",
-      "TargetPath": "Shared/SurveyPrompt.razor",
+      "FilePath": "Pages\\FetchData.razor",
+      "TargetPath": "Pages\\FetchData.razor",
       "FileKind": "component"
     },
     {
-      "FilePath": "Pages/Counter.razor",
-      "TargetPath": "Pages/Counter.razor",
-      "FileKind": "component"
-    },
-    {
-      "FilePath": "Shared/NavMenu.razor",
-      "TargetPath": "Shared/NavMenu.razor",
+      "FilePath": "Shared\\NavMenu.razor",
+      "TargetPath": "Shared\\NavMenu.razor",
       "FileKind": "component"
     },
     {
       "FilePath": "_Imports.razor",
       "TargetPath": "_Imports.razor",
       "FileKind": "componentImport"
+    },
+    {
+      "FilePath": "Shared\\MainLayout.razor",
+      "TargetPath": "Shared\\MainLayout.razor",
+      "FileKind": "component"
+    },
+    {
+      "FilePath": "Pages\\Counter.razor",
+      "TargetPath": "Pages\\Counter.razor",
+      "FileKind": "component"
     }
   ]
 }
