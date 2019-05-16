@@ -10,27 +10,23 @@ using Microsoft.Extensions.Configuration;
 
 namespace SectorBalanceAPI.Controllers
 {
-
-
-
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-
         private readonly IMemoryCache cache;
-        private readonly string connString;
         private readonly IConfiguration config;
+
+        private UserManager userMgr;
 
         public UsersController(IMemoryCache memoryCache, IConfiguration _config)
         {
             cache = memoryCache;
             config = _config;
 
-            connString = config.GetConnectionString("Default");
+            userMgr = new UserManager(cache, config);
         }
 
-        // GET api/values/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
