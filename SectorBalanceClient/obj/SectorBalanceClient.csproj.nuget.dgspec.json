@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj": {}
+    "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj": {}
   },
   "projects": {
-    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj": {
+    "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj",
+        "projectUniqueName": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj",
         "projectName": "SectorBalanceClient",
-        "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj",
+        "projectPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\SectorBalanceClient.csproj",
         "packagesPath": "C:\\Users\\geoff\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\obj\\",
+        "outputPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceClient\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

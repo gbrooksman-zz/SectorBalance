@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj": {}
+    "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj": {
+    "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj",
+        "projectUniqueName": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj",
         "projectName": "SectorBalanceAPI",
-        "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj",
+        "projectPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\SectorBalanceAPI.csproj",
         "packagesPath": "C:\\Users\\geoff\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\obj\\",
+        "outputPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -36,8 +36,8 @@
         "frameworks": {
           "netcoreapp3.0": {
             "projectReferences": {
-              "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj": {
-                "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj"
+              "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj": {
+                "projectPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj"
               }
             }
           }
@@ -68,6 +68,10 @@
             "Npgsql": {
               "target": "Package",
               "version": "[4.0.6, )"
+            },
+            "System.Runtime.Caching": {
+              "target": "Package",
+              "version": "[4.5.0, )"
             }
           },
           "imports": [
@@ -82,14 +86,14 @@
         }
       }
     },
-    "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj": {
+    "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj",
+        "projectUniqueName": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj",
         "projectName": "SectorBalanceShared",
-        "projectPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj",
+        "projectPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\SectorBalanceShared.csproj",
         "packagesPath": "C:\\Users\\geoff\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\obj\\",
+        "outputPath": "c:\\Users\\geoff\\source\\repos\\sectormodel\\SectorBalance\\SectorBalanceShared\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
