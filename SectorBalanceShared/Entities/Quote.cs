@@ -1,27 +1,29 @@
 using System;
-using NpgsqlTypes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
+    [Table("quotes")]
     public class Quote : BaseEntity
     {
-
         public Quote()
         {
             
         }
 
-        [PgName("symbol")]
-        public string Symbol { get; set; }
-
-         [PgName("price")]
-        public decimal Price { get; set; }
-
-         [PgName("date")]
+        [Key]
+        [Column("date")]
         public DateTime Date { get; set; }
 
-         [PgName("volume")]
-        public int Volume { get; set; }
+        [Key]
+        [Column("symbol")]
+        public string Symbol { get; set; }
 
+        [Column("price")]
+        public decimal Price { get; set; }
+
+        [Column("volume")]
+        public int Volume { get; set; }
     }
 }

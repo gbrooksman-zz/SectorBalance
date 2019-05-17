@@ -1,10 +1,10 @@
 using System;
-using Npgsql.PostgresTypes;
-using Npgsql;
-using NpgsqlTypes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
+    [Table("user_models")]
     public class UserModel : BaseEntity
     {
         public UserModel()
@@ -12,28 +12,30 @@ namespace SectorBalanceShared
             
         }
 
-        [PgName("model_id")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
         public Guid Id { get; set; }
 
-         [PgName("user_id")]
+        [Column("user_id")]
         public Guid UserId { get; set; }       
         
-         [PgName("name")]
+        [Column("name")]
         public string Name { get; set; }
         
-         [PgName("active")]
+        [Column("active")]
         public bool IsActive {get; set;}
 
-         [PgName("start_date")]
+        [Column("start_date")]
         public DateTime StartDate {get; set;}
 
-        [PgName("syop_date")]
+        [Column("syop_date")]
         public DateTime StopDate { get; set; }
 
-        [PgName("start_value")]
+        [Column("start_value")]
         public int StartValue { get; set; } 
 
-         [PgName("stop_value")]
+        [Column("stop_value")]
         public int StopValue { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 using System;
-using NpgsqlTypes;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SectorBalanceShared
 {
@@ -10,10 +10,12 @@ namespace SectorBalanceShared
             
         }
 
-        [PgName("created_at")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
-        [PgName("updated_at")]
+         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Column("updated_at")]
         public DateTime UpdatedAt { get; set; }
 
 

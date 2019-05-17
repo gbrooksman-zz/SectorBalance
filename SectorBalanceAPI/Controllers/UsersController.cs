@@ -30,13 +30,54 @@ namespace SectorBalanceAPI.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult  Get(string id)
+        public IActionResult  Get(Guid id)
         {
-            User user = new User();
+            User user = userMgr.GetOneById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(user);
+            }
+        }
 
+        [HttpGet("{userName}")]
+        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Get(string userName)
+        {
+            User user = userMgr.GetOneByName(userName);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(user);
+            }
+        }
 
-
-            return Ok(user);
+        [HttpPost()]
+        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult Save([FromBody] User user)
+        {
+            User newuser = userMgr.Save(user);
+            if (newuser == null)
+            {
+                return NotFound();
+            }
+            else if (newuser.Id != user.Id)
+            {
+                return Created("",user.Id);
+            }
+            else
+            {
+                return Ok(user);
+            }
         }
 
 

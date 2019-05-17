@@ -1,8 +1,11 @@
 using System;
-using NpgsqlTypes;
+using Dapper;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
+    [Table("users")]
     public class User : BaseEntity
     {
         public User()
@@ -10,17 +13,19 @@ namespace SectorBalanceShared
             
         }
 
-        [PgName("user_name")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
+        public Guid Id { get; set; }
+       
+       
+        [Key]
+        [Column("user_name")]
         public string UserName { get; set; }
 
-        [PgName("password")]
+        [Column("password")]
         public string Password { get; set; }
 
-        [PgName("id")]
-        public Guid Id { get; set; }
- 
-        [PgName("active")]
+        [Column("active")]
         public bool Active { get; set; }
-
     }
 }

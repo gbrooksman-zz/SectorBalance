@@ -6,6 +6,7 @@ using SectorBalanceShared;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using Dapper.FastCrud;
 
 namespace SectorBalanceShared
 {
@@ -60,5 +61,35 @@ namespace SectorBalanceShared
             }
         }
 
+        public User Save(User user)
+        {
+            if (user.Id == Guid.Empty)
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    db.Insert(user);
+                }
+            }
+            else
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    db.Update(user);
+                }
+            }           
+
+            return user;
+        }
+
+        public bool ToggleActive(User user)
+        {
+            bool ok = false;
+            using (NpgsqlConnection db = new NpgsqlConnection(connString))
+            {
+                user.Active = !user.Active;
+                ok = db.Update(user);
+            }
+            return ok;
+        }
     }
 }

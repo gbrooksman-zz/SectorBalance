@@ -1,8 +1,10 @@
 using System;
-using NpgsqlTypes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
+    [Table("equities")]
     public class Equity : BaseEntity
     {
         public Equity()
@@ -10,13 +12,15 @@ namespace SectorBalanceShared
             
         }
 
-        [PgName("id")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
         public Guid Id {get; set;}
 
-        [PgName("name")]
+        [Column("name")]
         public string Name { get; set; }
         
-        [PgName("symbol")]
+        [Column("symbol")]
         public string Symbol { get; set; }
     }
 }

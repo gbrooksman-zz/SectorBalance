@@ -1,8 +1,10 @@
 using System;
-using NpgsqlTypes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
+    [Table("symbol_groups")]
     public class SymbolGroup : BaseEntity
     {
         public SymbolGroup()
@@ -10,10 +12,12 @@ namespace SectorBalanceShared
             
         }
 
-        [PgName("id")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("id")]
         public Guid Id { get; set; }
 
-        [PgName("name")]
+        [Column("name")]
         public string Name { get; set; }
     }
 }

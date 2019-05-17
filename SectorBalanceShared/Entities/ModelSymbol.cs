@@ -1,8 +1,10 @@
 using System;
-using NpgsqlTypes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
+    [Table("model_symbols")]
     public class ModelSymbol
     {
         public ModelSymbol()
@@ -10,16 +12,18 @@ namespace SectorBalanceShared
             
         }
 
-        [PgName("model_symbol_id")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Column("model_symbol_id")]
         public Guid Id { get; set; }
 
-         [PgName("model_id")]
+        [Column("model_id")]
         public Guid ModelId { get; set; }
 
-        [PgName("symbol")]
+        [Column("symbol")]
         public string Symbol { get; set; }      
 
-        [PgName("percent")]
+        [Column("percent")]
         public int Percent { get; set; }
 
     }
