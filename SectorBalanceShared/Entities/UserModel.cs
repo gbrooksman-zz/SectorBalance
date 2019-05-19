@@ -24,7 +24,7 @@ namespace SectorBalanceShared
         public string Name { get; set; }
         
         [Column("active")]
-        public bool IsActive {get; set;}
+        public bool Active {get; set;}
 
         [Column("start_date")]
         public DateTime StartDate {get; set;}
