@@ -40,7 +40,10 @@ namespace SectorBalanceShared
         public string APIExceptionDescription { get; set; }
 
         //===================================================================================================
-
+        // this section contains custom error numbers and related messages
+        //===================================================================================================
+        
+        
         public const int EQUITY_USED = 1000;
         public const string EQUITY_USED_MESSAGE = "The equity is used in one or more models";
 

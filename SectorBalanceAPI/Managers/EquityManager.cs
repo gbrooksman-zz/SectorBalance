@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
+using Serilog;
 
 namespace SectorBalanceAPI
 {
@@ -37,6 +38,7 @@ namespace SectorBalanceAPI
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
+                Log.Error("EquityManager::GetSymbolInModelsCount",ex);
             } 
 
             return mgrResult;
@@ -52,7 +54,7 @@ namespace SectorBalanceAPI
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                   equity = db.Query<Equity>("SELECT * FROM users WHERE symbol = @s",symbol).FirstOrDefault();
+                   equity = db.Query<Equity>("SELECT * FROM equities WHERE symbol = @s",symbol).FirstOrDefault();
                 }
                 mgrResult.Entity = equity;
             }
@@ -62,6 +64,7 @@ namespace SectorBalanceAPI
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
+                Log.Error("EquityManager::Get",ex);
             }
             
             return mgrResult;
@@ -95,6 +98,7 @@ namespace SectorBalanceAPI
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
+                Log.Error("EquityManager::Save",ex);
             } 
 
             return mgrResult;
@@ -136,6 +140,7 @@ namespace SectorBalanceAPI
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
+                Log.Error("EquityManager::Delete",ex);
             } 
 
             return mgrResult;

@@ -7,50 +7,69 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
+using Serilog;
 
 namespace SectorBalanceAPI
 {
     public class QuoteManager : BaseManager
     {
 
+        EquityManager eqMgr;
+
         public QuoteManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
-
+            eqMgr = new EquityManager(_cache, _config);
         }
 
-        public Quote GetBySymbol(string symbol)
+        public ManagerResult<Quote> GetBySymbolAndDate(string symbol, DateTime date)
         {
-            Quote quote = new Quote();
+            ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
             using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
             {
-               quote =  db.Find<Quote>().Where(q => q.Symbol == symbol).FirstOrDefault();
+               mgrResult.Entity =  db.Find<Quote>().Where( q => q.Symbol == symbol 
+                                                        && q.Date == date).FirstOrDefault();
             }
 
-            return quote;
+            return mgrResult;
         }
 
-       public Quote Add(Quote quote)
-        {        
-            if (GetBySymbol(quote.Symbol) == null) 
+       public ManagerResult<Quote> Add(Quote quote)
+        {    
+            ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
+
+            try
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
+                if (eqMgr.Get(quote.Symbol).Entity == default(Equity)) 
                 {
-                    db.Insert(quote);
+                    using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
+                    {
+                        db.Insert(quote);
+                    }
+                }
+                else
+                {
+                    quote = new Quote();
                 }
             }
-            else
+            catch(Exception ex)
             {
-                quote = new Quote();
+                mgrResult.Entity = default(Quote);
+                mgrResult.Exception = ex;
+                mgrResult.Success = false;
+                mgrResult.Message = ex.Message;
+                Log.Error("QuoteManager::Add",ex);
             }
              
-            return quote;
+            return mgrResult;
         }
 
 
-       public Quote Delete(Quote quote)
-       {        
-            if (GetBySymbol(quote.Symbol) != null) 
+       public ManagerResult<bool> Delete(Quote quote)
+       {     
+            ManagerResult<bool> mgrResult = new ManagerResult<bool>();
+
+            if (eqMgr.Get(quote.Symbol).Entity != default(Equity)) 
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
                 {
@@ -59,12 +78,11 @@ namespace SectorBalanceAPI
             }
             else
             {
-                quote = new Quote();
+                mgrResult.Entity = false;
+                mgrResult.Success = false;
             }
              
-            return quote;
+            return mgrResult;
         }
-
-        
     }
 }
