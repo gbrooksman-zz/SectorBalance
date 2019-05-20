@@ -11,6 +11,7 @@ using Serilog;
 
 namespace SectorBalanceAPI
 {
+    //a quote is the price of an equity on a given day
     public class QuoteManager : BaseManager
     {
 
@@ -21,13 +22,13 @@ namespace SectorBalanceAPI
             eqMgr = new EquityManager(_cache, _config);
         }
 
-        public ManagerResult<Quote> GetBySymbolAndDate(string symbol, DateTime date)
+        public ManagerResult<Quote> GetBySymbolAndDate(Guid equityId, DateTime date)
         {
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
             using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
             {
-               mgrResult.Entity =  db.Find<Quote>().Where( q => q.Symbol == symbol 
+               mgrResult.Entity =  db.Find<Quote>().Where( q => q.EquityId == equityId 
                                                         && q.Date == date).FirstOrDefault();
             }
 
@@ -40,7 +41,7 @@ namespace SectorBalanceAPI
 
             try
             {
-                if (eqMgr.Get(quote.Symbol).Entity == default(Equity)) 
+                if (eqMgr.Get(quote.EquityId).Entity == default(Equity)) 
                 {
                     using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
                     {
@@ -69,7 +70,7 @@ namespace SectorBalanceAPI
        {     
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
 
-            if (eqMgr.Get(quote.Symbol).Entity != default(Equity)) 
+            if (eqMgr.Get(quote.EquityId).Entity != default(Equity)) 
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
                 {

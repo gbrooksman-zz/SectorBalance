@@ -17,8 +17,8 @@ namespace SectorBalanceShared
         public DateTime Date { get; set; }
 
         [Key]
-        [Column("symbol")]
-        public string Symbol { get; set; }
+        [Column("equity_id")]
+        public Guid EquityId { get; set; }
 
         [Column("price")]
         public decimal Price { get; set; }

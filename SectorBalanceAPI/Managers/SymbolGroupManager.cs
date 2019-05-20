@@ -10,17 +10,17 @@ using Dapper.FastCrud;
 
 namespace SectorBalanceAPI
 {
-    public class SymbolGroupManager : BaseManager
+    public class EquityGroupManager : BaseManager
     {
 
-        public SymbolGroupManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
+        public EquityGroupManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
 
         }
 
-        public ManagerResult<SymbolGroup> Save(SymbolGroup symbolGroup)
+        public ManagerResult<EquityGroup> Save(EquityGroup symbolGroup)
         {
-            ManagerResult<SymbolGroup> mgrResult = new ManagerResult<SymbolGroup>();
+            ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
             
             try
             {               
@@ -42,7 +42,7 @@ namespace SectorBalanceAPI
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(SymbolGroup);
+                mgrResult.Entity = default(EquityGroup);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -51,9 +51,9 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<SymbolGroup> ToggleActive(SymbolGroup symbolGroup)
+        public ManagerResult<EquityGroup> ToggleActive(EquityGroup symbolGroup)
         {
-            ManagerResult<SymbolGroup> mgrResult = new ManagerResult<SymbolGroup>();
+            ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
             
             try
             {
@@ -66,7 +66,7 @@ namespace SectorBalanceAPI
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(SymbolGroup);
+                mgrResult.Entity = default(EquityGroup);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -77,23 +77,23 @@ namespace SectorBalanceAPI
 
    #region symbol group items
 
-        public ManagerResult<List<SymbolGroupItem>> GetSymbolList(SymbolGroup symbolGroup)
+        public ManagerResult<List<EquityGroupItem>> GetSymbolList(EquityGroup symbolGroup)
         {
-            ManagerResult<List<SymbolGroupItem>> mgrResult = new ManagerResult<List<SymbolGroupItem>>();
-            List<SymbolGroupItem> symbolGroupItems = new List<SymbolGroupItem>();
+            ManagerResult<List<EquityGroupItem>> mgrResult = new ManagerResult<List<EquityGroupItem>>();
+            List<EquityGroupItem> symbolGroupItems = new List<EquityGroupItem>();
             
             try
             {  
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    symbolGroupItems = db.Query<SymbolGroupItem>("SELECT * FROM symbol_group_items WHERE model = @m",symbolGroup.Id).ToList();                         
+                    symbolGroupItems = db.Query<EquityGroupItem>("SELECT * FROM symbol_group_items WHERE model = @m",symbolGroup.Id).ToList();                         
                 }
 
                 mgrResult.Entity = symbolGroupItems;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<SymbolGroupItem>);
+                mgrResult.Entity = default(List<EquityGroupItem>);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -102,10 +102,10 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<SymbolGroupItem> AddSymbol(SymbolGroup symbolGroup, Guid symbolId)
+        public ManagerResult<EquityGroupItem> AddSymbol(EquityGroup symbolGroup, Guid symbolId)
         {
-            ManagerResult<SymbolGroupItem> mgrResult = new ManagerResult<SymbolGroupItem>();
-            SymbolGroupItem symbolGroupItem = new SymbolGroupItem();
+            ManagerResult<EquityGroupItem> mgrResult = new ManagerResult<EquityGroupItem>();
+            EquityGroupItem symbolGroupItem = new EquityGroupItem();
             
             try
             {   
@@ -121,7 +121,7 @@ namespace SectorBalanceAPI
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(SymbolGroupItem);
+                mgrResult.Entity = default(EquityGroupItem);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -130,10 +130,10 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveSymbol(SymbolGroup sysmbolGroup, Guid symbolId)
+        public ManagerResult<bool> RemoveSymbol(EquityGroup sysmbolGroup, Guid symbolId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            SymbolGroupItem symbolGroupItem = new SymbolGroupItem();
+            EquityGroupItem symbolGroupItem = new EquityGroupItem();
             bool ok = false;
             
             try

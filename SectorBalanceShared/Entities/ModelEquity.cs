@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
-    [Table("model_symbols")]
-    public class ModelSymbol
+    [Table("model_equities")]
+    public class ModelEquity
     {
-        public ModelSymbol()
+        public ModelEquity()
         {
             
         }
@@ -20,8 +20,8 @@ namespace SectorBalanceShared
         [Column("model_id")]
         public Guid ModelId { get; set; }
 
-        [Column("symbol")]
-        public string Symbol { get; set; }      
+        [Column("equity_id")]
+        public Guid EquityID { get; set; }      
 
         [Column("percent")]
         public int Percent { get; set; }

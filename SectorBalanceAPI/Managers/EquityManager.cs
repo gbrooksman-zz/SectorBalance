@@ -14,7 +14,7 @@ namespace SectorBalanceAPI
     public class EquityManager : BaseManager
     {
        
-
+        // an equity is an investment vehilce identified by a symbol that is included in the api's data
 
         public EquityManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
@@ -45,7 +45,7 @@ namespace SectorBalanceAPI
         }
 
 
-        public ManagerResult<Equity> Get(string symbol)
+        public ManagerResult<Equity> Get(Guid equityId)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
             Equity equity = new Equity();
@@ -54,7 +54,7 @@ namespace SectorBalanceAPI
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                   equity = db.Query<Equity>("SELECT * FROM equities WHERE symbol = @s",symbol).FirstOrDefault();
+                   equity = db.Query<Equity>("SELECT * FROM equities WHERE equity_id = @e",equityId).FirstOrDefault();
                 }
                 mgrResult.Entity = equity;
             }

@@ -105,23 +105,23 @@ namespace SectorBalanceAPI
 
         #region model symbols
 
-        public ManagerResult<List<ModelSymbol>> GetSymbolList(UserModel userModel)
+        public ManagerResult<List<ModelEquity>> GetSymbolList(UserModel userModel)
         {
-            ManagerResult<List<ModelSymbol>> mgrResult = new ManagerResult<List<ModelSymbol>>();
-            List<ModelSymbol> modelSymbols = new List<ModelSymbol>();
+            ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
+            List<ModelEquity> modelSymbols = new List<ModelEquity>();
             
             try
             {  
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    modelSymbols = db.Query<ModelSymbol>("SELECT * FROM model_symbols WHERE model = @m",userModel.Id).ToList();                         
+                    modelSymbols = db.Query<ModelEquity>("SELECT * FROM model_symbols WHERE model = @m",userModel.Id).ToList();                         
                 }
 
                 mgrResult.Entity = modelSymbols;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<ModelSymbol>);
+                mgrResult.Entity = default(List<ModelEquity>);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -132,10 +132,10 @@ namespace SectorBalanceAPI
 
       
 
-        public ManagerResult<ModelSymbol> AddSymbol(UserModel userModel, string symbol, int percent)
+        public ManagerResult<ModelEquity> AddSymbol(UserModel userModel, string symbol, int percent)
         {
-            ManagerResult<ModelSymbol> mgrResult = new ManagerResult<ModelSymbol>();
-            ModelSymbol modelSymbol = new ModelSymbol();
+            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
+            ModelEquity modelSymbol = new ModelEquity();
             
             try
             {   
@@ -150,7 +150,7 @@ namespace SectorBalanceAPI
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(ModelSymbol);
+                mgrResult.Entity = default(ModelEquity);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -159,16 +159,16 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveSymbol(UserModel userModel, string symbol)
+        public ManagerResult<bool> RemoveSymbol(UserModel userModel, Guid equityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            ModelSymbol modelSymbol = new ModelSymbol();
+            ModelEquity modelSymbol = new ModelEquity();
             bool ok = false;
             
             try
             {   
                modelSymbol.ModelId = userModel.Id;
-               modelSymbol.Symbol = symbol;
+               modelSymbol.EquityID = equityId;
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {

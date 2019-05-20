@@ -29,7 +29,7 @@ namespace SectorBalanceShared
         [Column("start_date")]
         public DateTime StartDate {get; set;}
 
-        [Column("syop_date")]
+        [Column("stop_date")]
         public DateTime StopDate { get; set; }
 
         [Column("start_value")]

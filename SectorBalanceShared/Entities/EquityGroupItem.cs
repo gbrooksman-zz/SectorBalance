@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SectorBalanceShared
 {
-    [Table("symbol_group_items")]
-    public class SymbolGroupItem : BaseEntity
+    [Table("equity_group_items")]
+    public class EquityGroupItem : BaseEntity
     {
-        public SymbolGroupItem()
+        public EquityGroupItem()
         {
             
         }
@@ -20,7 +20,7 @@ namespace SectorBalanceShared
         [Column("group_id")]
         public Guid GroupId { get; set; }
 
-        [Column("symbol_id")]
+        [Column("equity_id")]
         public Guid SymbolId { get; set; }
     }
 }
