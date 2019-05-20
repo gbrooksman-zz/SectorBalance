@@ -16,7 +16,7 @@ namespace SectorBalanceShared
 
        public Exception Exception {get; set;}
 
-      public T ResultEntity {get; set;}      
+      public T Entity {get; set;}      
 
     }
 }

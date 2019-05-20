@@ -8,15 +8,38 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
 
-namespace SectorBalanceShared
+namespace SectorBalanceAPI
 {
     public class UserModelManager : BaseManager
     {
-
-
         public UserModelManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
             
+        }
+
+        public ManagerResult<List<UserModel>> GetModelList(User user)
+        {
+            ManagerResult<List<UserModel>> mgrResult = new ManagerResult<List<UserModel>>();
+            List<UserModel> models = new List<UserModel>();
+            
+            try
+            {  
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    models = db.Query<UserModel>("SELECT * FROM user_models WHERE ucer_id = @id",user.Id).ToList();                         
+                }
+
+                mgrResult.Entity = models;
+            }
+            catch(Exception ex)
+            {
+                mgrResult.Entity = default(List<UserModel>);
+                mgrResult.Exception = ex;
+                mgrResult.Success = false;
+                mgrResult.Message = ex.Message;
+            } 
+
+            return mgrResult;
         }
 
        public ManagerResult<UserModel> Save(UserModel userModel)
@@ -25,8 +48,7 @@ namespace SectorBalanceShared
             
             try
             {
-                userModel.Active = !userModel.Active;
-                 if (userModel.Id == Guid.Empty)
+                if (userModel.Id == Guid.Empty)
                 {
                     using (NpgsqlConnection db = new NpgsqlConnection(connString))
                     {
@@ -40,11 +62,11 @@ namespace SectorBalanceShared
                         db.Update(userModel);
                     }
                 }           
-                mgrResult.ResultEntity = userModel;
+                mgrResult.Entity = userModel;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(UserModel);
+                mgrResult.Entity = default(UserModel);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -66,11 +88,11 @@ namespace SectorBalanceShared
                 {
                     bool ok = db.Update(userModel);               
                 }
-                mgrResult.ResultEntity = userModel;
+                mgrResult.Entity = userModel;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(UserModel);
+                mgrResult.Entity = default(UserModel);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -95,11 +117,11 @@ namespace SectorBalanceShared
                     modelSymbols = db.Query<ModelSymbol>("SELECT * FROM model_symbols WHERE model = @m",userModel.Id).ToList();                         
                 }
 
-                mgrResult.ResultEntity = modelSymbols;
+                mgrResult.Entity = modelSymbols;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(List<ModelSymbol>);
+                mgrResult.Entity = default(List<ModelSymbol>);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -107,6 +129,8 @@ namespace SectorBalanceShared
 
             return mgrResult;
         }
+
+      
 
         public ManagerResult<ModelSymbol> AddSymbol(UserModel userModel, string symbol, int percent)
         {
@@ -122,11 +146,11 @@ namespace SectorBalanceShared
                     db.Insert(modelSymbol);                               
                 }
 
-                mgrResult.ResultEntity = modelSymbol;
+                mgrResult.Entity = modelSymbol;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(ModelSymbol);
+                mgrResult.Entity = default(ModelSymbol);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -151,11 +175,11 @@ namespace SectorBalanceShared
                     ok = db.Delete(modelSymbol);                             
                 }
 
-                mgrResult.ResultEntity = ok;
+                mgrResult.Entity = ok;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = false;
+                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;

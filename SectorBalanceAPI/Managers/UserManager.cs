@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
 
-namespace SectorBalanceShared
+namespace SectorBalanceAPI
 {
-    public class UserManager :BaseManager
+    public class UserManager : BaseManager
     {
         public UserManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
@@ -28,11 +28,11 @@ namespace SectorBalanceShared
                 {
                      users = db.Query<User>("SELECT * FROM users WHERE active = True").ToList();
                 }
-                mgrResult.ResultEntity = users;
+                mgrResult.Entity = users;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(List<User>);
+                mgrResult.Entity = default(List<User>);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -52,11 +52,11 @@ namespace SectorBalanceShared
                 {
                     user =  db.Query<User>("SELECT * FROM users WHERE id = @id",id).FirstOrDefault();
                 }
-                mgrResult.ResultEntity = user;
+                mgrResult.Entity = user;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(User);
+                mgrResult.Entity = default(User);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -76,11 +76,11 @@ namespace SectorBalanceShared
                 {
                    user = db.Query<User>("SELECT * FROM users WHERE user_name = @un",userName).FirstOrDefault();
                 }
-                mgrResult.ResultEntity = user;
+                mgrResult.Entity = user;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(User);
+                mgrResult.Entity = default(User);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -105,12 +105,12 @@ namespace SectorBalanceShared
                                             AND password = @pw 
                                             AND active = true",new {userName, password}).FirstOrDefault();
                 
-                    mgrResult.ResultEntity = (user != default(User));
+                    mgrResult.Entity = (user != default(User));
                 }
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = false;
+                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -141,7 +141,7 @@ namespace SectorBalanceShared
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(User);
+                mgrResult.Entity = default(User);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -165,7 +165,7 @@ namespace SectorBalanceShared
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = false;
+                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;

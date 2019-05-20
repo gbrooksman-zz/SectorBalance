@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
 
-namespace SectorBalanceShared
+namespace SectorBalanceAPI
 {
     public class SymbolGroupManager : BaseManager
     {
@@ -38,11 +38,11 @@ namespace SectorBalanceShared
                         db.Update(symbolGroup);
                     }
                 }           
-                mgrResult.ResultEntity = symbolGroup;
+                mgrResult.Entity = symbolGroup;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(SymbolGroup);
+                mgrResult.Entity = default(SymbolGroup);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -62,11 +62,11 @@ namespace SectorBalanceShared
                 {
                     bool ok = db.Update(symbolGroup);               
                 }
-                mgrResult.ResultEntity = symbolGroup;
+                mgrResult.Entity = symbolGroup;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(SymbolGroup);
+                mgrResult.Entity = default(SymbolGroup);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -89,11 +89,11 @@ namespace SectorBalanceShared
                     symbolGroupItems = db.Query<SymbolGroupItem>("SELECT * FROM symbol_group_items WHERE model = @m",symbolGroup.Id).ToList();                         
                 }
 
-                mgrResult.ResultEntity = symbolGroupItems;
+                mgrResult.Entity = symbolGroupItems;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(List<SymbolGroupItem>);
+                mgrResult.Entity = default(List<SymbolGroupItem>);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -117,11 +117,11 @@ namespace SectorBalanceShared
                     db.Insert(symbolGroupItem);                               
                 }
 
-                mgrResult.ResultEntity = symbolGroupItem;
+                mgrResult.Entity = symbolGroupItem;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = default(SymbolGroupItem);
+                mgrResult.Entity = default(SymbolGroupItem);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -146,11 +146,11 @@ namespace SectorBalanceShared
                     ok = db.Delete(symbolGroupItem);                             
                 }
 
-                mgrResult.ResultEntity = ok;
+                mgrResult.Entity = ok;
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = false;
+                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;

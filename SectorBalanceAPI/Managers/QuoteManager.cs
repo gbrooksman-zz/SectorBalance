@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
 
-namespace SectorBalanceShared
+namespace SectorBalanceAPI
 {
     public class QuoteManager : BaseManager
     {
