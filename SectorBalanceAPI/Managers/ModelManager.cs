@@ -74,10 +74,12 @@ namespace SectorBalanceShared
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
-            } 
-
-            return mgrResult;
+           } 
+           
+           return mgrResult;
         }
+
+
 
         #region model symbols
 
@@ -141,8 +143,8 @@ namespace SectorBalanceShared
             
             try
             {   
-                modelSymbol.ModelId = userModel.Id;
-                modelSymbol.Symbol = symbol;
+               modelSymbol.ModelId = userModel.Id;
+               modelSymbol.Symbol = symbol;
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {

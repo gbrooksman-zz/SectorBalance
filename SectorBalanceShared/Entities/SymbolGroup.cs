@@ -19,5 +19,8 @@ namespace SectorBalanceShared
 
         [Column("name")]
         public string Name { get; set; }
+
+        [Column("active")]
+        public bool Active { get; set; }
     }
 }

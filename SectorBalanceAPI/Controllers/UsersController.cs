@@ -32,8 +32,8 @@ namespace SectorBalanceAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult  Get(Guid id)
         {
-            User user = userMgr.GetOneById(id);
-            if (user == null)
+            User user = userMgr.GetOneById(id).ResultEntity;
+            if (user == default(User))
             {
                 return NotFound();
             }
@@ -48,8 +48,8 @@ namespace SectorBalanceAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Get(string userName)
         {
-            User user = userMgr.GetOneByName(userName);
-            if (user == null)
+            User user = userMgr.GetOneByName(userName).ResultEntity;
+            if (user == default(User))
             {
                 return NotFound();
             }
@@ -65,8 +65,8 @@ namespace SectorBalanceAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult Save([FromBody] User user)
         {
-            User newuser = userMgr.Save(user);
-            if (newuser == null)
+            User newuser = userMgr.Save(user).ResultEntity;
+            if (newuser == default(User))
             {
                 return NotFound();
             }

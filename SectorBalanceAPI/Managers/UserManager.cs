@@ -12,16 +12,9 @@ namespace SectorBalanceShared
 {
     public class UserManager :BaseManager
     {
-        private readonly IMemoryCache cache;
-        private readonly string connString;
-        private readonly IConfiguration config;
-
         public UserManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
-            cache = _cache;
-            config = _config;
 
-            connString = config.GetConnectionString("Default");
         }
 
         public ManagerResult<List<User>> GetAllUsers()
@@ -48,7 +41,7 @@ namespace SectorBalanceShared
             return mgrResult;
         }
 
-        public User GetOneById(Guid id)
+        public ManagerResult<User> GetOneById(Guid id)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();
             User user = new User();
@@ -63,15 +56,16 @@ namespace SectorBalanceShared
             }
             catch(Exception ex)
             {
+                mgrResult.ResultEntity = default(User);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
             }
             
-            return user;
+            return mgrResult;
         }
 
-        public User GetOneByName(string userName)
+        public ManagerResult<User> GetOneByName(string userName)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();
             User user = new User();
@@ -86,21 +80,20 @@ namespace SectorBalanceShared
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = user;
+                mgrResult.ResultEntity = default(User);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
             }
             
-            return user;
+            return mgrResult;
         }
 
 
-        public bool Validate(string userName, string password)
+        public ManagerResult<bool> Validate(string userName, string password)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
             User user = new User();
-            bool ok = false;
               
             try
             {
@@ -117,16 +110,16 @@ namespace SectorBalanceShared
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = ok;
+                mgrResult.ResultEntity = false;
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
             }
             
-            return ok;
+            return mgrResult;
         }
 
-        public User Save(User user)
+        public ManagerResult<User> Save(User user)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();              
             try
@@ -148,16 +141,16 @@ namespace SectorBalanceShared
             }
             catch(Exception ex)
             {
-                mgrResult.ResultEntity = user;
+                mgrResult.ResultEntity = default(User);
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
             }
             
-            return user;
+            return mgrResult;
         }
 
-        public bool ToggleActive(User user)
+        public ManagerResult<bool> ToggleActive(User user)
         {
             bool ok = false;
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();   
@@ -178,7 +171,7 @@ namespace SectorBalanceShared
                 mgrResult.Message = ex.Message;
             }            
            
-            return ok;
+            return mgrResult;
         }
     }
 }

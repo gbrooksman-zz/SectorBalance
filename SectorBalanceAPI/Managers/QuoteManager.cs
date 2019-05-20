@@ -12,19 +12,10 @@ namespace SectorBalanceShared
 {
     public class QuoteManager : BaseManager
     {
-        // private readonly IMemoryCache cache;
-        // private readonly string connString;
-        // private readonly IConfiguration config;
 
         public QuoteManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
-        //{  // private readonly IMemoryCache cache;
-        // private readonly string connString;
-        // private readonly IConfiguration config;
-            // cache = _cache;
-            // config = _config;
 
-            // connString = config.GetConnectionString("Default");
         }
 
         public Quote GetBySymbol(string symbol)
