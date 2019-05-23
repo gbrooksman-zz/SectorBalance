@@ -18,6 +18,35 @@ namespace SectorBalanceAPI
 
         }
 
+        public ManagerResult<List<EquityGroup>> GetList()
+        {
+            ManagerResult<List<EquityGroup>> mgrResult = new ManagerResult<List<EquityGroup>>();
+            List<EquityGroup> equityGroupList = new List<EquityGroup>();
+            
+            try
+            {  
+                equityGroupList = cache.GetOrCreate<List<EquityGroup>>(CacheKeys.EQUITY_GROUP_LIST, entry =>
+                {
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {                    
+                        return db.Query<EquityGroup>("SELECT * FROM equity_groups").ToList();
+                    }
+                });
+
+
+                mgrResult.Entity = equityGroupList;
+            }
+            catch(Exception ex)
+            {
+                mgrResult.Entity = default(List<EquityGroup>);
+                mgrResult.Exception = ex;
+                mgrResult.Success = false;
+                mgrResult.Message = ex.Message;
+            } 
+
+            return mgrResult;
+        }
+
         public ManagerResult<EquityGroup> Save(EquityGroup symbolGroup)
         {
             ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
@@ -75,21 +104,25 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-   #region symbol group items
+   #region equity group items
 
-        public ManagerResult<List<EquityGroupItem>> GetSymbolList(EquityGroup symbolGroup)
+        public ManagerResult<List<EquityGroupItem>> GetGroupItemsList(EquityGroup equityGroup)
         {
             ManagerResult<List<EquityGroupItem>> mgrResult = new ManagerResult<List<EquityGroupItem>>();
-            List<EquityGroupItem> symbolGroupItems = new List<EquityGroupItem>();
-            
+            List<EquityGroupItem> equityGroupItems = new List<EquityGroupItem>();
+     
             try
             {  
+                equityGroupItems = cache.GetOrCreate<List<EquityGroupItem>>(equityGroup.Id, entry =>
+                {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    symbolGroupItems = db.Query<EquityGroupItem>("SELECT * FROM symbol_group_items WHERE model = @m",symbolGroup.Id).ToList();                         
-                }
+                    return db.Query<EquityGroupItem>(@"SELECT * 
+                                                        FROM equity_group_items 
+                                                        WHERE group_id = @g",equityGroup.Id).ToList();                         
+                }});
 
-                mgrResult.Entity = symbolGroupItems;
+                mgrResult.Entity = equityGroupItems;
             }
             catch(Exception ex)
             {

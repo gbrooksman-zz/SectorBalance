@@ -16,10 +16,49 @@ namespace SectorBalanceAPI
     {
 
         EquityManager eqMgr;
+        EquityGroupManager eqGroupMgr;
 
         public QuoteManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
             eqMgr = new EquityManager(_cache, _config);
+            eqGroupMgr = new EquityGroupManager(_cache, _config);
+        }
+
+         public ManagerResult<List<Quote>> GetEquityGroupQuoteList(EquityGroup equityGroup, DateTime startdate, DateTime stopdate)
+        {
+            ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
+            
+            using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
+            {
+               var equityList = eqGroupMgr.GetGroupItemsList(equityGroup).Entity; 
+
+                foreach (EquityGroupItem equity in equityList)
+                {
+                    mgrResult.Entity.AddRange(
+                        GetByEquityIdAndDateRange(equity.Id, startdate, stopdate).Entity);
+                }
+            }
+
+            return mgrResult;
+        }
+
+
+        public ManagerResult<List<Quote>> GetByEquityIdAndDateRange(Guid equityId, DateTime startdate, DateTime stopdate)
+        {
+            ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
+
+            using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
+            {
+                string sql = @"SELECT * FROM quotes 
+                                WHERE equity_id = @eid 
+                                AND date >= @d1
+                                and date <= @d2";
+
+                mgrResult.Entity = (db.Query<Quote>(sql, new {equityId, startdate, stopdate}).ToList());
+                                                                
+            }
+
+            return mgrResult;
         }
 
         public ManagerResult<Quote> GetBySymbolAndDate(Guid equityId, DateTime date)

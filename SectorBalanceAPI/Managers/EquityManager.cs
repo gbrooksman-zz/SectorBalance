@@ -45,6 +45,35 @@ namespace SectorBalanceAPI
         }
 
 
+        public ManagerResult<List<Equity>> GetList()
+        {
+            ManagerResult<List<Equity>> mgrResult = new ManagerResult<List<Equity>>();
+            List<Equity> equityList = new List<Equity>();
+              
+            try
+            {
+                equityList = cache.GetOrCreate<List<Equity>>(CacheKeys.EQUITY_LIST, entry =>
+                {
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {                    
+                        return db.Query<Equity>("SELECT * FROM equities").ToList();
+                    }
+                });
+
+                mgrResult.Entity = equityList;
+            }
+            catch(Exception ex)
+            {
+                mgrResult.Entity = default(List<Equity>);
+                mgrResult.Exception = ex;
+                mgrResult.Success = false;
+                mgrResult.Message = ex.Message;
+                Log.Error("EquityManager::GetList",ex);
+            }
+            
+            return mgrResult;
+        }
+
         public ManagerResult<Equity> Get(Guid equityId)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
