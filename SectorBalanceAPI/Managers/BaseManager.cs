@@ -33,9 +33,10 @@ namespace SectorBalanceAPI
 
     public static class CacheKeys
     {
-        public static readonly string EQUITY_LIST = "equityList";
+        public static readonly string EQUITY_LIST = "equity_ist";
 
-        public static readonly string EQUITY_GROUP_LIST = "equityList";
+        public static readonly string EQUITY_GROUP_LIST = "equity_group_list";
 
+        public static readonly string QUOTE_LIST = "quote_list";
     }
 }

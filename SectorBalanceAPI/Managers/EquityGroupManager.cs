@@ -47,27 +47,27 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<EquityGroup> Save(EquityGroup symbolGroup)
+        public ManagerResult<EquityGroup> Save(EquityGroup equityGroup)
         {
             ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
             
             try
             {               
-                if (symbolGroup.Id == Guid.Empty)
+                if (equityGroup.Id == Guid.Empty)
                 {
                     using (NpgsqlConnection db = new NpgsqlConnection(connString))
                     {
-                        db.Insert(symbolGroup);
+                        db.Insert(equityGroup);
                     }
                 }
                 else
                 {
                     using (NpgsqlConnection db = new NpgsqlConnection(connString))
                     {
-                        db.Update(symbolGroup);
+                        db.Update(equityGroup);
                     }
                 }           
-                mgrResult.Entity = symbolGroup;
+                mgrResult.Entity = equityGroup;
             }
             catch(Exception ex)
             {
@@ -80,18 +80,18 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<EquityGroup> ToggleActive(EquityGroup symbolGroup)
+        public ManagerResult<EquityGroup> ToggleActive(EquityGroup equityGroup)
         {
             ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
             
             try
             {
-                symbolGroup.Active = !symbolGroup.Active;
+                equityGroup.Active = !equityGroup.Active;
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    bool ok = db.Update(symbolGroup);               
+                    bool ok = db.Update(equityGroup);               
                 }
-                mgrResult.Entity = symbolGroup;
+                mgrResult.Entity = equityGroup;
             }
             catch(Exception ex)
             {
@@ -135,22 +135,22 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<EquityGroupItem> AddSymbol(EquityGroup symbolGroup, Guid symbolId)
+        public ManagerResult<EquityGroupItem> AddEquity(EquityGroup equityGroup, Guid equityId)
         {
             ManagerResult<EquityGroupItem> mgrResult = new ManagerResult<EquityGroupItem>();
-            EquityGroupItem symbolGroupItem = new EquityGroupItem();
+            EquityGroupItem equityGroupItem = new EquityGroupItem();
             
             try
             {   
-                symbolGroupItem.GroupId = symbolGroup.Id;
-                symbolGroupItem.SymbolId = symbolId;
+                equityGroupItem.GroupId = equityGroup.Id;
+                equityGroupItem.EquityId = equityId;
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    db.Insert(symbolGroupItem);                               
+                    db.Insert(equityGroupItem);                               
                 }
 
-                mgrResult.Entity = symbolGroupItem;
+                mgrResult.Entity = equityGroupItem;
             }
             catch(Exception ex)
             {
@@ -163,20 +163,20 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveSymbol(EquityGroup sysmbolGroup, Guid symbolId)
+        public ManagerResult<bool> RemoveEquiyt(EquityGroup sysmbolGroup, Guid equitylId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            EquityGroupItem symbolGroupItem = new EquityGroupItem();
+            EquityGroupItem equityGroupItem = new EquityGroupItem();
             bool ok = false;
             
             try
             {   
-                symbolGroupItem.GroupId = sysmbolGroup.Id;
-                symbolGroupItem.SymbolId = symbolId;
+                equityGroupItem.GroupId = sysmbolGroup.Id;
+                equityGroupItem.EquityId = equitylId;
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    ok = db.Delete(symbolGroupItem);                             
+                    ok = db.Delete(equityGroupItem);                             
                 }
 
                 mgrResult.Entity = ok;

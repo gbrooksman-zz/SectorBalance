@@ -14,14 +14,14 @@ namespace SectorBalanceAPI
     public class EquityManager : BaseManager
     {
        
-        // an equity is an investment vehilce identified by a symbol that is included in the api's data
+        // an equity is an investment vehilce identified by a equity that is included in the api's data
 
         public EquityManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
 
         }
 
-        public ManagerResult<int> GetSymbolInModelsCount(Equity equity)
+        public ManagerResult<int> GetEquitiesInModelsCount(Guid equityId)
         {
             ManagerResult<int> mgrResult = new ManagerResult<int>();
             
@@ -29,7 +29,7 @@ namespace SectorBalanceAPI
             {  
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    mgrResult.Entity = db.Query<int>("SELECT count(*) FROM model_symbols WHERE symbol = @e",equity.Id).FirstOrDefault();                         
+                    mgrResult.Entity = db.Query<int>("SELECT count(*) FROM model_equities WHERE equity_id = @e",equityId).FirstOrDefault();                         
                 }
             }
             catch(Exception ex)
@@ -38,7 +38,7 @@ namespace SectorBalanceAPI
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
-                Log.Error("EquityManager::GetSymbolInModelsCount",ex);
+                Log.Error("EquityManager::GetEquitiesInModelsCount",ex);
             } 
 
             return mgrResult;
@@ -77,15 +77,15 @@ namespace SectorBalanceAPI
         public ManagerResult<Equity> Get(Guid equityId)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
-            Equity equity = new Equity();
-              
+             
             try
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                   equity = db.Query<Equity>("SELECT * FROM equities WHERE equity_id = @e",equityId).FirstOrDefault();
+                   mgrResult.Entity = db.Query<Equity>(@"SELECT * 
+                                                FROM equities 
+                                                WHERE id = @eid", equityId).FirstOrDefault();  
                 }
-                mgrResult.Entity = equity;
             }
             catch(Exception ex)
             {
@@ -135,23 +135,26 @@ namespace SectorBalanceAPI
 
       
 
-        public ManagerResult<bool> Delete(string symbol)
+        public ManagerResult<bool> Delete(Guid equityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            Equity equity = new Equity();
             bool ok = false;
+
+            Equity equity = new Equity()
+            {
+                Id = equityId
+            };
+            
             
             try
             {   
-                equity.Symbol = symbol;
-
-                int count = this.GetSymbolInModelsCount(equity).Entity;
+                int count = this.GetEquitiesInModelsCount(equity.Id).Entity;
 
                 if (count == 0)
                 {
                     using (NpgsqlConnection db = new NpgsqlConnection(connString))
                     {
-                        ok = db.Delete(equity);                             
+                        ok = db.Delete(equity);                         
                     }
                     mgrResult.Entity = ok;
                 }

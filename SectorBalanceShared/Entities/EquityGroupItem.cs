@@ -21,6 +21,6 @@ namespace SectorBalanceShared
         public Guid GroupId { get; set; }
 
         [Column("equity_id")]
-        public Guid SymbolId { get; set; }
+        public Guid EquityId { get; set; }
     }
 }

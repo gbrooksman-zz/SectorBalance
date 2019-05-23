@@ -24,7 +24,7 @@ namespace SectorBalanceAPI
             eqGroupMgr = new EquityGroupManager(_cache, _config);
         }
 
-         public ManagerResult<List<Quote>> GetEquityGroupQuoteList(EquityGroup equityGroup, DateTime startdate, DateTime stopdate)
+        public ManagerResult<List<Quote>> GetEquityGroupQuoteList(EquityGroup equityGroup, DateTime startdate, DateTime stopdate)
         {
             ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
             
@@ -42,34 +42,37 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-
         public ManagerResult<List<Quote>> GetByEquityIdAndDateRange(Guid equityId, DateTime startdate, DateTime stopdate)
         {
             ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
 
-            using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
-            {
-                string sql = @"SELECT * FROM quotes 
-                                WHERE equity_id = @eid 
-                                AND date >= @d1
-                                and date <= @d2";
-
-                mgrResult.Entity = (db.Query<Quote>(sql, new {equityId, startdate, stopdate}).ToList());
-                                                                
-            }
+            List<Quote> quoteList = GetByEquityId(equityId);
+            
+            mgrResult.Entity =  quoteList.Where(q => q.Date >= startdate && q.Date <= stopdate).ToList();            
 
             return mgrResult;
         }
 
-        public ManagerResult<Quote> GetBySymbolAndDate(Guid equityId, DateTime date)
+        private List<Quote> GetByEquityId(Guid equityId)
+        {
+            return cache.GetOrCreate<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
+                        {
+                            using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                            {                    
+                                return db.Query<Quote>(@"SELECT * FROM quotes 
+                                                        WHERE equity_id = @eid").ToList();
+                            }
+                        });
+        }
+
+
+        public ManagerResult<Quote> GetByEquityIdAndDate(Guid equityId, DateTime date)
         {
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
-            using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
-            {
-               mgrResult.Entity =  db.Find<Quote>().Where( q => q.EquityId == equityId 
-                                                        && q.Date == date).FirstOrDefault();
-            }
+            List<Quote> quoteList = GetByEquityId(equityId);
+            
+            mgrResult.Entity =  quoteList.Where(q => q.Date == date).FirstOrDefault();  
 
             return mgrResult;
         }

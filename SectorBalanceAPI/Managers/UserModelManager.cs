@@ -101,23 +101,21 @@ namespace SectorBalanceAPI
            return mgrResult;
         }
 
+        #region model equities
 
-
-        #region model symbols
-
-        public ManagerResult<List<ModelEquity>> GetSymbolList(UserModel userModel)
+        public ManagerResult<List<ModelEquity>> GetEquityList(UserModel userModel)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
-            List<ModelEquity> modelSymbols = new List<ModelEquity>();
+            List<ModelEquity> modelEquities = new List<ModelEquity>();
             
             try
             {  
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    modelSymbols = db.Query<ModelEquity>("SELECT * FROM model_symbols WHERE model = @m",userModel.Id).ToList();                         
+                    modelEquities = db.Query<ModelEquity>("SELECT * FROM model_equities WHERE model = @m",userModel.Id).ToList();                         
                 }
 
-                mgrResult.Entity = modelSymbols;
+                mgrResult.Entity = modelEquities;
             }
             catch(Exception ex)
             {
@@ -132,21 +130,25 @@ namespace SectorBalanceAPI
 
       
 
-        public ManagerResult<ModelEquity> AddSymbol(UserModel userModel, string symbol, int percent)
+        public ManagerResult<ModelEquity> AddEquity(UserModel userModel, Guid equityId, int percent)
         {
-            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
-            ModelEquity modelSymbol = new ModelEquity();
+            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();           
             
             try
             {   
-                modelSymbol.ModelId = userModel.Id;
+                ModelEquity modelEquity = new ModelEquity()
+                {
+                    ModelId = userModel.Id,
+                    EquityID = equityId,
+                    Percent = percent
+                };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    db.Insert(modelSymbol);                               
+                    db.Insert(modelEquity);                               
                 }
 
-                mgrResult.Entity = modelSymbol;
+                mgrResult.Entity = modelEquity;
             }
             catch(Exception ex)
             {
@@ -159,23 +161,23 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveSymbol(UserModel userModel, Guid equityId)
+        public ManagerResult<bool> RemoveEquity(UserModel userModel, Guid equityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            ModelEquity modelSymbol = new ModelEquity();
-            bool ok = false;
             
             try
             {   
-               modelSymbol.ModelId = userModel.Id;
-               modelSymbol.EquityID = equityId;
+                ModelEquity modelEquity = new ModelEquity()
+                {
+                    ModelId = userModel.Id,
+                    EquityID = equityId
+                };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    ok = db.Delete(modelSymbol);                             
+                    mgrResult.Entity = db.Delete(modelEquity);                             
                 }
 
-                mgrResult.Entity = ok;
             }
             catch(Exception ex)
             {
