@@ -1,0 +1,7 @@
+App To Do Items
+=========================================================================================
+
+1 - Password encryption/decryption
+2 - Set password requirements
+3 - Integrate quote API from winforms App
+4 - Get connections strings out of version control

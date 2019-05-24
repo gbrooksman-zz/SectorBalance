@@ -12,7 +12,11 @@ namespace SectorBalanceAPI
 {
     public class EquityGroupManager : BaseManager
     {
-
+        // this manager holds methods for equity_groups and equity_group_items tables
+        // equity groups are collections of equities that are related by some criteria
+        // these are different from user models which are collections of equities created
+        // by users for whatever purposed
+        
         public EquityGroupManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
 
@@ -163,14 +167,14 @@ namespace SectorBalanceAPI
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveEquiyt(EquityGroup sysmbolGroup, Guid equitylId)
+        public ManagerResult<bool> RemoveEquity(EquityGroup sysmbolGroup, Guid equitylId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            EquityGroupItem equityGroupItem = new EquityGroupItem();
             bool ok = false;
-            
+
             try
-            {   
+            {
+                var equityGroupItem = new EquityGroupItem();
                 equityGroupItem.GroupId = sysmbolGroup.Id;
                 equityGroupItem.EquityId = equitylId;
 
