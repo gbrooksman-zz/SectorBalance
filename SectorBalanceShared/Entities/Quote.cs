@@ -25,5 +25,8 @@ namespace SectorBalanceShared
 
         [Column("volume")]
         public int Volume { get; set; }
+        
+        [Column("rate_of_change")]
+        public decimal RateOfChange { get; set; }
     }
 }
