@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SectorBalanceShared
 {
     [Table("model_equities")]
-    public class ModelEquity
+    public class ModelEquity : BaseEntity
     {
         public ModelEquity()
         {
