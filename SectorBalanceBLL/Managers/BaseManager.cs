@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
 
-namespace SectorBalanceAPI
+namespace SectorBalanceBLL
 {
     public class BaseManager
     {

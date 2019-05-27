@@ -9,7 +9,7 @@ using System.Linq;
 using Dapper.FastCrud;
 using Serilog;
 
-namespace SectorBalanceAPI
+namespace SectorBalanceBLL
 {
     public class CacheManager : BaseManager
     {

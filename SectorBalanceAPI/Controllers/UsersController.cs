@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using SectorBalanceShared;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using SectorBalanceBLL;
 
 namespace SectorBalanceAPI.Controllers
 {
@@ -17,7 +18,7 @@ namespace SectorBalanceAPI.Controllers
         private readonly IMemoryCache cache;
         private readonly IConfiguration config;
 
-        private UserManager userMgr;
+        private readonly UserManager userMgr;
 
         public UsersController(IMemoryCache memoryCache, IConfiguration _config)
         {

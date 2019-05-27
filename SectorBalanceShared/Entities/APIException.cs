@@ -5,8 +5,8 @@ namespace SectorBalanceShared
 {
     public class APIException : Exception
     {
-        private int _number;
-        private string _description;
+       // private int _number;
+      //  private string _description;
         public APIException()
         {
             

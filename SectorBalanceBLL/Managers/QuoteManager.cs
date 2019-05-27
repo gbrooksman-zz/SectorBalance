@@ -9,7 +9,7 @@ using System.Linq;
 using Dapper.FastCrud;
 using Serilog;
 
-namespace SectorBalanceAPI
+namespace SectorBalanceBLL
 {
     //a quote is the price of an equity on a given day
     public class QuoteManager : BaseManager
