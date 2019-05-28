@@ -21,6 +21,7 @@ namespace SectorBalanceShared
         public Guid UserId { get; set; }       
         
         [Column("name")]
+        [MaxLength(200)]
         public string Name { get; set; }
         
         [Column("active")]
@@ -37,5 +38,9 @@ namespace SectorBalanceShared
 
         [Column("stop_value")]
         public int StopValue { get; set; }
+
+        [Column("public")]
+        public bool Public { get; set; }
+
     }
 }

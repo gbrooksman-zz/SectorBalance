@@ -18,6 +18,7 @@ namespace SectorBalanceShared
         public Guid Id { get; set; }
 
         [Column("name")]
+        [MaxLength(200)]
         public string Name { get; set; }
 
         [Column("active")]
