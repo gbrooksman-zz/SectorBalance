@@ -1,0 +1,11 @@
+{
+    "User":
+    {
+        "Id":"8c8ce7f0-a2ff-4a81-b104-b5f99546c44a",
+        "UserName" : "test_user",
+        "Password" : "x",
+        "CreatedAt" : "05/01/2019",
+        "UpdatedAt" : "05/02/2019"        
+    }
+
+}

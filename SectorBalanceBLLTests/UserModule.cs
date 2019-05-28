@@ -3,13 +3,16 @@ using Xunit;
 
 namespace SectorBalanceBLLTests
 {
-    public class UserManagerTests
+    
+    public class UserModule
     {
         [Fact]
-        public void AddUser()
+        public void ModuleManager()
         {
            
 
         }
+
+        
     }
 }
