@@ -14,7 +14,6 @@ namespace SectorBalanceBLL
     //a quote is the price of an equity on a given day
     public class QuoteManager : BaseManager
     {
-
         EquityManager eqMgr;
         EquityGroupManager eqGroupMgr;
 
@@ -57,11 +56,9 @@ namespace SectorBalanceBLL
         {
             return cache.GetOrCreate<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
                         {
-                            using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                            {                    
-                                return db.Query<Quote>(@"SELECT * FROM quotes 
-                                                        WHERE equity_id = @eid").ToList();
-                            }
+                            using NpgsqlConnection db = new NpgsqlConnection(connString);
+                            return db.Query<Quote>(@"SELECT * FROM quotes 
+                                                        WHERE equity_id = @p1", new { p1 = equityId } ).ToList();
                         });
         }
 
@@ -85,10 +82,8 @@ namespace SectorBalanceBLL
             {
                 if (eqMgr.Get(quote.EquityId).Entity == default(Equity)) 
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
-                    {
-                        db.Insert(quote);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(base.connString);
+                    db.Insert(quote);
                 }
                 else
                 {
@@ -97,10 +92,7 @@ namespace SectorBalanceBLL
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(Quote);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
                 Log.Error("QuoteManager::Add",ex);
             }
              
@@ -114,10 +106,8 @@ namespace SectorBalanceBLL
 
             if (eqMgr.Get(quote.EquityId).Entity != default(Equity)) 
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
-                {
-                    db.Delete(quote);
-                }
+                using NpgsqlConnection db = new NpgsqlConnection(base.connString);
+                db.Delete(quote);
             }
             else
             {

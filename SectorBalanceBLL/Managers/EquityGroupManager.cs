@@ -25,31 +25,46 @@ namespace SectorBalanceBLL
         public ManagerResult<List<EquityGroup>> GetList()
         {
             ManagerResult<List<EquityGroup>> mgrResult = new ManagerResult<List<EquityGroup>>();
-            List<EquityGroup> equityGroupList = new List<EquityGroup>();
-            
+             
             try
-            {  
-                equityGroupList = cache.GetOrCreate<List<EquityGroup>>(CacheKeys.EQUITY_GROUP_LIST, entry =>
-                {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {                    
-                        return db.Query<EquityGroup>("SELECT * FROM equity_groups").ToList();
-                    }
-                });
-
-
+            {
+                List<EquityGroup> equityGroupList = GetAllGroups();
                 mgrResult.Entity = equityGroupList;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<EquityGroup>);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
         }
+        
+        public ManagerResult<List<EquityGroup>> GetActiveList()
+        {
+            ManagerResult<List<EquityGroup>> mgrResult = new ManagerResult<List<EquityGroup>>();           
+
+            try
+            {
+                List<EquityGroup> equityGroupList = GetAllGroups();
+                mgrResult.Entity = equityGroupList.Where(e => e.Active == true).ToList();
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
+        private List<EquityGroup> GetAllGroups()
+        {
+            return cache.GetOrCreate<List<EquityGroup>>(CacheKeys.EQUITY_GROUP_LIST, entry =>
+            {
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                return db.Query<EquityGroup>("SELECT * FROM equity_groups").ToList();
+            });
+        }
+
 
         public ManagerResult<EquityGroup> Save(EquityGroup equityGroup)
         {
@@ -59,26 +74,19 @@ namespace SectorBalanceBLL
             {               
                 if (equityGroup.Id == Guid.Empty)
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Insert(equityGroup);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Insert(equityGroup);
                 }
                 else
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Update(equityGroup);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Update(equityGroup);
                 }           
                 mgrResult.Entity = equityGroup;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(EquityGroup);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
@@ -86,26 +94,8 @@ namespace SectorBalanceBLL
 
         public ManagerResult<EquityGroup> ToggleActive(EquityGroup equityGroup)
         {
-            ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
-            
-            try
-            {
-                equityGroup.Active = !equityGroup.Active;
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    bool ok = db.Update(equityGroup);               
-                }
-                mgrResult.Entity = equityGroup;
-            }
-            catch(Exception ex)
-            {
-                mgrResult.Entity = default(EquityGroup);
-                mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
-            } 
-
-            return mgrResult;
+            equityGroup.Active = !equityGroup.Active;
+            return Save(equityGroup);
         }
 
    #region equity group items
@@ -119,21 +109,17 @@ namespace SectorBalanceBLL
             {  
                 equityGroupItems = cache.GetOrCreate<List<EquityGroupItem>>(equityGroup.Id, entry =>
                 {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
                     return db.Query<EquityGroupItem>(@"SELECT * 
                                                         FROM equity_group_items 
-                                                        WHERE group_id = @g",equityGroup.Id).ToList();                         
-                }});
+                                                        WHERE group_id = @p1 ", new { p1 = equityGroup.Id } ).ToList();
+                });
 
                 mgrResult.Entity = equityGroupItems;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<EquityGroupItem>);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
@@ -150,18 +136,13 @@ namespace SectorBalanceBLL
                 equityGroupItem.EquityId = equityId;
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    db.Insert(equityGroupItem);                               
-                }
+                db.Insert(equityGroupItem); 
 
                 mgrResult.Entity = equityGroupItem;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(EquityGroupItem);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
@@ -170,7 +151,6 @@ namespace SectorBalanceBLL
         public ManagerResult<bool> RemoveEquity(EquityGroup sysmbolGroup, Guid equitylId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            bool ok = false;
 
             try
             {
@@ -178,19 +158,12 @@ namespace SectorBalanceBLL
                 equityGroupItem.GroupId = sysmbolGroup.Id;
                 equityGroupItem.EquityId = equitylId;
 
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    ok = db.Delete(equityGroupItem);                             
-                }
-
-                mgrResult.Entity = ok;
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Delete(equityGroupItem);
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;

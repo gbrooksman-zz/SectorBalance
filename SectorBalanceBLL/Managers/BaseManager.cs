@@ -28,7 +28,6 @@ namespace SectorBalanceBLL
 
             connString = config.GetConnectionString("Default");
         }
-
     }
 
     public static class CacheKeys

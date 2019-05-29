@@ -39,8 +39,8 @@ namespace SectorBalanceShared
         [Column("stop_value")]
         public int StopValue { get; set; }
 
-        [Column("public")]
-        public bool Public { get; set; }
+        [Column("is_private")]
+        public bool IsPrivate { get; set; }
 
     }
 }

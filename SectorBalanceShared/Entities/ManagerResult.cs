@@ -5,6 +5,8 @@ namespace SectorBalanceShared
 {
     public class ManagerResult <T> 
     {
+        Exception exception;
+
         public ManagerResult ()
         {
             
@@ -14,9 +16,22 @@ namespace SectorBalanceShared
 
        public string Message { get; set; }
 
-       public Exception Exception {get; set;}
+       public Exception Exception
+        {
+            get
+            {
+                return this.Exception;
+            }
 
-      public T Entity {get; set;}      
+            set
+            {
+                this.Exception = value;
+                this.Message = value.Message;
+                this.Success = false;
+            }
+        }
+
+        public T Entity { get; set; } = default;    
 
     }
 }

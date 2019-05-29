@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Npgsql;
-using NpgsqlTypes;
-using Dapper;
-using SectorBalanceShared;
-
 
 namespace SectorBalanceBLLTests
 {
-    public  class TestHelpers
+    public class BaseModule
     {
-        private readonly string connString;
+        public readonly string connString;
 
-        public TestHelpers()
+        public BaseModule()
         {
             connString = @" User ID=gbrooksman;
                             Password=Gollum17;
@@ -22,6 +17,7 @@ namespace SectorBalanceBLLTests
                             Database=sectormodeltest;
                             Pooling=true;
                             Connection Lifetime=0;";
-        }       
+        }
+
     }
 }

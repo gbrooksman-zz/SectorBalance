@@ -32,10 +32,7 @@ namespace SectorBalanceBLL
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<User>);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
@@ -50,16 +47,13 @@ namespace SectorBalanceBLL
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    user =  db.Query<User>("SELECT * FROM users WHERE id = @id",id).FirstOrDefault();
+                    user =  db.Query<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id } ).FirstOrDefault();
                 }
                 mgrResult.Entity = user;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(User);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             }
             
             return mgrResult;
@@ -74,16 +68,13 @@ namespace SectorBalanceBLL
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                   user = db.Query<User>("SELECT * FROM users WHERE user_name = @un",userName).FirstOrDefault();
+                   user = db.Query<User>("SELECT * FROM users WHERE user_name = @p1", new { p1 = userName } ).FirstOrDefault();
                 }
                 mgrResult.Entity = user;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(User);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             }
             
             return mgrResult;
@@ -101,19 +92,16 @@ namespace SectorBalanceBLL
                 {
                     user =  db.Query<User>(@"SELECT * 
                                             FROM users 
-                                            WHERE user_name = @un 
-                                            AND password = @pw 
-                                            AND active = true",new {userName, password}).FirstOrDefault();
+                                            WHERE user_name = @p1 
+                                            AND password = @p2 
+                                            AND active = true",new { p1 = userName, p2 = password } ).FirstOrDefault();
                 
                     mgrResult.Entity = (user != default(User));
                 }
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             }
             
             return mgrResult;
@@ -126,25 +114,18 @@ namespace SectorBalanceBLL
             {
                 if (user.Id == Guid.Empty)
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Insert(user);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Insert(user);
                 }
                 else
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Update(user);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Update(user);
                 }           
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(User);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             }
             
             return mgrResult;
@@ -156,19 +137,14 @@ namespace SectorBalanceBLL
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();   
 
             try
-            {                
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    user.Active = !user.Active;
-                    ok = db.Update(user);
-                }
+            {
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                user.Active = !user.Active;
+                ok = db.Update(user);
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             }            
            
             return mgrResult;

@@ -1,22 +1,19 @@
+using SectorBalanceShared;
 using System;
 
 
 namespace SectorBalanceBLLTests
 {
-    public class TestResult <T> 
+    public class TestResult <T>:  ManagerResult <T>
     {
-        public TestResult ()
+        public TestResult () 
         {
             
         }
 
-       public bool Success { get; set; } = true;
+        public string ModuleName { get; set; }
 
-       public string Message { get; set; }
-
-       public Exception Exception {get; set;}
-
-      public T Entity {get; set;}      
+        public string MethodName { get; set; }
 
     }
 }

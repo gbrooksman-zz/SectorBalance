@@ -26,18 +26,13 @@ namespace SectorBalanceBLL
             ManagerResult<int> mgrResult = new ManagerResult<int>();
             
             try
-            {  
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    mgrResult.Entity = db.Query<int>("SELECT count(*) FROM model_equities WHERE equity_id = @e",equityId).FirstOrDefault();                         
-                }
+            {
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<int>("SELECT count(*) FROM model_equities WHERE equity_id = @p1 ", new { p1 = equityId } ).FirstOrDefault();
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(int);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
                 Log.Error("EquityManager::GetEquitiesInModelsCount",ex);
             } 
 
@@ -54,20 +49,15 @@ namespace SectorBalanceBLL
             {
                 equityList = cache.GetOrCreate<List<Equity>>(CacheKeys.EQUITY_LIST, entry =>
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {                    
-                        return db.Query<Equity>("SELECT * FROM equities").ToList();
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    return db.Query<Equity>("SELECT * FROM equities").ToList();
                 });
 
                 mgrResult.Entity = equityList;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<Equity>);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
                 Log.Error("EquityManager::GetList",ex);
             }
             
@@ -80,19 +70,14 @@ namespace SectorBalanceBLL
              
             try
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                   mgrResult.Entity = db.Query<Equity>(@"SELECT * 
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<Equity>(@"SELECT * 
                                                 FROM equities 
-                                                WHERE id = @eid", equityId).FirstOrDefault();  
-                }
+                                                WHERE id = @p1 ", new { p1 = equityId } ).FirstOrDefault();
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(Equity);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
                 Log.Error("EquityManager::Get",ex);
             }
             
@@ -107,26 +92,19 @@ namespace SectorBalanceBLL
             {
                 if (equity.Id == Guid.Empty)
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Insert(equity);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Insert(equity);
                 }
                 else
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Update(equity);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Update(equity);
                 }           
                 mgrResult.Entity = equity;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(Equity);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
                 Log.Error("EquityManager::Save",ex);
             } 
 
@@ -138,13 +116,11 @@ namespace SectorBalanceBLL
         public ManagerResult<bool> Delete(Guid equityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            bool ok = false;
 
             Equity equity = new Equity()
             {
                 Id = equityId
-            };
-            
+            };            
             
             try
             {   
@@ -152,26 +128,18 @@ namespace SectorBalanceBLL
 
                 if (count == 0)
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        ok = db.Delete(equity);                         
-                    }
-                    mgrResult.Entity = ok;
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    mgrResult.Entity = db.Delete(equity);
                 }
                 else
                 {
-                    mgrResult.Entity = false;
-                    mgrResult.Success = false;
                     mgrResult.Exception = new APIException( APIException.EQUITY_USED, 
                                                             APIException.EQUITY_USED_MESSAGE);
                 }
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
                 Log.Error("EquityManager::Delete",ex);
             } 
 

@@ -20,23 +20,18 @@ namespace SectorBalanceBLL
         public ManagerResult<List<UserModel>> GetModelList(User user)
         {
             ManagerResult<List<UserModel>> mgrResult = new ManagerResult<List<UserModel>>();
-            List<UserModel> models = new List<UserModel>();
-            
+           
             try
-            {  
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    models = db.Query<UserModel>("SELECT * FROM user_models WHERE ucer_id = @id",user.Id).ToList();                         
-                }
-
-                mgrResult.Entity = models;
+            {
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<UserModel>(@" SELECT * 
+                                                    FROM user_models 
+                                                    WHERE ucer_id = @p1",
+                                                    new { p1 = user.Id }).ToList();
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<UserModel>);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
@@ -50,55 +45,34 @@ namespace SectorBalanceBLL
             {
                 if (userModel.Id == Guid.Empty)
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Insert(userModel);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Insert(userModel);
                 }
                 else
                 {
-                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    {
-                        db.Update(userModel);
-                    }
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    db.Update(userModel);
                 }           
                 mgrResult.Entity = userModel;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(UserModel);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
         }
 
-
+        public ManagerResult<UserModel> TogglePrivate(UserModel userModel)
+        {
+            userModel.IsPrivate = !userModel.IsPrivate;
+            return Save(userModel);
+        }
 
         public ManagerResult<UserModel> ToggleActive(UserModel userModel)
         {
-            ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
-            
-            try
-            {
-                userModel.Active = !userModel.Active;
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    bool ok = db.Update(userModel);               
-                }
-                mgrResult.Entity = userModel;
-            }
-            catch(Exception ex)
-            {
-                mgrResult.Entity = default(UserModel);
-                mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
-           } 
-           
-           return mgrResult;
+            userModel.Active = !userModel.Active;
+            return Save(userModel);
         }
 
         #region model equities
@@ -106,29 +80,22 @@ namespace SectorBalanceBLL
         public ManagerResult<List<ModelEquity>> GetEquityList(UserModel userModel)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
-            List<ModelEquity> modelEquities = new List<ModelEquity>();
-            
+           
             try
-            {  
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    modelEquities = db.Query<ModelEquity>("SELECT * FROM model_equities WHERE model = @m",userModel.Id).ToList();                         
-                }
-
-                mgrResult.Entity = modelEquities;
+            {
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<ModelEquity>(@"SELECT * 
+                                                            FROM model_equities 
+                                                            WHERE model = @p1 ", 
+                                                            new { p1 = userModel.Id } ).ToList();
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(List<ModelEquity>);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
-        }
-
-      
+        }      
 
         public ManagerResult<ModelEquity> AddEquity(UserModel userModel, Guid equityId, int percent)
         {
@@ -144,24 +111,48 @@ namespace SectorBalanceBLL
                 };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    db.Insert(modelEquity);                               
-                }
+                db.Insert(modelEquity);                               
 
                 mgrResult.Entity = modelEquity;
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = default(ModelEquity);
                 mgrResult.Exception = ex;
-                mgrResult.Success = false;
-                mgrResult.Message = ex.Message;
             } 
 
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveEquity(UserModel userModel, Guid equityId)
+        public ManagerResult<ModelEquity> Update(Guid modelequityId, UserModel userModel, Guid equityId, int percent)
+        {
+            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
+
+            try
+            {
+                ModelEquity modelEquity = new ModelEquity()
+                {
+                    Id = modelequityId,
+                    ModelId = userModel.Id,
+                    EquityID = equityId,
+                    Percent = percent,
+                    
+                };
+
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    db.Update(modelEquity);
+
+                mgrResult.Entity = modelEquity;
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
+
+        public ManagerResult<bool> RemoveEquity(Guid modelequityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
             
@@ -169,19 +160,15 @@ namespace SectorBalanceBLL
             {   
                 ModelEquity modelEquity = new ModelEquity()
                 {
-                    ModelId = userModel.Id,
-                    EquityID = equityId
+                    Id = modelequityId                    
                 };
 
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    mgrResult.Entity = db.Delete(modelEquity);                             
-                }
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Delete(modelEquity);
 
             }
             catch(Exception ex)
             {
-                mgrResult.Entity = false;
                 mgrResult.Exception = ex;
                 mgrResult.Success = false;
                 mgrResult.Message = ex.Message;
@@ -190,11 +177,6 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-
-
-
-
         #endregion
-
     }
 }
