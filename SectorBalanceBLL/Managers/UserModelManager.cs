@@ -24,7 +24,7 @@ namespace SectorBalanceBLL
             try
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<UserModel>(@" SELECT * 
+                    mgrResult.Entity = db.Query<UserModel>(@" SELECT * 
                                                     FROM user_models 
                                                     WHERE ucer_id = @p1",
                                                     new { p1 = user.Id }).ToList();
@@ -46,12 +46,12 @@ namespace SectorBalanceBLL
                 if (userModel.Id == Guid.Empty)
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Insert(userModel);
+                        db.Insert(userModel);
                 }
                 else
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Update(userModel);
+                        db.Update(userModel);
                 }           
                 mgrResult.Entity = userModel;
             }
@@ -61,19 +61,7 @@ namespace SectorBalanceBLL
             } 
 
             return mgrResult;
-        }
-
-        public ManagerResult<UserModel> TogglePrivate(UserModel userModel)
-        {
-            userModel.IsPrivate = !userModel.IsPrivate;
-            return Save(userModel);
-        }
-
-        public ManagerResult<UserModel> ToggleActive(UserModel userModel)
-        {
-            userModel.Active = !userModel.Active;
-            return Save(userModel);
-        }
+        }     
 
         #region model equities
 
@@ -84,7 +72,7 @@ namespace SectorBalanceBLL
             try
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<ModelEquity>(@"SELECT * 
+                    mgrResult.Entity = db.Query<ModelEquity>(@"SELECT * 
                                                             FROM model_equities 
                                                             WHERE model = @p1 ", 
                                                             new { p1 = userModel.Id } ).ToList();
@@ -97,7 +85,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }      
 
-        public ManagerResult<ModelEquity> AddEquity(UserModel userModel, Guid equityId, int percent)
+        public ManagerResult<ModelEquity> AddEquity(Guid userModelId, Guid equityId, int percent)
         {
             ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();           
             
@@ -105,13 +93,13 @@ namespace SectorBalanceBLL
             {   
                 ModelEquity modelEquity = new ModelEquity()
                 {
-                    ModelId = userModel.Id,
+                    ModelId = userModelId,
                     EquityID = equityId,
                     Percent = percent
                 };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                db.Insert(modelEquity);                               
+                    db.Insert(modelEquity);                               
 
                 mgrResult.Entity = modelEquity;
             }
@@ -123,7 +111,31 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<ModelEquity> Update(Guid modelequityId, UserModel userModel, Guid equityId, int percent)
+
+        public ManagerResult<ModelEquity> Get(Guid modelequityId)
+        {
+            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
+
+            try
+            {
+                ModelEquity modelEquity = new ModelEquity();
+
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<ModelEquity>(@" SELECT * 
+                                                            FROM model_equities 
+                                                            WHERE id = @p1", 
+                                                            new { p1 = modelequityId } ).FirstOrDefault();
+
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
+        public ManagerResult<ModelEquity> Update(Guid modelequityId, Guid userModelId, Guid equityId, int percent)
         {
             ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
 
@@ -132,10 +144,9 @@ namespace SectorBalanceBLL
                 ModelEquity modelEquity = new ModelEquity()
                 {
                     Id = modelequityId,
-                    ModelId = userModel.Id,
+                    ModelId = userModelId,
                     EquityID = equityId,
-                    Percent = percent,
-                    
+                    Percent = percent                    
                 };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))

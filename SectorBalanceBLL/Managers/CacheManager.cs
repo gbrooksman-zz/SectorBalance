@@ -13,7 +13,6 @@ namespace SectorBalanceBLL
 {
     public class CacheManager : BaseManager
     {
-
         private EquityManager equityMgr;
         private EquityGroupManager equityGroupMgr;
 
@@ -31,6 +30,5 @@ namespace SectorBalanceBLL
             var equityGroupList = equityGroupMgr.GetList().Entity;        
             equityGroupList.ForEach(e =>  cache.Remove(e.Id) );
         }
-
     }
 }

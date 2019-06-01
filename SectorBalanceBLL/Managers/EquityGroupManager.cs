@@ -92,12 +92,6 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<EquityGroup> ToggleActive(EquityGroup equityGroup)
-        {
-            equityGroup.Active = !equityGroup.Active;
-            return Save(equityGroup);
-        }
-
    #region equity group items
 
         public ManagerResult<List<EquityGroupItem>> GetGroupItemsList(EquityGroup equityGroup)

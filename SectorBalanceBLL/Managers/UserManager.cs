@@ -20,15 +20,11 @@ namespace SectorBalanceBLL
         public ManagerResult<List<User>> GetAllUsers()
         {
             ManagerResult<List<User>> mgrResult = new ManagerResult<List<User>>();
-            List<User> users = new List<User>();
             
             try
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                     users = db.Query<User>("SELECT * FROM users WHERE active = True").ToList();
-                }
-                mgrResult.Entity = users;
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<User>("SELECT * FROM users WHERE active = True").ToList();
             }
             catch(Exception ex)
             {
@@ -41,15 +37,11 @@ namespace SectorBalanceBLL
         public ManagerResult<User> GetOneById(Guid id)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();
-            User user = new User();
             
             try
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    user =  db.Query<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id } ).FirstOrDefault();
-                }
-                mgrResult.Entity = user;
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id }).FirstOrDefault();
             }
             catch(Exception ex)
             {
@@ -84,18 +76,17 @@ namespace SectorBalanceBLL
         public ManagerResult<bool> Validate(string userName, string password)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-            User user = new User();
-              
+
             try
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    user =  db.Query<User>(@"SELECT * 
+                    User user = db.Query<User>(@"SELECT * 
                                             FROM users 
                                             WHERE user_name = @p1 
                                             AND password = @p2 
-                                            AND active = true",new { p1 = userName, p2 = password } ).FirstOrDefault();
-                
+                                            AND active = true", new { p1 = userName, p2 = password }).FirstOrDefault();
+
                     mgrResult.Entity = (user != default(User));
                 }
             }
@@ -128,25 +119,6 @@ namespace SectorBalanceBLL
                 mgrResult.Exception = ex;
             }
             
-            return mgrResult;
-        }
-
-        public ManagerResult<bool> ToggleActive(User user)
-        {
-            bool ok = false;
-            ManagerResult<bool> mgrResult = new ManagerResult<bool>();   
-
-            try
-            {
-                using NpgsqlConnection db = new NpgsqlConnection(connString);
-                user.Active = !user.Active;
-                ok = db.Update(user);
-            }
-            catch(Exception ex)
-            {
-                mgrResult.Exception = ex;
-            }            
-           
             return mgrResult;
         }
     }

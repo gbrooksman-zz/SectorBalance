@@ -15,14 +15,9 @@ namespace SectorBalanceBLL
         internal readonly IMemoryCache cache;
         internal readonly string connString;
         internal readonly IConfiguration config;     
-
-        //private static CancellationToken _resetCacheToken = new CancellationToken(); 
-        public static string CancelToken { get { return "_CancelTokenSource"; } }
-    
-
+   
         public BaseManager(IMemoryCache _cache, IConfiguration _config)
         {
-
             cache = _cache;
             config = _config;
 
