@@ -14,8 +14,8 @@ namespace SectorBalanceBLL
     //a quote is the price of an equity on a given day
     public class QuoteManager : BaseManager
     {
-        EquityManager eqMgr;
-        EquityGroupManager eqGroupMgr;
+        readonly EquityManager eqMgr;
+        readonly EquityGroupManager eqGroupMgr;
 
         public QuoteManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
@@ -57,8 +57,10 @@ namespace SectorBalanceBLL
             return cache.GetOrCreate<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
                         {
                             using NpgsqlConnection db = new NpgsqlConnection(connString);
-                            return db.Query<Quote>(@"SELECT * FROM quotes 
-                                                        WHERE equity_id = @p1", new { p1 = equityId } ).ToList();
+                            return db.Query<Quote>(@"   SELECT * 
+                                                        FROM quotes 
+                                                        WHERE equity_id = @p1", 
+                                                        new { p1 = equityId } ).ToList();
                         });
         }
 

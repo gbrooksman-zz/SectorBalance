@@ -117,15 +117,12 @@ namespace SectorBalanceBLL
             ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
 
             try
-            {
-                ModelEquity modelEquity = new ModelEquity();
-
+            { 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<ModelEquity>(@" SELECT * 
+                mgrResult.Entity = db.QueryFirstOrDefault<ModelEquity>(@" SELECT * 
                                                             FROM model_equities 
                                                             WHERE id = @p1", 
-                                                            new { p1 = modelequityId } ).FirstOrDefault();
-
+                                                            new { p1 = modelequityId } );
             }
             catch (Exception ex)
             {

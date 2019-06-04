@@ -15,8 +15,7 @@ namespace SectorBalanceShared
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
-        public Guid Id { get; set; }
-       
+        public Guid Id { get; set; }       
        
         [Key]
         [Column("user_name")]

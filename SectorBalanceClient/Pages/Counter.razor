@@ -1,16 +1,46 @@
 ﻿@page "/counter"
+@inject AppStateContainer state
+@using SectorBalanceShared
 
 <h1>Counter</h1>
 
+<p>Current User Name: @state.UserName</p>
+<p>Current Guid: @state.UserId</p>
+
+
 <p>Current count: @currentCount</p>
 
-<button class="btn btn-primary" onclick="@IncrementCount">Click me</button>
 
-@functions {
+
+
+<button class="btn btn-primary" onclick="@IncrementCount">Click me</button>
+<br />
+<button class="btn btn-info" onclick="@ListEquities">List Equities</button>
+
+    @foreach (var equity in equityList)
+    {
+        <p>@equity.Name</p>
+        <br/>
+
+    }
+
+
+@functions
+{
+
+    List<Equity> equityList;
+
     int currentCount = 0;
 
     void IncrementCount()
     {
         currentCount++;
     }
+
+    void ListEquities()
+    {
+       
+    }
+
+
 }
