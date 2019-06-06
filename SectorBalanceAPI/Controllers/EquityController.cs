@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using SectorBalanceShared;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using SectorBalanceBLL;
+using SectorBalanceShared;
 
 namespace SectorBalanceAPI.Controllers
 {
@@ -29,9 +29,19 @@ namespace SectorBalanceAPI.Controllers
         }
 
         [HttpGet]
+        [Route("GetList")]
         public List<Equity> GetList()
         {
-            return new List<Equity>(); // eqMgr.GetList();
+            ManagerResult<List<Equity>> mgrResult =  eqMgr.GetList();
+            return mgrResult.Entity;
+        }
+
+        [HttpGet]
+        [Route("GetBySymbol")]
+        public Equity Get(string symbol)
+        {
+            ManagerResult<Equity> mgrResult =  eqMgr.GetBySymbol(symbol);
+            return mgrResult.Entity;
         }
 
 
