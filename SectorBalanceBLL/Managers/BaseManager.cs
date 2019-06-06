@@ -22,6 +22,8 @@ namespace SectorBalanceBLL
             config = _config;
 
             connString = config.GetConnectionString("Default");
+
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         }
     }
 

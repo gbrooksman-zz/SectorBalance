@@ -26,7 +26,7 @@ namespace SectorBalanceBLL
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
                     mgrResult.Entity = db.Query<UserModel>(@" SELECT * 
                                                     FROM user_models 
-                                                    WHERE ucer_id = @p1",
+                                                    WHERE user_id = @p1",
                                                     new { p1 = user.Id }).ToList();
             }
             catch(Exception ex)

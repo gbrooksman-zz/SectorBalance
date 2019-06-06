@@ -14,13 +14,10 @@ namespace SectorBalanceShared
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id")]
         public Guid Id { get; set; }
 
-        [Column("group_id")]
         public Guid GroupId { get; set; }
 
-        [Column("equity_id")]
         public Guid EquityId { get; set; }
     }
 }

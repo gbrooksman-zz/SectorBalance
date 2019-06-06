@@ -13,18 +13,13 @@ namespace SectorBalanceShared.Entities
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id")]
         public Guid Id { get; set; }
 
-        [Column("model_id")]
         public Guid ModelId { get; set; }
 
-        [Column("user_id")]
-        public Guid UserlId { get; set; }
+        public Guid UserId { get; set; }
 
-        [Column("comment")]
         [MaxLength(2000)]
         public string Comment { get; set; }
-
     }
 }

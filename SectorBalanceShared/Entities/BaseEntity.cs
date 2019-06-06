@@ -11,13 +11,9 @@ namespace SectorBalanceShared
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
-         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        [Column("updated_at")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime UpdatedAt { get; set; }
-
-
     }
 }

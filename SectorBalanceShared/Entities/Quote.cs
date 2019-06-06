@@ -13,20 +13,16 @@ namespace SectorBalanceShared
         }
 
         [Key]
-        [Column("date")]
         public DateTime Date { get; set; }
 
         [Key]
-        [Column("equity_id")]
+
         public Guid EquityId { get; set; }
 
-        [Column("price")]
         public decimal Price { get; set; }
 
-        [Column("volume")]
         public int Volume { get; set; }
-        
-        [Column("rate_of_change")]
+
         public decimal RateOfChange { get; set; }
     }
 }

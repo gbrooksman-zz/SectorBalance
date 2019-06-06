@@ -5,8 +5,6 @@ namespace SectorBalanceShared
 {
     public class ManagerResult <T> 
     {
-        Exception exception;
-
         public ManagerResult ()
         {
             

@@ -69,10 +69,12 @@ namespace SectorBalanceBLL
         {
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
-            List<Quote> quoteList = GetByEquityId(equityId);
-            
-            mgrResult.Entity =  quoteList.Where(q => q.Date == date).FirstOrDefault();  
-
+            using NpgsqlConnection db = new NpgsqlConnection(connString);
+            mgrResult.Entity =  db.Query<Quote>(@"  SELECT * 
+                                                    FROM quotes 
+                                                    WHERE equity_id = @p1 
+                                                    AND date = @p2",
+                                new { p1 = equityId, p2 = date }).FirstOrDefault();
             return mgrResult;
         }
 

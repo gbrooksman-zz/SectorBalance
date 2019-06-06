@@ -90,12 +90,10 @@ namespace SectorBalanceBLL
              
             try
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    mgrResult.Entity = db.Query<Equity>(@"SELECT * 
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                mgrResult.Entity = db.Query<Equity>(@"SELECT * 
                                                 FROM equities 
-                                                WHERE symbol = @p1 ", new { p1 = symbol } ).FirstOrDefault();
-                }
+                                                WHERE LOWER(symbol) = @p1 ", new { p1 = symbol.ToLower() }).FirstOrDefault();
             }
             catch(Exception ex)
             {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
@@ -15,35 +12,46 @@ namespace SectorBalanceAPI.Controllers
     [ApiController]
     public class EquityController : ControllerBase
     {
-        private readonly IMemoryCache cache;
-        private readonly IConfiguration config;
-
         private readonly EquityManager eqMgr;
 
-        public EquityController(IMemoryCache memoryCache, IConfiguration _config)
+        public EquityController(IMemoryCache _cache, IConfiguration _config)
         {
-            cache = memoryCache;
-            config = _config;
-
-            eqMgr = new EquityManager(cache, config);
+            eqMgr = new EquityManager(_cache, _config);
         }
 
         [HttpGet]
         [Route("GetList")]
-        public List<Equity> GetList()
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<List<Equity>> GetList()
         {
             ManagerResult<List<Equity>> mgrResult =  eqMgr.GetList();
-            return mgrResult.Entity;
+            if (!mgrResult.Success)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok(mgrResult.Entity);
+            }
         }
 
         [HttpGet]
         [Route("GetBySymbol")]
-        public Equity Get(string symbol)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<Equity> Get(string symbol)
         {
             ManagerResult<Equity> mgrResult =  eqMgr.GetBySymbol(symbol);
-            return mgrResult.Entity;
+
+            if (!mgrResult.Success)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok(mgrResult.Entity);
+            }
         }
-
-
     }
 }

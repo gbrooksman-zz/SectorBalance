@@ -14,14 +14,11 @@ namespace SectorBalanceShared
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Column("id")]
         public Guid Id { get; set; }
 
-        [Column("name")]
         [MaxLength(200)]
         public string Name { get; set; }
 
-        [Column("active")]
         public bool Active { get; set; }
     }
 }
