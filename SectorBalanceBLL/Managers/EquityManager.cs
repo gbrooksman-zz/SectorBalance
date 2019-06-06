@@ -84,6 +84,28 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        public ManagerResult<Equity> GetBySymbol(string symbol)
+        {
+            ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
+             
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    mgrResult.Entity = db.Query<Equity>(@"SELECT * 
+                                                FROM equities 
+                                                WHERE symbol = @p1 ", new { p1 = symbol } ).FirstOrDefault();
+                }
+            }
+            catch(Exception ex)
+            {
+                mgrResult.Exception = ex;
+                Log.Error("EquityManager::GetBySymbol",ex);
+            }
+            
+            return mgrResult;
+        }
+
         public ManagerResult<Equity> Save(Equity equity)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
