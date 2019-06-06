@@ -10,3 +10,5 @@ logs
 /SectorBalance.sln
 /.vs/SectorBalance/v16/Server/sqlite3
 /.vs/SectorBalance/v16/TestStore/0
+/SectorBalanceAPI/.vs/SectorBalanceAPI/v16/Server/sqlite3/db.lock
+/SectorBalanceAPI/.vs/SectorBalanceAPI/v16/Server/sqlite3/storage.ide
