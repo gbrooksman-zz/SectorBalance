@@ -1,19 +1,17 @@
 ﻿@page "/"
 @inject  AppStateContainer state;
 
-<h1>Hello, world!</h1>
+<h1>Welcome to The Sector Model Guide.</h1>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
 
 @functions
 {
     protected override void  OnInit()
     {
-        state.UserName = "Geoff";
-        state.UserId = Guid.NewGuid();
+        state.APIUrl = "http://localhost:5000";
+        state.APIKey = "A8F12BB0-535A-4117-BA0B-E5722DC50367";
 
-        //state.EquityList = 
+        state.UserName = "geoffb";
+        state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");  //copied form db
     }
 }

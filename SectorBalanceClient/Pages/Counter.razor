@@ -1,5 +1,6 @@
 ﻿@page "/counter"
 @inject AppStateContainer state
+@inject HttpClient httpClient
 @using SectorBalanceShared
 
 <h1>Counter</h1>
@@ -7,40 +8,31 @@
 <p>Current User Name: @state.UserName</p>
 <p>Current Guid: @state.UserId</p>
 
+<p>API Url: @state.APIUrl</p>
 
 <p>Current count: @currentCount</p>
 
+<button class="btn btn-primary" onclick="@(async () => await ListEquities())">Click me</button>
 
 
-
-<button class="btn btn-primary" onclick="@IncrementCount">Click me</button>
-<br />
-<button class="btn btn-info" onclick="@ListEquities">List Equities</button>
-
-    @foreach (var equity in equityList)
-    {
-        <p>@equity.Name</p>
-        <br/>
-
-    }
-
-
-@functions
+@foreach (var equity in equityList)
 {
+    <p>Symbol: @equity.SymbolName</p>
+    <br />
 
-    List<Equity> equityList;
+}
+
+
+@functions {
+
+    private List<Equity> equityList = new List<Equity>();
 
     int currentCount = 0;
 
-    void IncrementCount()
+    private async Task ListEquities()
     {
-        currentCount++;
+        var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
+        equityList = response.ToList();
     }
-
-    void ListEquities()
-    {
-      
-    }
-
 
 }

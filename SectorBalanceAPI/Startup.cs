@@ -22,6 +22,8 @@ namespace SectorBalanceAPI
 
         public IConfiguration Configuration { get; }
 
+        readonly string CORSPolicy = "_cors_policy";
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -32,6 +34,15 @@ namespace SectorBalanceAPI
             services.AddSingleton<IConfiguration>(Configuration); 
 
             services.AddControllers().AddNewtonsoftJson();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(CORSPolicy,
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:61428").AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,9 +54,10 @@ namespace SectorBalanceAPI
             }
             else
             {
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCors(CORSPolicy);
 
             app.UseHttpsRedirection();
 
@@ -57,6 +69,8 @@ namespace SectorBalanceAPI
             {
                 endpoints.MapControllers();
             });
+
+           
         }
     }
 }
