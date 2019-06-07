@@ -15,28 +15,24 @@ namespace SectorBalanceAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IMemoryCache cache;
-        private readonly IConfiguration config;
-
         private readonly UserManager userMgr;
 
-        public UsersController(IMemoryCache memoryCache, IConfiguration _config)
+        public UsersController(IMemoryCache _cache, IConfiguration _config)
         {
-            cache = memoryCache;
-            config = _config;
-
-            userMgr = new UserManager(cache, config);
+            userMgr = new UserManager(_cache, _config);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult  Get(Guid id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult>Get(Guid id)
         {
-            User user = userMgr.GetOneById(id).Result.Entity;
+            var result = await userMgr.GetOneById(id);
+            User user = result.Entity;
+
             if (user == default(User))
             {
-                return NotFound();
+                return BadRequest(result);
             }
             else
             {
@@ -46,13 +42,15 @@ namespace SectorBalanceAPI.Controllers
 
         [HttpGet("{userName}")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Get(string userName)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(string userName)
         {
-            User user = userMgr.GetOneByName(userName).Result.Entity;
+           var result = await userMgr.GetOneByName(userName);
+           User user = result.Entity;
+
             if (user == default(User))
             {
-                return NotFound();
+                return BadRequest(result);
             }
             else
             {
@@ -63,13 +61,15 @@ namespace SectorBalanceAPI.Controllers
         [HttpPost()]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult Save([FromBody] User user)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Save([FromBody] User user)
         {
-            User newuser = userMgr.Save(user).Result.Entity;
+            var result = await userMgr.Save(user);
+            User newuser = result.Entity;
+
             if (newuser == default(User))
             {
-                return NotFound();
+                return BadRequest(result);
             }
             else if (newuser.Id != user.Id)
             {
@@ -81,7 +81,22 @@ namespace SectorBalanceAPI.Controllers
             }
         }
 
+        [HttpGet("{validate}")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Validate(string username, string password)
+        {
+            var result = await userMgr.Validate(username, password);
+            bool isOK = result.Entity;
 
+            if (!isOK)
+            {
+                return Unauthorized(result);
+            }
+            else
+            {
+                return Ok(isOK);
+            }
+        }
     }
-
 }
