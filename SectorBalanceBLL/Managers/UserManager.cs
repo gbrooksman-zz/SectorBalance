@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
+using System.Threading.Tasks;
 
 namespace SectorBalanceBLL
 {
@@ -17,14 +18,16 @@ namespace SectorBalanceBLL
 
         }
 
-        public ManagerResult<List<User>> GetAllUsers()
+        public async Task<ManagerResult<List<User>>> GetAllUsers()
         {
             ManagerResult<List<User>> mgrResult = new ManagerResult<List<User>>();
             
             try
             {
-                using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<User>("SELECT * FROM users WHERE active = True").ToList();
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    mgrResult.Entity = db.QueryAsync<User>("SELECT * FROM users WHERE active = True").Result.ToList();
+                }
             }
             catch(Exception ex)
             {
@@ -34,14 +37,14 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<User> GetOneById(Guid id)
+        public async Task<ManagerResult<User>> GetOneById(Guid id)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();
             
             try
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id }).FirstOrDefault();
+                mgrResult.Entity = await db.QueryFirstOrDefaultAsync<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id });
             }
             catch(Exception ex)
             {
@@ -51,7 +54,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<User> GetOneByName(string userName)
+        public async Task<ManagerResult<User>> GetOneByName(string userName)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();
             User user = new User();
@@ -60,7 +63,10 @@ namespace SectorBalanceBLL
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                   user = db.Query<User>("SELECT * FROM users WHERE user_name = @p1", new { p1 = userName } ).FirstOrDefault();
+                   user = await db.QueryFirstOrDefaultAsync<User>(@"SELECT * 
+                                                FROM users 
+                                                WHERE user_name = @p1", 
+                                                new { p1 = userName } );
                 }
                 mgrResult.Entity = user;
             }
@@ -73,7 +79,7 @@ namespace SectorBalanceBLL
         }
 
 
-        public ManagerResult<bool> Validate(string userName, string password)
+        public async Task<ManagerResult<bool>> Validate(string userName, string password)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
 
@@ -81,11 +87,12 @@ namespace SectorBalanceBLL
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    User user = db.Query<User>(@"SELECT * 
+                    User user = await db.QueryFirstOrDefaultAsync<User>(@"SELECT * 
                                             FROM users 
                                             WHERE user_name = @p1 
                                             AND password = @p2 
-                                            AND active = true", new { p1 = userName, p2 = password }).FirstOrDefault();
+                                            AND active = true", 
+                                            new { p1 = userName, p2 = password });
 
                     mgrResult.Entity = (user != default(User));
                 }
@@ -98,7 +105,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<User> Save(User user)
+        public async Task<ManagerResult<User>> Save(User user)
         {
             ManagerResult<User> mgrResult = new ManagerResult<User>();              
             try
@@ -106,12 +113,12 @@ namespace SectorBalanceBLL
                 if (user.Id == Guid.Empty)
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Insert(user);
+                    await db.InsertAsync(user);
                 }
                 else
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Update(user);
+                    await db.UpdateAsync(user);
                 }           
             }
             catch(Exception ex)

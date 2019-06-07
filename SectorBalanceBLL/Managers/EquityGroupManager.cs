@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
+using System.Threading.Tasks;
 
 namespace SectorBalanceBLL
 {
@@ -22,13 +23,13 @@ namespace SectorBalanceBLL
 
         }
 
-        public ManagerResult<List<EquityGroup>> GetList()
+        public async Task<ManagerResult<List<EquityGroup>>> GetList()
         {
             ManagerResult<List<EquityGroup>> mgrResult = new ManagerResult<List<EquityGroup>>();
              
             try
             {
-                List<EquityGroup> equityGroupList = GetAllGroups();
+                List<EquityGroup> equityGroupList = await GetAllGroups();
                 mgrResult.Entity = equityGroupList;
             }
             catch(Exception ex)
@@ -39,13 +40,13 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
         
-        public ManagerResult<List<EquityGroup>> GetActiveList()
+        public async Task<ManagerResult<List<EquityGroup>>> GetActiveList()
         {
             ManagerResult<List<EquityGroup>> mgrResult = new ManagerResult<List<EquityGroup>>();           
 
             try
             {
-                List<EquityGroup> equityGroupList = GetAllGroups();
+                List<EquityGroup> equityGroupList =  await GetAllGroups() ;
                 mgrResult.Entity = equityGroupList.Where(e => e.Active == true).ToList();
             }
             catch (Exception ex)
@@ -56,17 +57,17 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        private List<EquityGroup> GetAllGroups()
+        private async Task<List<EquityGroup>> GetAllGroups()
         {
-            return cache.GetOrCreate<List<EquityGroup>>(CacheKeys.EQUITY_GROUP_LIST, entry =>
+            return await cache.GetOrCreateAsync<List<EquityGroup>>(CacheKeys.EQUITY_GROUP_LIST, entry =>
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                return db.Query<EquityGroup>("SELECT * FROM equity_groups").ToList();
+                return Task.FromResult(db.Query<EquityGroup>("SELECT * FROM equity_groups").ToList());
             });
         }
 
 
-        public ManagerResult<EquityGroup> Save(EquityGroup equityGroup)
+        public async Task<ManagerResult<EquityGroup>> Save(EquityGroup equityGroup)
         {
             ManagerResult<EquityGroup> mgrResult = new ManagerResult<EquityGroup>();
             
@@ -75,12 +76,12 @@ namespace SectorBalanceBLL
                 if (equityGroup.Id == Guid.Empty)
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Insert(equityGroup);
+                    await db.InsertAsync(equityGroup);
                 }
                 else
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Update(equityGroup);
+                    await db.UpdateAsync(equityGroup);
                 }           
                 mgrResult.Entity = equityGroup;
             }
@@ -94,19 +95,19 @@ namespace SectorBalanceBLL
 
    #region equity group items
 
-        public ManagerResult<List<EquityGroupItem>> GetGroupItemsList(EquityGroup equityGroup)
+        public async Task<ManagerResult<List<EquityGroupItem>>> GetGroupItemsList(Guid equityGroupId)
         {
             ManagerResult<List<EquityGroupItem>> mgrResult = new ManagerResult<List<EquityGroupItem>>();
             List<EquityGroupItem> equityGroupItems = new List<EquityGroupItem>();
      
             try
-            {  
-                equityGroupItems = cache.GetOrCreate<List<EquityGroupItem>>(equityGroup.Id, entry =>
+            {
+                equityGroupItems = await cache.GetOrCreateAsync<List<EquityGroupItem>>(equityGroupId, entry =>
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    return db.Query<EquityGroupItem>(@"SELECT * 
+                    return Task.FromResult(db.Query<EquityGroupItem>(@"SELECT * 
                                                         FROM equity_group_items 
-                                                        WHERE group_id = @p1 ", new { p1 = equityGroup.Id } ).ToList();
+                                                        WHERE group_id = @p1 ", new { p1 = equityGroupId }).ToList());
                 });
 
                 mgrResult.Entity = equityGroupItems;
@@ -119,7 +120,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<EquityGroupItem> AddEquity(EquityGroup equityGroup, Guid equityId)
+        public async Task<ManagerResult<EquityGroupItem>> AddEquity(EquityGroup equityGroup, Guid equityId)
         {
             ManagerResult<EquityGroupItem> mgrResult = new ManagerResult<EquityGroupItem>();
             EquityGroupItem equityGroupItem = new EquityGroupItem();
@@ -130,7 +131,9 @@ namespace SectorBalanceBLL
                 equityGroupItem.EquityId = equityId;
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                db.Insert(equityGroupItem); 
+                {
+                    await db.InsertAsync(equityGroupItem);
+                }
 
                 mgrResult.Entity = equityGroupItem;
             }
@@ -142,7 +145,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public ManagerResult<bool> RemoveEquity(EquityGroup sysmbolGroup, Guid equitylId)
+        public async Task<ManagerResult<bool>> RemoveEquity(EquityGroup sysmbolGroup, Guid equitylId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
 
@@ -153,7 +156,7 @@ namespace SectorBalanceBLL
                 equityGroupItem.EquityId = equitylId;
 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Delete(equityGroupItem);
+                mgrResult.Entity = await db.DeleteAsync(equityGroupItem);
             }
             catch(Exception ex)
             {

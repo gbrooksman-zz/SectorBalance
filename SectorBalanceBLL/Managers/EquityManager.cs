@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Dapper.FastCrud;
 using Serilog;
+using System.Threading.Tasks;
 
 namespace SectorBalanceBLL
 {
@@ -21,14 +22,19 @@ namespace SectorBalanceBLL
 
         }
 
-        public ManagerResult<int> GetEquitiesInModelsCount(Guid equityId)
+        public async Task<ManagerResult<int>> GetEquitiesInModelsCount(Guid equityId)
         {
             ManagerResult<int> mgrResult = new ManagerResult<int>();
             
             try
             {
-                using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<int>("SELECT count(*) FROM model_equities WHERE equity_id = @p1 ", new { p1 = equityId } ).FirstOrDefault();
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<int>(@"SELECT count(*)  
+                                                                                FROM model_equities 
+                                                                                WHERE equity_id = @p1 ", 
+                                                                                new { p1 = equityId });
+                }
             }
             catch(Exception ex)
             {
@@ -40,17 +46,19 @@ namespace SectorBalanceBLL
         }
 
 
-        public ManagerResult<List<Equity>> GetList()
+        public async Task<ManagerResult<List<Equity>>> GetList()
         {
             ManagerResult<List<Equity>> mgrResult = new ManagerResult<List<Equity>>();
             List<Equity> equityList = new List<Equity>();
-              
+
             try
             {
-                equityList = cache.GetOrCreate<List<Equity>>(CacheKeys.EQUITY_LIST, entry =>
+                equityList = await cache.GetOrCreateAsync<List<Equity>>(CacheKeys.EQUITY_LIST, entry =>
                 {
-                    using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    return db.Query<Equity>("SELECT * FROM equities").ToList();
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {
+                        return Task.FromResult(db.Query<Equity>("SELECT * FROM equities").ToList());
+                    }
                 });
 
                 mgrResult.Entity = equityList;
@@ -58,53 +66,61 @@ namespace SectorBalanceBLL
             catch(Exception ex)
             {
                 mgrResult.Exception = ex;
+                mgrResult.Message = "EquityManager::GetList";
                 Log.Error("EquityManager::GetList",ex);
             }
             
             return mgrResult;
         }
 
-        public ManagerResult<Equity> Get(Guid equityId)
+        public async Task<ManagerResult<Equity>> Get(Guid equityId)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
              
             try
             {
-                using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<Equity>(@"SELECT * 
-                                                FROM equities 
-                                                WHERE id = @p1 ", new { p1 = equityId } ).FirstOrDefault();
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<Equity>(@"SELECT * 
+                                                                                    FROM equities 
+                                                                                    WHERE id = @p1 ", new { p1 = equityId });
+                }
             }
             catch(Exception ex)
             {
                 mgrResult.Exception = ex;
+                mgrResult.Message = "EquityManager::Get";
                 Log.Error("EquityManager::Get",ex);
             }
             
             return mgrResult;
         }
 
-        public ManagerResult<Equity> GetBySymbol(string symbol)
+        public async Task<ManagerResult<Equity>> GetBySymbol(string symbol)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
              
             try
             {
-                using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = db.Query<Equity>(@"SELECT * 
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<Equity>(@"SELECT * 
                                                 FROM equities 
-                                                WHERE LOWER(symbol) = @p1 ", new { p1 = symbol.ToLower() }).FirstOrDefault();
+                                                WHERE LOWER(symbol) = @p1 ",
+                                                new { p1 = symbol.ToLower() });
+                }
             }
             catch(Exception ex)
             {
                 mgrResult.Exception = ex;
+                mgrResult.Message = "EquityManager::GetBySymbol";
                 Log.Error("EquityManager::GetBySymbol",ex);
             }
             
             return mgrResult;
         }
 
-        public ManagerResult<Equity> Save(Equity equity)
+        public async Task<ManagerResult<Equity>> Save(Equity equity)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
             
@@ -112,19 +128,24 @@ namespace SectorBalanceBLL
             {
                 if (equity.Id == Guid.Empty)
                 {
-                    using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Insert(equity);
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {
+                        await db.InsertAsync(equity);
+                    }
                 }
                 else
                 {
-                    using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    db.Update(equity);
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {
+                        await db.UpdateAsync(equity);
+                    }
                 }           
                 mgrResult.Entity = equity;
             }
             catch(Exception ex)
             {
                 mgrResult.Exception = ex;
+                mgrResult.Message = "EquityManager::Save";
                 Log.Error("EquityManager::Save",ex);
             } 
 
@@ -133,10 +154,9 @@ namespace SectorBalanceBLL
 
       
 
-        public ManagerResult<bool> Delete(Guid equityId)
+        public async Task<ManagerResult<bool>> Delete(Guid equityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
-
             Equity equity = new Equity()
             {
                 Id = equityId
@@ -144,12 +164,14 @@ namespace SectorBalanceBLL
             
             try
             {   
-                int count = this.GetEquitiesInModelsCount(equity.Id).Entity;
+                int count = GetEquitiesInModelsCount(equity.Id).Result.Entity;
 
                 if (count == 0)
                 {
-                    using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    mgrResult.Entity = db.Delete(equity);
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {
+                        mgrResult.Entity = await db.DeleteAsync(equity);
+                    }
                 }
                 else
                 {
@@ -160,6 +182,7 @@ namespace SectorBalanceBLL
             catch(Exception ex)
             {
                 mgrResult.Exception = ex;
+                mgrResult.Message = "EquityManager::Save";
                 Log.Error("EquityManager::Delete",ex);
             } 
 

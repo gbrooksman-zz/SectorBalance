@@ -14,22 +14,9 @@ namespace SectorBalanceShared
 
        public string Message { get; set; }
 
-       public Exception Exception
-        {
-            get
-            {
-                return this.Exception;
-            }
+       public Exception Exception { get; set; }        
 
-            set
-            {
-                this.Exception = value;
-                this.Message = value.Message;
-                this.Success = false;
-            }
-        }
-
-        public T Entity { get; set; } = default;    
+       public T Entity { get; set; } = default;    
 
     }
 }

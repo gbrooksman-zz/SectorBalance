@@ -5,28 +5,29 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using SectorBalanceBLL;
 using SectorBalanceShared;
+using System;
 using System.Threading.Tasks;
 
 namespace SectorBalanceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EquityController : ControllerBase
+    public class EquityGroupController : ControllerBase
     {
-        private readonly EquityManager eqMgr;
+        private readonly EquityGroupManager egMgr;
 
-        public EquityController(IMemoryCache _cache, IConfiguration _config)
+        public EquityGroupController(IMemoryCache _cache, IConfiguration _config)
         {
-            eqMgr = new EquityManager(_cache, _config);
+            egMgr = new EquityGroupManager(_cache, _config);
         }
 
         [HttpGet]
         [Route("GetList")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<Equity>>> GetList()
+        public async Task<ActionResult<List<EquityGroup>>> GetList()
         {
-            ManagerResult<List<Equity>> mgrResult =  await eqMgr.GetList();
+            ManagerResult<List<EquityGroup>> mgrResult = await egMgr.GetList();
             if (!mgrResult.Success)
             {
                 return BadRequest(mgrResult);
@@ -38,13 +39,12 @@ namespace SectorBalanceAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetBySymbol")]
+        [Route("GetGroupItems")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Equity>> Get(string symbol)
+        public async Task<ActionResult<List<EquityGroupItem>>> GetGroupItems(Guid equityGrouid)
         {
-            ManagerResult<Equity> mgrResult =  await eqMgr.GetBySymbol(symbol);
-
+            ManagerResult<List<EquityGroupItem>> mgrResult = await egMgr.GetGroupItemsList(equityGrouid);
             if (!mgrResult.Success)
             {
                 return BadRequest(mgrResult);

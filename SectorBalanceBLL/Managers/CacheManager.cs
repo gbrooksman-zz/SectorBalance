@@ -27,7 +27,7 @@ namespace SectorBalanceBLL
             cache.Remove(CacheKeys.EQUITY_LIST);
             cache.Remove(CacheKeys.EQUITY_GROUP_LIST);
 
-            var equityGroupList = equityGroupMgr.GetList().Entity;        
+            var equityGroupList = equityGroupMgr.GetList().Result.Entity;        
             equityGroupList.ForEach(e =>  cache.Remove(e.Id) );
         }
     }
