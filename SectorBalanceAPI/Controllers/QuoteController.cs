@@ -73,5 +73,20 @@ namespace SectorBalanceAPI.Controllers
             }
             return Ok(mrQuoteList.Entity);
         }
+
+        [HttpGet]
+        [Route("GetLast")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<Quote>> GetLast(Guid equityid)
+        {
+            ManagerResult<Quote> mrQuoteList = new ManagerResult<Quote>();
+            mrQuoteList = await qMgr.GetLast(equityid);
+            if (!mrQuoteList.Success)
+            {
+                return BadRequest(mrQuoteList);            
+            }
+            return Ok(mrQuoteList.Entity);
+        }
     }
 }

@@ -10,29 +10,62 @@
 
 <p>API Url: @state.APIUrl</p>
 
-<p>Current count: @currentCount</p>
+<button class="btn btn-primary" onclick="@(async () => await ListEquities())">List Equities</button>
+<br/>
+<div class="container-fluid">
+    <div class="card-deck">
+        @foreach (var pricedequity in pricedEquityList)
+        { 
+            <div class="card">
+                <div class="card-header"> @pricedequity.Symbol</div>
+                <div class="card-body">
+                    @pricedequity.SymbolName
+                    <p>Last price: @pricedequity.LastPrice</p>
+                    <p>Last price date: @pricedequity.LastPriceDate.ToShortDateString()</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
-<button class="btn btn-primary" onclick="@(async () => await ListEquities())">Click me</button>
 
-
-@foreach (var equity in equityList)
+@functions
 {
-    <p>Symbol: @equity.SymbolName</p>
-    <br />
-
-}
-
-
-@functions {
-
-    private List<Equity> equityList = new List<Equity>();
-
-    int currentCount = 0;
+    private List<PricedEquity> pricedEquityList = new List<PricedEquity>();
+    private decimal lastPrice = default;
 
     private async Task ListEquities()
     {
         var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
-        equityList = response.ToList();
+        List<Equity> tempequityList = response.ToList();
+
+        foreach (var equity in tempequityList)
+        {
+            PricedEquity pricedEquity = new PricedEquity();
+            pricedEquity.Id = equity.Id;
+            pricedEquity.Symbol = equity.Symbol;
+            pricedEquity.SymbolName = equity.SymbolName;
+
+            PricedEquity pe = await GetLastQuote(equity.Id);
+
+            pricedEquity.LastPrice = pe.LastPrice;
+            pricedEquity.LastPriceDate = pe.LastPriceDate;
+            pricedEquityList.Add(pricedEquity);
+        }
     }
 
+    private async Task<PricedEquity> GetLastQuote(Guid equityid)
+    {
+        var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
+        PricedEquity pe = new PricedEquity();
+        pe.LastPrice = response.Price;
+        pe.LastPriceDate = response.Date;
+        return pe;
+    }
+
+    internal class PricedEquity : Equity
+    {
+        internal decimal LastPrice { get; set;}
+        internal DateTime LastPriceDate { get; set; }
+    }
 }

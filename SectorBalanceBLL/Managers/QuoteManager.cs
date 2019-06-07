@@ -53,6 +53,16 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+
+        public async Task<ManagerResult<Quote>> GetLast(Guid equityid)
+        {
+            ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
+
+            List<Quote> quoteList = await GetByEquityId(equityid);
+            mgrResult.Entity = quoteList.OrderByDescending(q => q.Date).FirstOrDefault();           
+
+            return mgrResult;
+        }
         private async Task<List<Quote>> GetByEquityId(Guid equityId)
         {
             return await cache.GetOrCreateAsync<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
@@ -62,7 +72,9 @@ namespace SectorBalanceBLL
                                 return Task.FromResult(db.Query<Quote>(@"   SELECT * 
                                                                             FROM quotes 
                                                                             WHERE equity_id = @p1",
-                                                                            new { p1 = equityId }).ToList());
+                                                                            new { p1 = equityId })
+                                                                            .OrderBy(q => q.Date)
+                                                                            .ToList());
                             }
                         });
         }
