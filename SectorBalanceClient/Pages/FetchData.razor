@@ -1,55 +1,57 @@
-﻿@page "/fetchdata"
-@inject HttpClient Http
+﻿@page "/equitygroups"
+@inject AppStateContainer state
+@inject HttpClient httpClient
+@using SectorBalanceShared
 
-<h1>Weather forecast</h1>
+<h1>Equity Groups</h1>
 
-<p>This component demonstrates fetching data from the server.</p>
+<br />
+<div class="container-fluid">
+    <div class="card-deck">
+        @foreach (var peg in popEquityGroupList)
+        {
+            <div class="card">
+                <div class="card-header"> @peg.GroupName</div>
+                <div class="card-body">                    
+                    <p>Equities in Group: @peg.EquityCount</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
 
-@if (forecasts == null)
+@functions
 {
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-@functions {
-    WeatherForecast[] forecasts;
+    private List<PopulatedEquityGroup> popEquityGroupList = new List<PopulatedEquityGroup>();
 
     protected override async Task OnInitAsync()
     {
-        forecasts = await Http.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        await ListEquityGroups();
     }
 
-    class WeatherForecast
+    private async Task ListEquityGroups()
     {
-        public DateTime Date { get; set; }
+        var response = await httpClient.GetJsonAsync<List<EquityGroup>>($"{state.APIUrl}/api/equitygroup/getlist");
+        List<EquityGroup> equityGroupList = response.ToList();
 
-        public int TemperatureC { get; set; }
+        foreach (var equityGroup in equityGroupList)
+        {
+            PopulatedEquityGroup peg = new PopulatedEquityGroup();
+            peg.GroupName = equityGroup.Name;
+            peg.EquityCount = await GetGroupCount(equityGroup.Id);
+            popEquityGroupList.Add(peg);
+        }
+    }
 
-        public int TemperatureF { get; set; }
+    private async Task<int> GetGroupCount(Guid equityGroupid)
+    {
+        var response = await httpClient.GetJsonAsync<int>($"{state.APIUrl}/api/equitygroup/getcount?equitygroupid={equityGroupid}");
+        return response;
+    }
 
-        public string Summary { get; set; }
+    internal class PopulatedEquityGroup
+    {   
+        internal string GroupName { get; set; }
+        internal int EquityCount { get; set; }
     }
 }

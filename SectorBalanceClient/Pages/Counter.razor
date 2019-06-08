@@ -1,21 +1,15 @@
-﻿@page "/counter"
+﻿@page "/equitiestracked"
 @inject AppStateContainer state
 @inject HttpClient httpClient
 @using SectorBalanceShared
 
-<h1>Counter</h1>
+<h1>Equities tracked</h1>
 
-<p>Current User Name: @state.UserName</p>
-<p>Current Guid: @state.UserId</p>
-
-<p>API Url: @state.APIUrl</p>
-
-<button class="btn btn-primary" onclick="@(async () => await ListEquities())">List Equities</button>
-<br/>
+<br />
 <div class="container-fluid">
     <div class="card-deck">
         @foreach (var pricedequity in pricedEquityList)
-        { 
+        {
             <div class="card">
                 <div class="card-header"> @pricedequity.Symbol</div>
                 <div class="card-body">
@@ -33,6 +27,11 @@
 {
     private List<PricedEquity> pricedEquityList = new List<PricedEquity>();
     private decimal lastPrice = default;
+
+    protected override async Task OnInitAsync()
+    {
+        await ListEquities();
+    }
 
     private async Task ListEquities()
     {
@@ -64,8 +63,8 @@
     }
 
     internal class PricedEquity : Equity
-    {
-        internal decimal LastPrice { get; set;}
+    { 
+        internal decimal LastPrice { get; set; }
         internal DateTime LastPriceDate { get; set; }
     }
 }

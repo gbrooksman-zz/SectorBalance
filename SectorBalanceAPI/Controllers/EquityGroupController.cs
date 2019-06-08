@@ -42,9 +42,26 @@ namespace SectorBalanceAPI.Controllers
         [Route("GetGroupItems")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<EquityGroupItem>>> GetGroupItems(Guid equityGrouid)
+        public async Task<ActionResult<List<EquityGroupItem>>> GetGroupItems(Guid equityGroupid)
         {
-            ManagerResult<List<EquityGroupItem>> mgrResult = await egMgr.GetGroupItemsList(equityGrouid);
+            ManagerResult<List<EquityGroupItem>> mgrResult = await egMgr.GetGroupItemsList(equityGroupid);
+            if (!mgrResult.Success)
+            {
+                return BadRequest(mgrResult);
+            }
+            else
+            {
+                return Ok(mgrResult.Entity);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCount")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<int>> GetCount(Guid equityGroupid)
+        {
+            ManagerResult<int> mgrResult = await egMgr.GetItemsCount(equityGroupid);
             if (!mgrResult.Success)
             {
                 return BadRequest(mgrResult);

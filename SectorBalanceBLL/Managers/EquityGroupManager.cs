@@ -120,6 +120,28 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        public async Task<ManagerResult<int>> GetItemsCount(Guid equityGroupId)
+        {
+            ManagerResult<int> mgrResult = new ManagerResult<int>();
+  
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    mgrResult.Entity = db.ExecuteScalar<int>(@"SELECT count(*) 
+                                                        FROM equity_group_items 
+                                                        WHERE group_id = @p1 ", 
+                                                        new { p1 = equityGroupId });
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
         public async Task<ManagerResult<EquityGroupItem>> AddEquity(EquityGroup equityGroup, Guid equityId)
         {
             ManagerResult<EquityGroupItem> mgrResult = new ManagerResult<EquityGroupItem>();
