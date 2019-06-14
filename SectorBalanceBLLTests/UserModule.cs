@@ -11,10 +11,10 @@ namespace SectorBalanceBLLTests
     
     public class UserModule : BaseModule
     {
-        private UserManager userMgr;
+        //private UserManager userMgr;
 
-        private readonly IMemoryCache _memoryCache;
-        private readonly IConfiguration _config;
+        //private readonly IMemoryCache _memoryCache;
+        //private readonly IConfiguration _config;
 
         [Fact]
         public void UserMethods()

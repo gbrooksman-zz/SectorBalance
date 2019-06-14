@@ -120,6 +120,35 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        public async Task<ManagerResult<List<EquityGroupItem>>> GetGroupItemsEquityList(Guid equityGroupId)
+        {
+            ManagerResult<List<EquityGroupItem>> mgrResult = new ManagerResult<List<EquityGroupItem>>();
+            List<EquityGroupItem> equityGroupItems = new List<EquityGroupItem>();
+
+            try
+            {
+                equityGroupItems = await cache.GetOrCreateAsync<List<EquityGroupItem>>($"EQUITIES-{equityGroupId}", entry =>
+                {
+                    string sql = @" SELECT e.* 
+                                    FROM equities e, equity_group_items i, equity_groups g
+                                    WHERE e.id = i.equity_id 
+                                    AND i.group_id = g.id
+                                    AND g.id = @p1";
+
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    return Task.FromResult(db.Query<EquityGroupItem>(sql, new { p1 = equityGroupId }).ToList());
+                });
+
+                mgrResult.Entity = equityGroupItems;
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
         public async Task<ManagerResult<int>> GetItemsCount(Guid equityGroupId)
         {
             ManagerResult<int> mgrResult = new ManagerResult<int>();

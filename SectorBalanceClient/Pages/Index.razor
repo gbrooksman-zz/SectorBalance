@@ -1,11 +1,13 @@
 ﻿@page "/"
-@inject  AppStateContainer state;
+@inject AppStateContainer state
+@inject HttpClient httpClient
+@using SectorBalanceShared
 
 <h1>Welcome to The Sector Model Guide.</h1>
 
 @functions
 {
-    protected override void  OnInit()
+    protected override void OnInit()
     {
         // stuff for testing
 
@@ -14,5 +16,14 @@
 
         state.UserName = "geoffb";
         state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");  //copied from db
+
+       
+
     }
+
+    //protected async Task<List<Equity>> GetEquities()
+    //{
+    //    var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
+    //    return response.ToList();
+    //}
 }

@@ -26,7 +26,7 @@ namespace SectorBalanceAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<List<Equity>>> GetList()
         {
-            ManagerResult<List<Equity>> mgrResult =  eqMgr.GetList().Result;
+            ManagerResult<List<Equity>> mgrResult =  await eqMgr.GetList();
            
           return mgrResult.Entity;
 
