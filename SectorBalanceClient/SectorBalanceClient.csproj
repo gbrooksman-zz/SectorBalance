@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="ChartEngine\" />
+    <Folder Include="Pages\Charts\" />
   </ItemGroup>
 
 </Project>

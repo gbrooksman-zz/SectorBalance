@@ -1,9 +1,10 @@
 ﻿@page "/equitiestracked"
 @inject AppStateContainer state
 @inject HttpClient httpClient
+@using SectorBalanceClient
 @using SectorBalanceShared
 
-    <HeadingComponent HeadingText ="Hello Geoff" />
+   <LineChart EquityList = "@GetEquityList()"/>
 
 @*<br />
 <div class="container-fluid">
@@ -23,50 +24,56 @@
 </div>*@
 
 
-@functions
+@code
 {
-    // private List<PricedEquity> pricedEquityList = new List<PricedEquity>();
-    //// private decimal lastPrice = default;
 
-    // protected override async Task OnInitAsync()
-    // {
-    //     await ListEquities();
-    // }
+private string GetEquityList()
+{
+    return "xlf,xle,xlk";
+}
 
-    // private async Task ListEquities()
-    // {
-    //     var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
-    //     List<Equity> tempequityList = response.ToList();
+// private List<PricedEquity> pricedEquityList = new List<PricedEquity>();
+//// private decimal lastPrice = default;
 
-    //     state.EquityList = tempequityList;
+// protected override async Task OnInitAsync()
+// {
+//     await ListEquities();
+// }
 
-    //     foreach (var equity in tempequityList)
-    //     {
-    //         PricedEquity pricedEquity = new PricedEquity();
-    //         pricedEquity.Id = equity.Id;
-    //         pricedEquity.Symbol = equity.Symbol;
-    //         pricedEquity.SymbolName = equity.SymbolName;
+// private async Task ListEquities()
+// {
+//     var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
+//     List<Equity> tempequityList = response.ToList();
 
-    //         PricedEquity pe = await GetLastQuote(equity.Id);
+//     state.EquityList = tempequityList;
 
-    //         pricedEquity.LastPrice = pe.LastPrice;
-    //         pricedEquity.LastPriceDate = pe.LastPriceDate;
-    //         pricedEquityList.Add(pricedEquity);
-    //     }
-    // }
+//     foreach (var equity in tempequityList)
+//     {
+//         PricedEquity pricedEquity = new PricedEquity();
+//         pricedEquity.Id = equity.Id;
+//         pricedEquity.Symbol = equity.Symbol;
+//         pricedEquity.SymbolName = equity.SymbolName;
 
-    // private async Task<PricedEquity> GetLastQuote(Guid equityid)
-    // {
-    //     var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
-    //     PricedEquity pe = new PricedEquity();
-    //     pe.LastPrice = response.Price;
-    //     pe.LastPriceDate = response.Date;
-    //     return pe;
-    // }
+//         PricedEquity pe = await GetLastQuote(equity.Id);
 
-    // internal class PricedEquity : Equity
-    // {
-    //     internal decimal LastPrice { get; set; }
-    //     internal DateTime LastPriceDate { get; set; }
-    // }
+//         pricedEquity.LastPrice = pe.LastPrice;
+//         pricedEquity.LastPriceDate = pe.LastPriceDate;
+//         pricedEquityList.Add(pricedEquity);
+//     }
+// }
+
+// private async Task<PricedEquity> GetLastQuote(Guid equityid)
+// {
+//     var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
+//     PricedEquity pe = new PricedEquity();
+//     pe.LastPrice = response.Price;
+//     pe.LastPriceDate = response.Date;
+//     return pe;
+// }
+
+// internal class PricedEquity : Equity
+// {
+//     internal decimal LastPrice { get; set; }
+//     internal DateTime LastPriceDate { get; set; }
+// }
 }

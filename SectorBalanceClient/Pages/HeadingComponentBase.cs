@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.RenderTree;
-using SectorBalanceClient.SVG;
+using SectorBalanceClient;
 using Microsoft.AspNetCore.Blazor.Rendering;
 
 namespace SectorBalanceClient
