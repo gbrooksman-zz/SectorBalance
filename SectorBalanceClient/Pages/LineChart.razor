@@ -2,10 +2,9 @@
 @using SectorBalanceShared
 @using Microsoft.AspNetCore.Components
 
-
 <figure>
     <div class="linechart-main">
-        <svg width="100%" height="100%" viewBox="0 0 500 500">
+        <svg width="50%" height="50%" viewBox="0 0 500 500">
             <rect width="100%" height="100%" fill="white" stroke="gray" />
 
             <style type="text/css">
@@ -19,8 +18,8 @@
             </style>
 
 
-            <title>LineChart</title>
-            <desc>Equity Chart</desc>
+            <title>Equity Chart Title</title>
+            <desc>Equity Chart Description</desc>
             <!--Axis-->
             <path d="M 0 350 L 500 350 M 25 350 L 25 0"
                   fill="red" stroke="gray" stroke-width="0.3" />
@@ -49,14 +48,7 @@
             <path d="M 400 0 L 400 350"
                   fill="none" stroke="gray" stroke-width="0.3" />
 
-            <!-- Lines -->
-            <!--Legend-->
-
-            @*<text class="small" x="330" y="295" fill="Bluwk">Male</text>
-            <text class="small" x="330" y="275" fill="Bluw">Female</text>
-            <path d="M 375 290 L 395 290" fill="none" stroke="blue" stroke-width="2" />
-            <path d="M 395 270 L 415 270" fill="none" stroke="red" stroke-width="2" />*@
-
+       
             <!--Labels-->
 
             <text class="small" x="30" y="375" fill="Black">Jan</text>
@@ -81,104 +73,105 @@
 
 @code
 {
-RenderFragment BuildLines(string linePath, int colorValue) => builder =>
-{
-    builder.OpenElement(12,"path");
-    builder.AddAttribute(13, "d", linePath);
-    builder.AddAttribute(14, "fill", "none");
-    builder.AddAttribute(15, "stroke",GetLineColor(colorValue));
-    builder.AddAttribute(16, "stroke-width", 2);
-    builder.CloseElement();
-};
 
-RenderFragment BuildLegendPath(string legendPath, string legendText, int colorValue, int xCoord, int yCoord) => builder =>
-{
-    builder.OpenElement(1,"path");
-    builder.AddAttribute(2, "d", legendPath);
-    builder.AddAttribute(3, "fill", "none");
-    builder.AddAttribute(4, "stroke",GetLineColor(colorValue));
-    builder.AddAttribute(5, "stroke-width", 2);
-    builder.CloseElement();
-};
-
-RenderFragment BuildLegendText(string legendText, int xCoord, int yCoord) => builder =>
-{
-    builder.OpenElement(1,"text");
-    builder.AddAttribute(2, "class", "small");
-    builder.AddAttribute(3, "x", xCoord);
-    builder.AddAttribute(4, "y", yCoord);
-    builder.AddContent(5, legendText);
-    builder.CloseElement();
-};
-
-private RenderFragment DrawDataElements()
-{
-    RenderFragment frag = null;
-    int colorValue = 1;
-    int xCoord = 0;
-    int yCoord = 0;
-    string linePath = string.Empty;
-    string legendPath = string.Empty;
-    string legendText = string.Empty;
-
-    foreach(string equity in EquityList.Split(",".ToCharArray()))
+    RenderFragment BuildLines(string linePath, int colorValue) => builder =>
     {
-        switch (equity)
+        builder.OpenElement(1,"path");
+        builder.AddAttribute(2, "d", linePath);
+        builder.AddAttribute(3, "fill", "none");
+        builder.AddAttribute(4, "stroke",GetLineColor(colorValue));
+        builder.AddAttribute(5, "stroke-width", 2);
+        builder.CloseElement();
+    };
+
+    RenderFragment BuildLegendPath(string legendPath, string legendText, int colorValue, int xCoord, int yCoord) => builder =>
+    {
+        builder.OpenElement(1,"path");
+        builder.AddAttribute(2, "d", legendPath);
+        builder.AddAttribute(3, "fill", "none");
+        builder.AddAttribute(4, "stroke",GetLineColor(colorValue));
+        builder.AddAttribute(5, "stroke-width", 2);
+        builder.CloseElement();
+    };
+
+    RenderFragment BuildLegendText(string legendText, int xCoord, int yCoord) => builder =>
+    {
+        builder.OpenElement(1,"text");
+        builder.AddAttribute(2, "class", "small");
+        builder.AddAttribute(3, "x", xCoord);
+        builder.AddAttribute(4, "y", yCoord);
+        builder.AddContent(5, legendText);
+        builder.CloseElement();
+    };
+
+    private RenderFragment DrawDataElements()
+    {
+        RenderFragment frag = null;
+        int colorValue = 1;
+        int xCoord = 0;
+        int yCoord = 0;
+        string linePath = string.Empty;
+        string legendPath = string.Empty;
+        string legendText = string.Empty;
+
+        foreach(string equity in EquityList.Split(",".ToCharArray()))
         {
-            case "xlf":
-                linePath = "M 30 250 L 130 120 L 230 150 L 330 80 L 480 200";
-                legendPath = "M 40 10 L 80 10";
-                legendText = equity;
-                xCoord = 20;
-                yCoord = 10;
+            switch (equity)
+            {
+                case "xlf":
+                    linePath = "M 30 250 L 130 120 L 230 150 L 330 80 L 480 200";
+                    legendPath = "M 40 10 L 80 10";
+                    legendText = equity;
+                    xCoord = 20;
+                    yCoord = 10;
+                    break;
+                case "xle":
+                    linePath = "M 30 230 L 130 170 L 230 120 L 330 100 L 480 130";
+                    legendPath = "M 40 30 L 80 30";
+                    legendText = equity;
+                    xCoord = 20;
+                    yCoord = 30;
+                    break;
+                case "xlk":
+                    linePath = "M 30 210 L 130 150 L 230 100 L 330 120 L 480 160";
+                    legendPath = "M 40 50 L 80 50";
+                    legendText = equity;
+                    xCoord = 20;
+                    yCoord = 50;
+                    break;
+            }
+
+            frag += BuildLines(linePath, colorValue);
+            frag += BuildLegendPath(legendPath, legendText,colorValue, xCoord, yCoord);
+            frag += BuildLegendText(legendText, xCoord, yCoord);
+
+            colorValue++;
+        }
+
+        return frag;
+    }
+
+    private string GetLineColor(int value)
+    {
+        string ret = string.Empty;
+
+        switch (value)
+        {
+            case 1:
+                ret = "blue";
                 break;
-            case "xle":
-                linePath = "M 30 230 L 130 170 L 230 120 L 330 100 L 480 130";
-                legendPath = "M 40 30 L 80 30";
-                legendText = equity;
-                xCoord = 20;
-                yCoord = 30;
+            case 2:
+                ret = "red";
                 break;
-            case "xlk":
-                linePath = "M 30 210 L 130 150 L 230 100 L 330 120 L 480 160";
-                legendPath = "M 40 50 L 80 50";
-                legendText = equity;
-                xCoord = 20;
-                yCoord = 50;
+            case 3:
+                ret = "green";
                 break;
         }
 
-        frag += BuildLines(linePath, colorValue);
-        frag += BuildLegendPath(legendPath, legendText,colorValue, xCoord, yCoord);
-        frag += BuildLegendText(legendText, xCoord, yCoord);
-
-        colorValue++;
+        return ret;
     }
 
-    return frag;
-}
-
-private string GetLineColor(int value)
-{
-    string ret = string.Empty;
-
-    switch (value)
-    {
-        case 1:
-            ret = "blue";
-            break;
-        case 2:
-            ret = "red";
-            break;
-        case 3:
-            ret = "green";
-            break;
-    }
-
-    return ret;
-}
-
-[Parameter]
-public string EquityList { get; set; }
+    [Parameter]
+    public string EquityList { get; set; }
 
 }

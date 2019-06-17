@@ -20,9 +20,4 @@
     <ProjectReference Include="..\SectorBalanceShared\SectorBalanceShared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ChartEngine\" />
-    <Folder Include="Pages\Charts\" />
-  </ItemGroup>
-
 </Project>

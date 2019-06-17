@@ -20,6 +20,8 @@ namespace SectorBalanceClient
         public List<Equity> EquityList { get; set; }
         public List<UserModel> UserModels { get; set; }
         public DateTime LastQuoteDate { get; set; }
+        public Guid CoreModelId { get; set; }
+
 
 
 

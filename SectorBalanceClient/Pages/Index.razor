@@ -9,16 +9,17 @@
 {
     protected override void OnInit()
     {
-        // stuff for testing
+        // stuff for testing - replace with a settings file
 
         state.APIUrl = "http://localhost:5000";
+
         state.APIKey = "A8F12BB0-535A-4117-BA0B-E5722DC50367";
 
         state.UserName = "geoffb";
-        state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");  //copied from db
 
-       
+        state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");          //copied from db
 
+        state.CoreModelId = Guid.Parse("e81de052-9091-11e9-a901-0aefc68022c6");     //copied from db
     }
 
     //protected async Task<List<Equity>> GetEquities()
