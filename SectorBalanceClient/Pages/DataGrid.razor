@@ -1,0 +1,58 @@
+﻿@using SectorBalanceClient
+@using SectorBalanceShared
+@using Microsoft.AspNetCore.Components
+
+<style type="text/css">
+    .small {
+        font: 12px sans-serif;
+    }
+
+    .normal {
+        font: 16px sans-serif;
+    }
+</style>
+
+@typeparam TItem
+
+@inject HttpClient HttpExecutor
+<div style="border: solid 2px gray;">
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    @if (HeaderTemplate != null)
+                    {
+                        @HeaderTemplate
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>
+                        @RowTemplate(item)
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    @if (FooterTemplate != null)
+                    {
+                        @FooterTemplate(Items)
+                    }
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+@code 
+{
+    [Parameter]
+    RenderFragment HeaderTemplate { get; set; }
+    [Parameter]
+    RenderFragment<TItem> RowTemplate { get; set; }
+    [Parameter]
+    RenderFragment<IList<TItem>> FooterTemplate { get; set; }
+    [Parameter]
+    IList<TItem> Items { get; set; }
+}

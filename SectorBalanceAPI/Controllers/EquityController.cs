@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using SectorBalanceBLL;
 using SectorBalanceShared;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace SectorBalanceAPI.Controllers
 {
@@ -27,9 +28,10 @@ namespace SectorBalanceAPI.Controllers
         public async Task<ActionResult<List<Equity>>> GetList()
         {
             ManagerResult<List<Equity>> mgrResult =  await eqMgr.GetList();
-           
-          return mgrResult.Entity;
 
+            Log.Information("Equity count:" + mgrResult.Entity.Count);
+           
+            return mgrResult.Entity;
         }
 
         [HttpGet]

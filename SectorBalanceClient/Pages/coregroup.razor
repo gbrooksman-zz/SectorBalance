@@ -1,0 +1,100 @@
+@page "/coregroup"
+@inject AppStateContainer state
+@inject HttpClient httpClient
+@using SectorBalanceClient
+@using SectorBalanceShared
+
+<style type="text/css">
+    .small {
+        font: 12px sans-serif;
+    }
+
+    .normal {
+        font: 16px sans-serif;
+    }
+
+    .row {
+        display: flex;
+    }
+
+    .column {
+        flex: 50%;
+    }
+</style>
+
+<div class="row">
+    <div class="column">
+        <DataGrid Items="@pricedEquityList" TItem="PricedEquity">
+            <HeaderTemplate>
+                <th>Symbol</th>
+                <th>Name</th>
+            </HeaderTemplate>
+            <RowTemplate>
+                <td>@context.Symbol</td>
+                <td>@context.SymbolName</td>
+            </RowTemplate>
+            <FooterTemplate>
+                <td colspan="2">
+                    @context.Count equities found. 
+                </td>
+            </FooterTemplate>
+        </DataGrid>
+
+    </div>
+    <div class="column">
+        <LineChart EquityList="@GetEquityList()" />
+    </div>
+</div>
+
+@code
+    {
+
+private List<PricedEquity> pricedEquityList = new List<PricedEquity>();
+
+private string GetEquityList()
+{
+    return "xlf,xle,xlk";
+}
+
+protected override async Task OnInitAsync()
+{
+    var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
+    List<Equity> tempequityList = response.ToList();
+
+    state.EquityList = tempequityList;
+
+    foreach (var equity in tempequityList)
+    {
+        PricedEquity pricedEquity = new PricedEquity();
+        pricedEquity.Id = equity.Id;
+        pricedEquity.Symbol = equity.Symbol;
+        pricedEquity.SymbolName = equity.SymbolName;
+
+        //PricedEquity pe = await GetLastQuote(equity.Id);
+
+        //pricedEquity.LastPrice = pe.LastPrice;
+        //pricedEquity.LastPriceDate = pe.LastPriceDate;
+        pricedEquityList.Add(pricedEquity);
+    }
+
+    // pricedEquityList.Add(new PricedEquity { Symbol="XXX",SymbolName="YYYYY"});
+}
+
+private async Task<PricedEquity> GetLastQuote(Guid equityid)
+{
+    var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
+    PricedEquity pe = new PricedEquity();
+    pe.LastPrice = response.Price;
+    pe.LastPriceDate = response.Date;
+    return pe;
+}
+
+internal class PricedEquity : Equity
+{
+    internal decimal LastPrice { get; set; }
+    internal DateTime LastPriceDate { get; set; }
+}
+
+
+
+}

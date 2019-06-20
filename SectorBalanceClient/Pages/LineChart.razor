@@ -2,53 +2,53 @@
 @using SectorBalanceShared
 @using Microsoft.AspNetCore.Components
 
-<figure>
-    <div class="linechart-main">
-        <svg width="50%" height="50%" viewBox="0 0 500 500">
+    <style type="text/css">
+        .small {
+            font: 12px sans-serif;
+        }
+
+        .normal {
+            font: 16px sans-serif;
+        }
+
+    </style>
+     
+    <figure>
+        <svg width="100%" height="100%" viewBox="0 0 500 500">
             <rect width="100%" height="100%" fill="white" stroke="gray" />
-
-            <style type="text/css">
-                .small {
-                    font: 12px sans-serif;
-                }
-
-                .normal {
-                    font: 16px sans-serif;
-                }
-            </style>
-
 
             <title>Equity Chart Title</title>
             <desc>Equity Chart Description</desc>
+
             <!--Axis-->
             <path d="M 0 350 L 500 350 M 25 350 L 25 0"
-                  fill="red" stroke="gray" stroke-width="0.3" />
+                    fill="red" stroke="gray" stroke-width="0.3" />
 
             <!--Horizontal Lines-->
             <path d="M 25 300 L 500 300"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 25 250 L 500 250"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 25 200 L 500 200"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 25 150 L 500 150"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 25 100 L 500 100"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 25 50 L 500 50"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
 
             <!--Vertical Lines-->
             <path d="M 100 0 L 100 350"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 200 0 L 200 350"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 300 0 L 300 350"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
             <path d="M 400 0 L 400 350"
-                  fill="none" stroke="gray" stroke-width="0.3" />
+                    fill="none" stroke="gray" stroke-width="0.3" />
 
-       
+
             <!--Labels-->
 
             <text class="small" x="30" y="375" fill="Black">Jan</text>
@@ -67,9 +67,7 @@
             @DrawDataElements()
 
         </svg>
-    </div>
-
-</figure>
+    </figure>  
 
 @code
 {
