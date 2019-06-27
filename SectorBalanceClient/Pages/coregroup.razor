@@ -24,14 +24,18 @@
 
 <div class="row">
     <div class="column">
-        <DataGrid Items="@pricedEquityList" TItem="PricedEquity">
+        <DataGrid Items="@modelEquityList" TItem="ModelEquity">
             <HeaderTemplate>
                 <th>Symbol</th>
                 <th>Name</th>
+                <th>Percent</th>
+                <th>Last Price</th>
             </HeaderTemplate>
             <RowTemplate>
-                <td>@context.Symbol</td>
-                <td>@context.SymbolName</td>
+                <td>@context.Equity.Symbol</td>
+                <td>@context.Equity.SymbolName</td>
+                <td>@context.Percent</td>
+                <td>@context.LastPrice</td>
             </RowTemplate>
             <FooterTemplate>
                 <td colspan="2">
@@ -47,54 +51,20 @@
 </div>
 
 @code
-    {
-
-private List<PricedEquity> pricedEquityList = new List<PricedEquity>();
-
-private string GetEquityList()
 {
-    return "xlf,xle,xlk";
-}
 
-protected override async Task OnInitAsync()
-{
-    var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
-    List<Equity> tempequityList = response.ToList();
+    private List<ModelEquity> modelEquityList = new List<ModelEquity>();
 
-    state.EquityList = tempequityList;
-
-    foreach (var equity in tempequityList)
+    private string GetEquityList()
     {
-        PricedEquity pricedEquity = new PricedEquity();
-        pricedEquity.Id = equity.Id;
-        pricedEquity.Symbol = equity.Symbol;
-        pricedEquity.SymbolName = equity.SymbolName;
-
-        //PricedEquity pe = await GetLastQuote(equity.Id);
-
-        //pricedEquity.LastPrice = pe.LastPrice;
-        //pricedEquity.LastPriceDate = pe.LastPriceDate;
-        pricedEquityList.Add(pricedEquity);
+        return "xlf,xle,xlk";
     }
 
-    // pricedEquityList.Add(new PricedEquity { Symbol="XXX",SymbolName="YYYYY"});
-}
-
-private async Task<PricedEquity> GetLastQuote(Guid equityid)
-{
-    var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
-    PricedEquity pe = new PricedEquity();
-    pe.LastPrice = response.Price;
-    pe.LastPriceDate = response.Date;
-    return pe;
-}
-
-internal class PricedEquity : Equity
-{
-    internal decimal LastPrice { get; set; }
-    internal DateTime LastPriceDate { get; set; }
-}
-
-
-
+    protected override async Task OnInitAsync()
+    {
+        var response = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/model/getcore");
+   
+        modelEquityList = response.ToList();    
+    }
+    
 }

@@ -22,5 +22,11 @@ namespace SectorBalanceShared
 
         public int Percent { get; set; }
 
+        [NotMapped]
+        public Equity Equity { get; set; }
+
+        [NotMapped]
+        public decimal LastPrice { get; set; }
+
     }
 }

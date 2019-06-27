@@ -19,7 +19,7 @@
     },
     "SectorBalanceAPI": {
       "commandName": "Project",
-      "launchUrl": "api/values",
+      "launchUrl": "api/model/getcore",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

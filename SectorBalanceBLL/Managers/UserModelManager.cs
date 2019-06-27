@@ -13,13 +13,16 @@ namespace SectorBalanceBLL
 {
     public class UserModelManager : BaseManager
     {
+        private EquityManager eqMgr;
+        private QuoteManager qMgr;
+
         public UserModelManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
-            
+            eqMgr = new EquityManager(_cache, _config);
+            qMgr = new QuoteManager(_cache, _config);
         }
 
         public async Task<ManagerResult<List<UserModel>>> GetModelList(User user)
-
         {
             ManagerResult<List<UserModel>> mgrResult = new ManagerResult<List<UserModel>>();
            
@@ -41,7 +44,40 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-       public async Task<ManagerResult<UserModel>> Save(UserModel userModel)
+        public async Task<ManagerResult<List<ModelEquity>>> GetCore(Guid guid)
+        {
+            ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    List<ModelEquity> modelEquityList = db.QueryAsync<ModelEquity>(@" SELECT * 
+                                                    FROM model_equities 
+                                                    WHERE model_id = @p1",
+                                                    new { p1 = guid }).Result.ToList();
+
+                    foreach (ModelEquity modelEquity in modelEquityList)
+                    {
+                        modelEquity.Equity = eqMgr.Get(modelEquity.EquityID).Result.Entity;
+                        Quote quote =  qMgr.GetLast(modelEquity.EquityID).Result.Entity;
+                        if (quote != null)
+                        {
+                            modelEquity.LastPrice = quote.Price;
+                        }
+                    }
+
+                    mgrResult.Entity = modelEquityList;
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
+        public async Task<ManagerResult<UserModel>> Save(UserModel userModel)
         {
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
             
