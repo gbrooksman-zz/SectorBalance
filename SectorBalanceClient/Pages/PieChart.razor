@@ -8,9 +8,7 @@
     <div class="piechart-main">
         <svg width="84%" height="84%" viewBox="-1 -1 2 2" style="transform: rotate(-90deg);margin-left:8px;margin-top:20px">
 
-            <path fill="#ce4b99" d="M 1 0 A 1 1 0 0 1 0.8090169943749475 0.5877852522924731 L 0 0" />
-            <path fill="#27A844" d="M 0.8090169943749475 0.5877852522924731 A 1 1 0 1 1 -1.8369701987210297e-16 -1 L 0 0" />
-            <path fill="#377bbc" d="M -1.8369701987210297e-16 -1 A 1 1 0 0 1 0.9510565162951535 -0.3090169943749476 L 0 0" />
+            @DrawSlices();
 
         </svg>
     </div>
@@ -39,19 +37,63 @@
 
 @code
 {
-    /*
-        public class Slice
-        {
-            public double percent { get; set; }
-            public string color { get; set; }
-        }
-        IList<Slice> Slices = new List<Slice>();
-        protected override async Task OnInitAsync()
-        {
-            Slice slice = new Slice();
-            slice.percent = 0.1;
-            slice.color = "Coral";
-            Slices.Add(slice);
-        }
-        */
+    
+    public class Slice
+    {
+        public double Percent { get; set; }
+        public string Color { get; set; }
+    }
+
+    public class Point
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+    
+
+    private RenderFragment DrawSlices()
+    {
+        RenderFragment frag = null;
+
+        Slice slice = new Slice();
+        slice.Percent = 12.0f;
+        slice.Color = "blue";
+
+        frag = BuildSlice(slice);
+
+        return frag;
+    }
+    
+
+    RenderFragment BuildSlice(Slice slice ) => builder =>
+    {
+        builder.OpenElement(1,"path");
+        builder.AddAttribute(2, "d", GetPath(slice.Percent));
+        builder.AddAttribute(3, "fill", slice.Color);
+        builder.CloseElement();
+    };
+
+    private string GetPath(double slicePercent)
+    {        
+
+        Point startingPoint = new Point();
+        startingPoint.X = 0;
+        startingPoint.Y = 1;        
+
+        Point endingPoint  = GetCoordinatesForPercent(slicePercent);        
+
+        string slicePath = $"M {startingPoint.X} {startingPoint.Y} A 1 1 0 0 1 {endingPoint.X} {endingPoint.Y} L 0 0";
+
+        return slicePath;        
+    }
+
+
+    private Point GetCoordinatesForPercent(double percent) 
+    {
+        Point point = new Point();
+        point.X = System.Math.Cos(2 * Math.PI * percent);
+        point.Y = System.Math.Sin(2 * Math.PI * percent);
+        return point;
+    }
+
 }
