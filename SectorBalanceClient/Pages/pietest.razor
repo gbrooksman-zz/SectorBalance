@@ -1,0 +1,55 @@
+﻿
+
+@page "/pietest"
+@inject AppStateContainer state
+@inject HttpClient httpClient
+@using SectorBalanceClient.Entities
+
+<div>
+    <PieChart Width="20%" PieSlices="@slices" />
+</div>
+
+@code
+{
+    List<PieSlice> slices = new List<PieSlice>();
+
+    protected override void OnInit()
+    {
+        slices = GetSlices();
+    }
+
+    private List<PieSlice> GetSlices()
+    {
+        slices.Add(new PieSlice()
+        {
+            Name = "XLF",
+            Percent = 15,
+            Color = "Red"
+        });
+
+        slices.Add(new PieSlice()
+        {
+            Name = "XLE",
+            Percent = 20,
+            Color = "Yellow"
+        });
+
+        slices.Add(new PieSlice()
+        {
+            Name = "XLK",
+            Percent = 60,
+            Color = "Green"
+        });
+
+        slices.Add(new PieSlice()
+        {
+            Name = "XLV",
+            Percent = 5,
+            Color = "Blue"
+        });
+
+        return slices;
+    }
+
+}
+

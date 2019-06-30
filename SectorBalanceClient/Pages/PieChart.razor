@@ -1,99 +1,107 @@
-﻿@using SectorBalanceClient
-@using SectorBalanceShared
+﻿
+@using SectorBalanceClient.Entities
 @using Microsoft.AspNetCore.Components
-
+@using System
 
 <figure>
-
     <div class="piechart-main">
-        <svg width="84%" height="84%" viewBox="-1 -1 2 2" style="transform: rotate(-90deg);margin-left:8px;margin-top:20px">
-
+        <svg width="@Width" height="@Height" viewBox="-1 -1 2 2 " style="transform: rotate(-0.25turn);margin-left:10px;margin-top:10px;">
             @DrawSlices();
-
         </svg>
     </div>
     <br />
-
-    <figcaption class="piechart-key">
-
-        <ul class="piechart-key-list" aria-hidden="true" style="list-style-type: none;">
-            <li>
-                <span class="round-dot dot-red"></span> App Store (40)
-            </li>
-            <li>
-                <span class="round-dot dot-green"></span> Website (20)
-            </li>
-            <li>
-                <span class="round-dot dot-blue"></span> Partners (40)
-
-            </li>
+    <figcaption>
+        <ul>
+            @DrawLegend();
         </ul>
-
     </figcaption>
-
-
 </figure>
 
 
 @code
 {
-    
-    public class Slice
-    {
-        public double Percent { get; set; }
-        public string Color { get; set; }
-    }
+    [Parameter]
+    public string Width { get; set; } = "auto";
 
-    public class Point
+    [Parameter]
+    public string Height { get; set; } = "auto";
+
+    [Parameter]
+    public IEnumerable<PieSlice> PieSlices { get; set; }
+
+    private class Point
     {
         public double X { get; set; }
         public double Y { get; set; }
     }
-    
 
     private RenderFragment DrawSlices()
     {
         RenderFragment frag = null;
 
-        Slice slice = new Slice();
-        slice.Percent = 12.0f;
-        slice.Color = "blue";
+        double percentSum = 0;
+        double startX = 1;
+        double startY = 0;
 
-        frag = BuildSlice(slice);
+        foreach (var slice in PieSlices)
+        {
+            slice.StartingX = startX;
+            slice.StartingY = startY;
+
+            Point endingPoint = GetCoordinatesForPercent(slice.Percent + percentSum);
+
+            slice.EndingX = endingPoint.X;
+            slice.EndingY = endingPoint.Y;
+
+            frag += BuildSlice(slice);
+
+            percentSum += slice.Percent;
+            startX = slice.EndingX;
+            startY = slice.EndingY;
+        }
 
         return frag;
     }
-    
 
-    RenderFragment BuildSlice(Slice slice ) => builder =>
+    RenderFragment BuildSlice(PieSlice slice) => builder =>
     {
-        builder.OpenElement(1,"path");
-        builder.AddAttribute(2, "d", GetPath(slice.Percent));
+        builder.OpenElement(1, "path");
+        builder.AddAttribute(2, "d", GetPath(slice));
         builder.AddAttribute(3, "fill", slice.Color);
         builder.CloseElement();
     };
 
-    private string GetPath(double slicePercent)
-    {        
-
-        Point startingPoint = new Point();
-        startingPoint.X = 0;
-        startingPoint.Y = 1;        
-
-        Point endingPoint  = GetCoordinatesForPercent(slicePercent);        
-
-        string slicePath = $"M {startingPoint.X} {startingPoint.Y} A 1 1 0 0 1 {endingPoint.X} {endingPoint.Y} L 0 0";
-
-        return slicePath;        
-    }
-
-
-    private Point GetCoordinatesForPercent(double percent) 
+    private string GetPath(PieSlice slice)
     {
-        Point point = new Point();
-        point.X = System.Math.Cos(2 * Math.PI * percent);
-        point.Y = System.Math.Sin(2 * Math.PI * percent);
-        return point;
+        int arcDirection = slice.Percent > .5 ? 1 : 0;
+        return $"M {slice.StartingX} {slice.StartingY} A 1 1 0 {arcDirection} 1 {slice.EndingX} {slice.EndingY} L 0 0";
     }
 
+    private Point GetCoordinatesForPercent(double percent)
+    {
+        return new Point()
+        {
+            X = Math.Cos(2 * Math.PI * percent),
+            Y = Math.Sin(2 * Math.PI * percent)
+        };
+    }
+
+    private RenderFragment DrawLegend()
+    {
+        RenderFragment frag = null;
+
+        foreach (PieSlice slice in PieSlices)
+        {
+            frag += BuildLegendEntry(slice);
+        }
+
+        return frag;
+    }
+
+    RenderFragment BuildLegendEntry(PieSlice slice) => builder =>
+    {
+        builder.OpenElement(1, "li");
+        builder.AddContent(2, slice.Name);
+        builder.CloseElement();
+    };
 }
