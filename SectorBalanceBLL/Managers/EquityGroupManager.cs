@@ -114,7 +114,8 @@ namespace SectorBalanceBLL
                     {
                         return Task.FromResult(db.Query<EquityGroupItem>(@"SELECT * 
                                                         FROM equity_group_items 
-                                                        WHERE group_id = @p1 ", new { p1 = equityGroupId }).ToList());
+                                                        WHERE group_id = @p1 ", 
+                                                        new { p1 = equityGroupId }).ToList());
                     }
                 });
 
