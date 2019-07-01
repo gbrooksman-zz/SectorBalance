@@ -62,7 +62,9 @@ namespace SectorBalanceBLL
             return await cache.GetOrCreateAsync<List<EquityGroup>>(CacheKeys.EQUITY_GROUP_LIST, entry =>
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
+                {
                 return Task.FromResult(db.Query<EquityGroup>("SELECT * FROM equity_groups").ToList());
+                }
             });
         }
 
@@ -76,12 +78,16 @@ namespace SectorBalanceBLL
                 if (equityGroup.Id == Guid.Empty)
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    await db.InsertAsync(equityGroup);
+                    {
+                        await db.InsertAsync(equityGroup);
+                    }
                 }
                 else
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    await db.UpdateAsync(equityGroup);
+                    {
+                        await db.UpdateAsync(equityGroup);
+                    }
                 }           
                 mgrResult.Entity = equityGroup;
             }
@@ -105,9 +111,11 @@ namespace SectorBalanceBLL
                 equityGroupItems = await cache.GetOrCreateAsync<List<EquityGroupItem>>(equityGroupId, entry =>
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    return Task.FromResult(db.Query<EquityGroupItem>(@"SELECT * 
+                    {
+                        return Task.FromResult(db.Query<EquityGroupItem>(@"SELECT * 
                                                         FROM equity_group_items 
                                                         WHERE group_id = @p1 ", new { p1 = equityGroupId }).ToList());
+                    }
                 });
 
                 mgrResult.Entity = equityGroupItems;
@@ -136,7 +144,9 @@ namespace SectorBalanceBLL
                                     AND g.id = @p1";
 
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    return Task.FromResult(db.Query<EquityGroupItem>(sql, new { p1 = equityGroupId }).ToList());
+                    {
+                        return Task.FromResult(db.Query<EquityGroupItem>(sql, new { p1 = equityGroupId }).ToList());
+                    }
                 });
 
                 mgrResult.Entity = equityGroupItems;
@@ -207,7 +217,9 @@ namespace SectorBalanceBLL
                 equityGroupItem.EquityId = equitylId;
 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = await db.DeleteAsync(equityGroupItem);
+                {
+                    mgrResult.Entity = await db.DeleteAsync(equityGroupItem);
+                }
             }
             catch(Exception ex)
             {

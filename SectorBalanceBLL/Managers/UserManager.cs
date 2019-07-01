@@ -44,7 +44,9 @@ namespace SectorBalanceBLL
             try
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
-                mgrResult.Entity = await db.QueryFirstOrDefaultAsync<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id });
+                {
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id });
+                }
             }
             catch(Exception ex)
             {
@@ -113,12 +115,16 @@ namespace SectorBalanceBLL
                 if (user.Id == Guid.Empty)
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    await db.InsertAsync(user);
+                    {
+                        await db.InsertAsync(user);
+                    }
                 }
                 else
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
-                    await db.UpdateAsync(user);
+                    {
+                        await db.UpdateAsync(user);
+                    }
                 }           
             }
             catch(Exception ex)

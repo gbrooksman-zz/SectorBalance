@@ -86,12 +86,16 @@ namespace SectorBalanceBLL
                 if (userModel.Id == Guid.Empty)
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    {
                         await db.InsertAsync(userModel);
+                    }
                 }
                 else
                 {
                     using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    {
                         await db.UpdateAsync(userModel);
+                    }
                 }           
                 mgrResult.Entity = userModel;
             }
@@ -113,10 +117,12 @@ namespace SectorBalanceBLL
             try
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
+                {
                     mgrResult.Entity = db.QueryAsync<ModelEquity>(@"SELECT * 
                                                             FROM model_equities 
                                                             WHERE model = @p1 ", 
                                                             new { p1 = userModel.Id } ).Result.ToList();
+                }
             }
             catch(Exception ex)
             {
@@ -140,7 +146,9 @@ namespace SectorBalanceBLL
                 };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                    await db.InsertAsync(modelEquity);                               
+                {
+                    await db.InsertAsync(modelEquity); 
+                }                              
 
                 mgrResult.Entity = modelEquity;
             }
@@ -160,10 +168,12 @@ namespace SectorBalanceBLL
             try
             { 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
+                {
                 mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
                                                             FROM model_equities 
                                                             WHERE id = @p1", 
                                                             new { p1 = modelequityId } );
+                }
             }
             catch (Exception ex)
             {
@@ -188,7 +198,9 @@ namespace SectorBalanceBLL
                 };
 
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
                     await db.UpdateAsync(modelEquity);
+                }
 
                 mgrResult.Entity = modelEquity;
             }
@@ -213,7 +225,9 @@ namespace SectorBalanceBLL
                 };
 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
+                {
                 mgrResult.Entity = await db.DeleteAsync(modelEquity);
+                }
 
             }
             catch(Exception ex)
