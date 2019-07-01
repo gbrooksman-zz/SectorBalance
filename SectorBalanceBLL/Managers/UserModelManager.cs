@@ -169,7 +169,7 @@ namespace SectorBalanceBLL
             { 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
                 {
-                mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
                                                             FROM model_equities 
                                                             WHERE id = @p1", 
                                                             new { p1 = modelequityId } );
@@ -226,7 +226,7 @@ namespace SectorBalanceBLL
 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
                 {
-                mgrResult.Entity = await db.DeleteAsync(modelEquity);
+                    mgrResult.Entity = await db.DeleteAsync(modelEquity);
                 }
 
             }
