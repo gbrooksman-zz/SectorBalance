@@ -45,7 +45,9 @@ namespace SectorBalanceBLL
             {
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
                 {
-                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<User>("SELECT * FROM users WHERE id = @p1", new { p1 = id });
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<User>(@"SELECT * FROM users 
+                                                                                 WHERE id = @p1", 
+                                                                                 new { p1 = id });
                 }
             }
             catch(Exception ex)
