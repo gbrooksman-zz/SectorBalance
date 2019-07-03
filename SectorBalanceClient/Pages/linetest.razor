@@ -1,0 +1,25 @@
+
+@page "/linetest"
+@inject AppStateContainer state
+@inject HttpClient httpClient
+@using SectorBalanceClient.Entities
+
+<div>
+     <LineChart EquityList = "@GetEquityList()" Width="100%" Height="100%"/>
+</div>
+
+@code
+{
+
+    protected override void OnInit()
+    {
+        
+    }
+
+    private string GetEquityList()
+    {
+        return "xlf,xle,xlk";
+    }
+
+}
+
