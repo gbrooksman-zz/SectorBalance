@@ -5,16 +5,11 @@
 @using SectorBalanceClient.Entities
 
 <div>
-     <LineChart EquityList = "@GetEquityList()" Width="100%" Height="100%"/>
+     <LineChart EquityList = "@GetEquityList()" Width="500" Height="500"/>
 </div>
 
 @code
 {
-
-    protected override void OnInit()
-    {
-        
-    }
 
     private string GetEquityList()
     {

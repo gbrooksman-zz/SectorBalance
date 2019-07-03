@@ -4,25 +4,25 @@
 
     <style type="text/css">
         .small {
-            font: 12px sans-serif;
+            font: 8px sans-serif;
         }
 
         .normal {
-            font: 16px sans-serif;
+            font: 12px sans-serif;
         }
 
     </style>
      
     <figure>
-        <svg width="@Width" height="@Height" viewBox="0 0 500 500">
-            <rect width="@Width" height="@Height" fill="white" stroke="gray" />
+        <svg width="@Width" height="@Height" viewBox="0 0 100 100">
+            <rect x = "0" y="0" width="100%" height="100%" fill="white" stroke="gray" />
 
             <title>Equity Chart Title</title>
             <desc>Equity Chart Description</desc>
 
             <!--Axis-->
-            <path d="M 0 0 L 0 500 M 0 0 L 500 0"
-                    fill="red" stroke="gray" stroke-width="0.3" />
+            <!-- <path d="M 0 0 L 0 100 M 0 0 L 100 0"
+                    fill="red" stroke="gray" stroke-width="0.3" /> -->
 
             <!--Horizontal Lines-->
 
@@ -42,32 +42,32 @@
                     fill="none" stroke="black" stroke-width="0.3" /> -->
 
             <!--Vertical Lines-->
-            <path d="M 100 0 L 100 350"
+            <!-- <path d="M 100 0 L 100 350"
                     fill="none" stroke="black" stroke-width="0.3" />
             <path d="M 200 0 L 200 350"
                     fill="none" stroke="black" stroke-width="0.3" />
             <path d="M 300 0 L 300 350"
                     fill="none" stroke="black" stroke-width="0.3" />
             <path d="M 400 0 L 400 350"
-                    fill="none" stroke="black" stroke-width="0.3" />
+                    fill="none" stroke="black" stroke-width="0.3" /> -->
 
 
             <!--Labels-->
 
-            <text class="small" x="30" y="375" fill="Black">Jan</text>
-            <text class="small" x="130" y="375" fill="Black">Feb</text>
-            <text class="small" x="230" y="375" fill="Black">Mar</text>
-            <text class="small" x="330" y="375" fill="Black">Apr</text>
-            <text class="small" x="430" y="375" fill="Black">May</text>
+            <!-- <text class="small" x="3" y="37.5" fill="Black">Jan</text>
+            <text class="small" x="13" y="37.5" fill="Black">Feb</text>
+            <text class="small" x="23" y="37.5" fill="Black">Mar</text>
+            <text class="small" x="33" y="37.5" fill="Black">Apr</text>
+            <text class="small" x="43" y="37.5" fill="Black">May</text>
 
-            <text class="small" x="0" y="300" fill="Black">10</text>
-            <text class="small" x="0" y="250" fill="Black">20</text>
-            <text class="small" x="0" y="200" fill="Black">30</text>
-            <text class="small" x="0" y="150" fill="Black">40</text>
-            <text class="small" x="0" y="100" fill="Black">50</text>
-            <text class="small" x="0" y="50" fill="Black">60</text>
+            <text class="small" x="0" y="30" fill="Black">10</text>
+            <text class="small" x="0" y="25" fill="Black">20</text>
+            <text class="small" x="0" y="20" fill="Black">30</text>
+            <text class="small" x="0" y="15" fill="Black">40</text>
+            <text class="small" x="0" y="10" fill="Black">50</text>
+            <text class="small" x="0" y="5" fill="Black">60</text>
 
-            @DrawDataElements()
+            @DrawDataElements() -->
 
         </svg>
     </figure>  
@@ -81,29 +81,50 @@
     public string Height {get; set;} = "auto";
 
     [Parameter]
-    public int HorizontalGridLineCount {get; set;} = 20;
+    public int HorizontalGridLineCount {get; set;} = 10;
 
     [Parameter]
-    public int VerticalGridLineCount {get; set;} = 20;
+    public int VerticalGridLineCount {get; set;} = 10;
 
-    RenderFragment BuidHorizontalGridLines() => builder =>
+    RenderFragment BuildHorizontalGridLines() => builder =>
     {
-        double lineGap = 500 / HorizontalGridLineCount;
-        int lineNumber = 1;
-        double aggregateHeight = 0d;
+        double lineGap = 0;
+        double aggregateHeight = 0;
 
-        for(int i = 1; i <= HorizontalGridLineCount; i++)
+        for(int i = 0; i <= HorizontalGridLineCount; i++)
         {
-            string linePath = $"M {lineGap} {aggregateHeight} L 500 {aggregateHeight}";
+            string linePath = $"M {aggregateHeight} 0 L {aggregateHeight} 100";
 
             builder.OpenElement(1,"path");
             builder.AddAttribute(2, "d", linePath);
             builder.AddAttribute(3, "fill", "none");
             builder.AddAttribute(4, "stroke","black");
-            builder.AddAttribute(5, "stroke-width", 0.5);
+            builder.AddAttribute(5, "stroke-width", 0.2);
             builder.CloseElement();
-            lineNumber++;
-            aggregateHeight += lineGap; 
+            lineGap = 100 / HorizontalGridLineCount;
+            aggregateHeight += lineGap;            
+            
+        }
+    };
+
+      RenderFragment BuildVerticalGridLines() => builder =>
+    {
+        double lineGap = 0;
+        double aggregateWidth = 0;
+
+        for(int i = 0; i <= VerticalGridLineCount; i++)
+        {
+            string linePath = $"M 0 {aggregateWidth} L 100 {aggregateWidth}";
+
+            builder.OpenElement(1,"path");
+            builder.AddAttribute(2, "d", linePath);
+            builder.AddAttribute(3, "fill", "none");
+            builder.AddAttribute(4, "stroke","black");
+            builder.AddAttribute(5, "stroke-width", 0.2);
+            builder.CloseElement();
+            lineGap = 100 / VerticalGridLineCount;
+            aggregateWidth += lineGap; 
+            
         }
     };
 
@@ -111,7 +132,9 @@
     {
         RenderFragment frag = null;
 
-        frag = BuidHorizontalGridLines();
+        frag = BuildHorizontalGridLines();
+
+        frag += BuildVerticalGridLines();
 
         return frag;
     }
@@ -161,25 +184,25 @@
             switch (equity)
             {
                 case "xlf":
-                    linePath = "M 30 250 L 130 120 L 230 150 L 330 80 L 480 200";
-                    legendPath = "M 40 10 L 80 10";
+                    linePath = "M 3 25 L 13 12 L 23 15 L 33 8 L 48 20";
+                    legendPath = "M 4 1 L 8 1";
                     legendText = equity;
-                    xCoord = 20;
-                    yCoord = 10;
+                    xCoord = 2;
+                    yCoord = 1;
                     break;
                 case "xle":
-                    linePath = "M 30 230 L 130 170 L 230 120 L 330 100 L 480 130";
-                    legendPath = "M 40 30 L 80 30";
+                    linePath = "M 3 23 L 13 17 L 23 12 L 33 10 L 48 13";
+                    legendPath = "M 4 3 L 8 3";
                     legendText = equity;
-                    xCoord = 20;
-                    yCoord = 30;
+                    xCoord = 2;
+                    yCoord = 3;
                     break;
                 case "xlk":
-                    linePath = "M 30 210 L 130 150 L 230 100 L 330 120 L 480 160";
-                    legendPath = "M 40 50 L 80 50";
+                    linePath = "M 3 21 L 13 15 L 23,10 L 33 12 L 48 16";
+                    legendPath = "M 4 5 L 8 5";
                     legendText = equity;
-                    xCoord = 20;
-                    yCoord = 50;
+                    xCoord = 2;
+                    yCoord = 5;
                     break;
             }
 
