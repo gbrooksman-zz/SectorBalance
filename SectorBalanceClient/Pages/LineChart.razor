@@ -14,130 +14,45 @@
     </style>
      
     <figure>
-        <svg width="@Width" height="@Height" viewBox="0 0 100 100">
-            <rect x = "0" y="0" width="100%" height="100%" fill="white" stroke="gray" />
 
-            <title>Equity Chart Title</title>
-            <desc>Equity Chart Description</desc>
+        <svg width="@Width" height="@Height" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid" width="@gridWidth" height="@gridHeight" patternUnits="userSpaceOnUse">
+                <rect width="@gridWidth" height="@gridHeight" fill="white"/>
+                <path d="M @gridWidth 0 L 0 0 0 @gridHeight" fill="none" stroke="gray" stroke-width="1"/>
+                </pattern>
+            </defs>
 
-            <!--Axis-->
-            <!-- <path d="M 0 0 L 0 100 M 0 0 L 100 0"
-                    fill="red" stroke="gray" stroke-width="0.3" /> -->
-
-            <!--Horizontal Lines-->
-
-            @DrawGridLines()
-
-            <!-- <path d="M 25 300 L 500 300"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 25 250 L 500 250"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 25 200 L 500 200"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 25 150 L 500 150"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 25 100 L 500 100"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 25 50 L 500 50"
-                    fill="none" stroke="black" stroke-width="0.3" /> -->
-
-            <!--Vertical Lines-->
-            <!-- <path d="M 100 0 L 100 350"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 200 0 L 200 350"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 300 0 L 300 350"
-                    fill="none" stroke="black" stroke-width="0.3" />
-            <path d="M 400 0 L 400 350"
-                    fill="none" stroke="black" stroke-width="0.3" /> -->
-
-
-            <!--Labels-->
-
-            <!-- <text class="small" x="3" y="37.5" fill="Black">Jan</text>
-            <text class="small" x="13" y="37.5" fill="Black">Feb</text>
-            <text class="small" x="23" y="37.5" fill="Black">Mar</text>
-            <text class="small" x="33" y="37.5" fill="Black">Apr</text>
-            <text class="small" x="43" y="37.5" fill="Black">May</text>
-
-            <text class="small" x="0" y="30" fill="Black">10</text>
-            <text class="small" x="0" y="25" fill="Black">20</text>
-            <text class="small" x="0" y="20" fill="Black">30</text>
-            <text class="small" x="0" y="15" fill="Black">40</text>
-            <text class="small" x="0" y="10" fill="Black">50</text>
-            <text class="small" x="0" y="5" fill="Black">60</text>
-
-            @DrawDataElements() -->
-
-        </svg>
+            <rect width="100%" height="100%" fill="url(#grid)" stroke="gray" stroke-width="1" />
+            </svg>
     </figure>  
 
 @code
 {
     [Parameter]
-    public string Width {get; set;} = "auto";
+    protected string Width {get; set;} 
 
     [Parameter]
-    public string Height {get; set;} = "auto";
+    protected string Height {get; set;}
 
     [Parameter]
-    public int HorizontalGridLineCount {get; set;} = 10;
+    protected string Title {get; set;} = "Equities";
 
     [Parameter]
-    public int VerticalGridLineCount {get; set;} = 10;
+    protected int HorizontalGridLines {get; set;} = 10;
 
-    RenderFragment BuildHorizontalGridLines() => builder =>
+    [Parameter]
+    protected int VerticalGridLines {get; set;} = 10;
+
+    protected double gridWidth = 0;
+    protected double gridHeight = 0;
+
+    protected override void OnInit()
     {
-        double lineGap = 0;
-        double aggregateHeight = 0;
-
-        for(int i = 0; i <= HorizontalGridLineCount; i++)
-        {
-            string linePath = $"M {aggregateHeight} 0 L {aggregateHeight} 100";
-
-            builder.OpenElement(1,"path");
-            builder.AddAttribute(2, "d", linePath);
-            builder.AddAttribute(3, "fill", "none");
-            builder.AddAttribute(4, "stroke","black");
-            builder.AddAttribute(5, "stroke-width", 0.2);
-            builder.CloseElement();
-            lineGap = 100 / HorizontalGridLineCount;
-            aggregateHeight += lineGap;            
-            
-        }
-    };
-
-      RenderFragment BuildVerticalGridLines() => builder =>
-    {
-        double lineGap = 0;
-        double aggregateWidth = 0;
-
-        for(int i = 0; i <= VerticalGridLineCount; i++)
-        {
-            string linePath = $"M 0 {aggregateWidth} L 100 {aggregateWidth}";
-
-            builder.OpenElement(1,"path");
-            builder.AddAttribute(2, "d", linePath);
-            builder.AddAttribute(3, "fill", "none");
-            builder.AddAttribute(4, "stroke","black");
-            builder.AddAttribute(5, "stroke-width", 0.2);
-            builder.CloseElement();
-            lineGap = 100 / VerticalGridLineCount;
-            aggregateWidth += lineGap; 
-            
-        }
-    };
-
-    private RenderFragment DrawGridLines()
-    {
-        RenderFragment frag = null;
-
-        frag = BuildHorizontalGridLines();
-
-        frag += BuildVerticalGridLines();
-
-        return frag;
+        gridWidth = double.Parse(Width) / (double) HorizontalGridLines;
+        gridHeight = double.Parse(Height) / (double) VerticalGridLines;
     }
+   
 
     RenderFragment BuildLines(string linePath, int colorValue) => builder =>
     {

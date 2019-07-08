@@ -5,7 +5,12 @@
 @using SectorBalanceClient.Entities
 
 <div>
-     <LineChart EquityList = "@GetEquityList()" Width="500" Height="500"/>
+     <LineChart EquityList = "@GetEquityList()" 
+        Width="700" 
+        Height="400" 
+        Title="Our Stocks" 
+        HorizontalGridLineCount="15"
+        VerticalGridLineCount="15"/>
 </div>
 
 @code
