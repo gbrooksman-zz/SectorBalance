@@ -1,11 +1,11 @@
 ﻿@page "/"
 @inject AppStateContainer state
 @inject HttpClient httpClient
-@using SectorBalanceShared
+@layout MainLayout
 
-<h1>Welcome to The Sector Model Guide.</h1>
+Welcome to The Sector Model Guide.
 
-@functions
+@code
 {
     protected override void OnInit()
     {

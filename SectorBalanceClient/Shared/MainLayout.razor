@@ -1,11 +1,26 @@
+@using SectorBalanceClient.Shared.Menu
 @inherits LayoutComponentBase
 
-<div class="sidebar">
-    <NavMenu />
-</div>
 
-<div class="main">
-    <div class="content px-4">
-        @Body
+    <div class='row' style="width:100%;margin:10px;">
+        <header class='row' style="width:100%;margin:10px;">
+            <AppMenu MenuBuilder="@menuBuilder" />
+        </header>
+
+        <div class='row' style="width:100%;margin:10px;">
+            @Body
+        </div>
+
     </div>
-</div>
+
+@code
+{
+            MenuBuilder menuBuilder = new MenuBuilder();
+
+            protected override void OnInit()
+            {
+                menuBuilder.AddItem(1, "Home", "/")
+                           .AddItem(2, "Pie Test", "pietest")
+                           .AddItem(3, "Line Test", "linetest");
+            }
+        }
