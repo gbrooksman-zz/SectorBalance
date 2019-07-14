@@ -17,11 +17,15 @@ namespace SectorBalanceAPI.Controllers
     {
         private readonly QuoteManager qMgr;
         private readonly EquityManager eMgr;
+        private readonly EquityGroupManager egMgr;
+        private readonly UserModelManager umMgr;
 
         public QuoteController(IMemoryCache _cache, IConfiguration _config)
         {
             qMgr = new QuoteManager(_cache, _config);
             eMgr = new EquityManager(_cache, _config);
+            egMgr = new EquityGroupManager(_cache, _config);
+            umMgr = new UserModelManager(_cache, _config);
         }
 
         [HttpGet]
@@ -55,9 +59,8 @@ namespace SectorBalanceAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Quote>> GetDate(string symbol, DateTime date)
         {
-            ManagerResult<Quote> mrQuoteList = new ManagerResult<Quote>();
             ManagerResult<Equity> mrEquity = await eMgr.GetBySymbol(symbol);
-
+            ManagerResult<Quote> mrQuoteList;
             if (!mrEquity.Success)
             {
                 return BadRequest(mrEquity);
@@ -75,18 +78,49 @@ namespace SectorBalanceAPI.Controllers
         }
 
         [HttpGet]
+        [Route("GetCoreByDate")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<ModelEquity>>> GetCoreByDatet(Guid coreGuid, DateTime date)
+        {
+            ManagerResult<List<ModelEquity>> mrME = await umMgr.GetCoreByDate(coreGuid, date);
+            if (!mrME.Success)
+            {
+                return BadRequest(mrME);
+            }
+           
+            return Ok(mrME.Entity);
+        }
+
+        [HttpGet]
         [Route("GetLast")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Quote>> GetLast(Guid equityid)
         {
-            ManagerResult<Quote> mrQuoteList = new ManagerResult<Quote>();
-            mrQuoteList = await qMgr.GetLast(equityid);
+            ManagerResult<Quote> mrQuoteList = await qMgr.GetLast(equityid);
             if (!mrQuoteList.Success)
             {
                 return BadRequest(mrQuoteList);            
             }
             return Ok(mrQuoteList.Entity);
         }
+
+        [HttpGet]
+        [Route("GetLastQuoteDate")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<DateTime>> GetLastQuoteDate()
+        {
+            ManagerResult<DateTime> mrLastQuoteDate = await qMgr.GetLastQuoteDate();
+            if (!mrLastQuoteDate.Success)
+            {
+                return BadRequest(mrLastQuoteDate);
+            }
+            return Ok(mrLastQuoteDate.Entity);
+        }
+
+
+
     }
 }

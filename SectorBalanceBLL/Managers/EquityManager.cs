@@ -120,6 +120,8 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        #region CRUD
+
         public async Task<ManagerResult<Equity>> Save(Equity equity)
         {
             ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
@@ -188,6 +190,9 @@ namespace SectorBalanceBLL
 
             return mgrResult;
         }
+
+        #endregion
+
     }
 
 }

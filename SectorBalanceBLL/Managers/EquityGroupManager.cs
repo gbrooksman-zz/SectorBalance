@@ -68,6 +68,7 @@ namespace SectorBalanceBLL
             });
         }
 
+        #region CRUD
 
         public async Task<ManagerResult<EquityGroup>> Save(EquityGroup equityGroup)
         {
@@ -99,7 +100,9 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-   #region equity group items
+        #endregion
+
+        #region equity group items
 
         public async Task<ManagerResult<List<EquityGroupItem>>> GetGroupItemsList(Guid equityGroupId)
         {
@@ -130,6 +133,37 @@ namespace SectorBalanceBLL
         }
 
         public async Task<ManagerResult<List<EquityGroupItem>>> GetGroupItemsEquityList(Guid equityGroupId)
+        {
+            ManagerResult<List<EquityGroupItem>> mgrResult = new ManagerResult<List<EquityGroupItem>>();
+            List<EquityGroupItem> equityGroupItems = new List<EquityGroupItem>();
+
+            try
+            {
+                equityGroupItems = await cache.GetOrCreateAsync<List<EquityGroupItem>>($"EQUITY-ITEMS-{equityGroupId}", entry =>
+                {
+                    string sql = @" SELECT e.* 
+                                    FROM equities e, equity_group_items i, equity_groups g
+                                    WHERE e.id = i.equity_id 
+                                    AND i.group_id = g.id
+                                    AND g.id = @p1";
+
+                    using NpgsqlConnection db = new NpgsqlConnection(connString);
+                    {
+                        return Task.FromResult(db.Query<EquityGroupItem>(sql, new { p1 = equityGroupId }).ToList());
+                    }
+                });
+
+                mgrResult.Entity = equityGroupItems;
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
+        public async Task<ManagerResult<List<EquityGroupItem>>> GetGroupEquities(Guid equityGroupId)
         {
             ManagerResult<List<EquityGroupItem>> mgrResult = new ManagerResult<List<EquityGroupItem>>();
             List<EquityGroupItem> equityGroupItems = new List<EquityGroupItem>();
@@ -182,6 +216,8 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        #region CRUD
+
         public async Task<ManagerResult<EquityGroupItem>> AddEquity(EquityGroup equityGroup, Guid equityId)
         {
             ManagerResult<EquityGroupItem> mgrResult = new ManagerResult<EquityGroupItem>();
@@ -229,6 +265,7 @@ namespace SectorBalanceBLL
 
             return mgrResult;
         }
+        #endregion
 
         #endregion
     }

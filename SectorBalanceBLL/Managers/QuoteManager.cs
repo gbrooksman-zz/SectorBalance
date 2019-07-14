@@ -9,38 +9,59 @@ using System.Linq;
 using Dapper.FastCrud;
 using Serilog;
 using System.Threading.Tasks;
+using SectorBalanceShared.Entities;
 
 namespace SectorBalanceBLL
 {
     //a quote is the price of an equity on a given day
     public class QuoteManager : BaseManager
     {
-        readonly EquityManager eqMgr;
-        readonly EquityGroupManager eqGroupMgr;
+        private readonly EquityManager eqMgr;
+        private readonly EquityGroupManager eqGroupMgr;
+       // private readonly QuoteManager qMgr;
 
         public QuoteManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
             eqMgr = new EquityManager(_cache, _config);
             eqGroupMgr = new EquityGroupManager(_cache, _config);
+          //  qMgr = new QuoteManager(_cache, _config);
         }
 
-        public async Task<ManagerResult<List<Quote>>> GetEquityGroupQuoteList(EquityGroup equityGroup, DateTime startdate, DateTime stopdate)
-        {
-            ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
-            
-            using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
-            {
-                var mgrGroupItemsResult = await eqGroupMgr.GetGroupItemsList(equityGroup.Id);
+        //public async Task<ManagerResult<List<ModelEquity>>> GetEquityGroupQuoteList(EquityGroup equityGroup, DateTime startdate, DateTime stopdate)
+        //{
+        //    ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
+                       
+        //    var mgrGroupItemsResult = await eqGroupMgr.GetGroupItemsList(equityGroup.Id);
 
-                foreach (EquityGroupItem equity in mgrGroupItemsResult.Entity)
-                {
-                    mgrResult.Entity.AddRange(
-                        GetByEquityIdAndDateRange(equity.Id, startdate, stopdate).Result.Entity);
-                }
-            }
+        //    foreach (EquityGroupItem equity in mgrGroupItemsResult.Entity)
+        //    {
+        //        mgrResult.Entity.AddRange(
+        //            GetByEquityIdAndDateRange(equity.Id, startdate, stopdate).Result.Entity);
+        //    }
 
-            return mgrResult;
-        }
+        //    return mgrResult;
+        //}
+
+        //public async Task<ManagerResult<List<PricedEquity>>> GetEquityGroupQuoteList(Guid equityGroupId, DateTime quoteDate)
+        //{
+        //    ManagerResult<List<PricedEquity>> mgrResult = new ManagerResult<List<PricedEquity>>();
+
+        //    List<PricedEquity> equityQuotes = new List<PricedEquity>();
+
+        //    using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
+        //    {
+        //        var mgrGroupItemsResult = await eqGroupMgr.GetGroupItemsList(equityGroupId);
+
+        //        foreach (EquityGroupItem equity in mgrGroupItemsResult.Entity)
+        //        {
+        //            equityQuotes.Add(new PricedEquity { Equity = equity,
+        //                Quote = qMgr.GetByEquityIdAndDate(equity.Id, quoteDate).Result.Entity });
+
+        //        }
+        //    }
+
+        //    return mgrResult;
+        //}
 
         public async Task<ManagerResult<List<Quote>>> GetByEquityIdAndDateRange(Guid equityId, DateTime startdate, DateTime stopdate)
         {
@@ -63,6 +84,23 @@ namespace SectorBalanceBLL
 
             return mgrResult;
         }
+
+        public async Task<ManagerResult<DateTime>> GetLastQuoteDate()
+        {
+            ManagerResult<DateTime> mgrResult = new ManagerResult<DateTime>();
+
+            mgrResult.Entity = await cache.GetOrCreateAsync<DateTime>(CacheKeys.LAST_QUOTE_DATE, entry =>
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    return Task.FromResult(db.QueryFirstOrDefault<DateTime>
+                                                    (@"SELECT MAX(date) FROM quotes "));
+                }
+            });
+
+            return mgrResult;
+        }
+
         private async Task<List<Quote>> GetByEquityId(Guid equityId)
         {
             return await cache.GetOrCreateAsync<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
@@ -84,19 +122,57 @@ namespace SectorBalanceBLL
         {
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
+            DateTime tradeDate = GetNearestQuoteDate(date);
+
             using (NpgsqlConnection db = new NpgsqlConnection(connString))
             {
                 mgrResult.Entity = await db.QueryFirstOrDefaultAsync<Quote>(@"  SELECT * 
                                                                                 FROM quotes 
                                                                                 WHERE equity_id = @p1 
                                                                                 AND date = @p2",
-                                                                                new { p1 = equityId, p2 = date });
+                                                                                new { p1 = equityId, p2 = tradeDate});
             }
 
             return mgrResult;
         }
 
-       public async Task<ManagerResult<Quote>> Add(Quote quote)
+
+        public DateTime GetNearestQuoteDate(DateTime inDate)
+        {
+            DateTime nearestDate = new DateTime();
+            DateTime lookDate = inDate;
+
+            List<DateTime> tradeDates = cache.GetOrCreate<List<DateTime>>(CacheKeys.TRADING_DATES, entry =>
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    return db.Query<DateTime>(@"SELECT DISTINCT(date) FROM quotes ORDER BY 1 DESC").ToList();
+                }
+            });
+
+            bool foundIt = false;
+
+            while (!foundIt)
+            {
+                if (tradeDates.Where(d => d.ToShortDateString() == lookDate.ToShortDateString()).Any())
+                {
+                    nearestDate = lookDate;
+                    foundIt = true;
+                }
+                else
+                {
+                    lookDate = lookDate.AddDays(-1);
+                }
+            }
+
+            return nearestDate.Date;
+        }
+
+
+
+        #region crud
+
+        public async Task<ManagerResult<Quote>> Add(Quote quote)
         {    
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
@@ -143,5 +219,7 @@ namespace SectorBalanceBLL
              
             return mgrResult;
         }
+
+        #endregion
     }
 }

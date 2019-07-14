@@ -4,44 +4,71 @@
 @using SectorBalanceClient
 @using SectorBalanceShared
 
+    <div>
+        <div class="row">
+            <DataGrid Items="@pricedEquityList" TItem="ModelEquity">
+                <HeaderTemplate>
+                    <th>Symbol</th>
+                    <th>Name</th>
+                    <th>Last Price</th>
+                </HeaderTemplate>
+                <RowTemplate>
+                    <td>@context.Equity.Symbol</td>
+                    <td>@context.Equity.SymbolName</td>
+                    <td>@context.LastPrice</td>
+                </RowTemplate>
+                <FooterTemplate>
+                    <td>
+                        @context.Count equities found.
+                    </td>
+                    <td>
+                        Prices as of: @state.LastQuoteDate.ToShortDateString()
+                    </td>   
+                </FooterTemplate>
+            </DataGrid>
+        </div>
+        <div class="row">
+            
+        </div>
+    </div>
 
-<table>
-    <th>ETF Name</th>
-    <th>Symbol</th>
-    <tr>
-        <td>Materials Select Sector SPDR Fund</td>
-        <td>XLB</td>
-    </tr>
-    <tr>
-        <td>Communication Services Select Sector SPDR Fund</td>
-        <td>XLC</td>
-    </tr>
-    <tr>
-        <td>Energy Select Sector SPDR Fund</td>
-        <td>XLE</td>
-    </tr>
-    <tr>
-        <td>Financial Select Sector SPDR Fund</td>
-        <td>XLF</td>
-    </tr>
-    <tr>
-        <td>Industrial Select Sector SPDR Fund</td>
-        <td>XLI</td>
-    </tr>
-    <tr>
-        <td>Technology Select Sector SPDR Fund</td>
-        <td>XLK</td>
-    </tr>
-    <tr>
-        <td>Consumer Staples Select Sector SPDR Fund</td>
-        <td>XLP</td>        
-    </tr>
-    <tr>
-        <td>The Real Estate Select Sector SPDR Fund</td>
-        <td>XLRE</td>
-    </tr>
-    <tr>
-        <td>Utilities Select Sector SPDR Fund</td>
-        <td>XLU</td>
-    </tr>
-</table>
+
+@code
+{
+
+
+private List<ModelEquity> pricedEquityList = new List<ModelEquity>();
+
+
+protected override async Task OnInitAsync()
+{
+    await ListEquities();
+}
+
+private async Task ListEquities()
+{
+    var response = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getcorebydate?coreGuid={state.CoreModelId}&date={DateTime.Now}");
+
+    pricedEquityList = response.ToList();
+
+    state.ModelEquityList = pricedEquityList;
+
+}
+
+private async Task<PricedEquity> GetLastQuote(Guid equityid)
+{
+    var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
+    PricedEquity pe = new PricedEquity();
+    pe.LastPrice = response.Price;
+    pe.LastPriceDate = response.Date;
+    return pe;
+}
+
+internal class PricedEquity : Equity
+{
+    internal decimal LastPrice { get; set; }
+    internal DateTime LastPriceDate { get; set; }
+}
+
+
+}

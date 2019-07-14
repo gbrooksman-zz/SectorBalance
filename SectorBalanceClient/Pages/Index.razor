@@ -2,30 +2,36 @@
 @inject AppStateContainer state
 @inject HttpClient httpClient
 @layout MainLayout
-
-Welcome to The Sector Model Guide. This site focuses on constructing an investment portfolio 
-using nine ETF Sector Funds managed by State Street Global Advisors. 
+Welcome to The Sector Model Guide. This site focuses on constructing an investment portfolio
+using nine ETF Sector Funds managed by State Street Global Advisors.
 This site is in no way affiliated with State Street Global Advisors and does not offer investment advice.
 This site is intended to describe the investment approach taken by the site authors and will in a future update
 allow readers to construct their own sector models as well as compare sector funds in various ways. Stay tuned.
 
-The nine ETF sector funds that are the focus of this modeling process 
+The nine ETF sector funds that are the focus of this modeling process
 can be found by clicking the "ETF List" button above.
 
-<br/>
+<br />
 
 <h3>Developing the Core Model</h3>
 
-The Core Model is made up of four or more of the nine available ETFs. 
+The Core Model is made up of four or more of the nine available ETFs.
 The selection of the particular sector and their relative weight in the overall modeling
 is based on historical price movements of all nine of the ETFs, macroeconomic factors and analysis
 of other factors.
+
+<a href="https://iexcloud.io">Data provided by IEX Cloud</a>
+<br />
+User: @state.UserName
+<br />
+Last Quote Update Date: @state.LastQuoteDate.ToShortDateString()
 
 
 
 @code
 {
-    protected override void OnInit()
+
+    protected override async Task OnInitAsync()
     {
         // stuff for testing - replace with a settings file
 
@@ -38,7 +44,10 @@ of other factors.
         state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");          //copied from db
 
         state.CoreModelId = Guid.Parse("e81de052-9091-11e9-a901-0aefc68022c6");     //copied from db
+
+        state.LastQuoteDate = await httpClient.GetJsonAsync<DateTime>($"{state.APIUrl}/api/quote/getlastquotedate");
     }
+
 
     //protected async Task<List<Equity>> GetEquities()
     //{

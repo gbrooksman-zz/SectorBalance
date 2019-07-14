@@ -28,5 +28,9 @@ namespace SectorBalanceShared
         [NotMapped]
         public decimal LastPrice { get; set; }
 
+        [NotMapped]
+        public DateTime LastPriceDate { get; set; }
+
+
     }
 }

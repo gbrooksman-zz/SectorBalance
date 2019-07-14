@@ -77,6 +77,42 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        public async Task<ManagerResult<List<ModelEquity>>> GetCoreByDate(Guid guid, DateTime quoteDate)
+        {
+            ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
+
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    List<ModelEquity> modelEquityList = db.QueryAsync<ModelEquity>(@" SELECT * 
+                                                    FROM model_equities 
+                                                    WHERE model_id = @p1",
+                                                    new { p1 = guid }).Result.ToList();
+
+                    foreach (ModelEquity modelEquity in modelEquityList)
+                    {
+                        modelEquity.Equity = eqMgr.Get(modelEquity.EquityID).Result.Entity;
+                       // Quote quote = qMgr.GetLast(modelEquity.EquityID).Result.Entity;
+                        Quote quote = qMgr.GetByEquityIdAndDate(modelEquity.EquityID, quoteDate).Result.Entity;
+                        if (quote != null)
+                        {
+                            modelEquity.LastPrice = quote.Price;
+                            modelEquity.LastPriceDate = quoteDate;
+                        }
+                    }
+
+                    mgrResult.Entity = modelEquityList;
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
         public async Task<ManagerResult<UserModel>> Save(UserModel userModel)
         {
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
@@ -105,9 +141,31 @@ namespace SectorBalanceBLL
             } 
 
             return mgrResult;
-        }     
+        }
 
         #region model equities
+
+        public async Task<ManagerResult<ModelEquity>> Get(Guid modelequityId)
+        {
+            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
+
+            try
+            {
+                using NpgsqlConnection db = new NpgsqlConnection(connString);
+                {
+                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
+                                                            FROM model_equities 
+                                                            WHERE id = @p1",
+                                                            new { p1 = modelequityId });
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
 
         public async Task<ManagerResult<List<ModelEquity>>> GetEquityList(UserModel userModel)
 
@@ -130,7 +188,9 @@ namespace SectorBalanceBLL
             } 
 
             return mgrResult;
-        }      
+        }
+
+        #region CRUD
 
         public async Task<ManagerResult<ModelEquity>> AddEquity(Guid userModelId, Guid equityId, int percent)
         {
@@ -158,30 +218,7 @@ namespace SectorBalanceBLL
             } 
 
             return mgrResult;
-        }
-
-
-        public async Task<ManagerResult<ModelEquity>> Get(Guid modelequityId)
-        {
-            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
-
-            try
-            { 
-                using NpgsqlConnection db = new NpgsqlConnection(connString);
-                {
-                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
-                                                            FROM model_equities 
-                                                            WHERE id = @p1", 
-                                                            new { p1 = modelequityId } );
-                }
-            }
-            catch (Exception ex)
-            {
-                mgrResult.Exception = ex;
-            }
-
-            return mgrResult;
-        }
+        }      
 
         public async Task<ManagerResult<ModelEquity>> Update(Guid modelequityId, Guid userModelId, Guid equityId, int percent)
         {
@@ -241,5 +278,7 @@ namespace SectorBalanceBLL
         }
 
         #endregion
+
+    #endregion
     }
 }
