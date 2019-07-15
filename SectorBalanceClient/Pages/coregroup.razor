@@ -22,49 +22,83 @@
     }
 </style>
 
-<div class="row">
-    <div class="column">
-        <DataGrid Items="@modelEquityList" TItem="ModelEquity">
-            <HeaderTemplate>
-                <th>Symbol</th>
-                <th>Name</th>
-                <th>Percent</th>
-                <th>Last Price</th>
-            </HeaderTemplate>
-            <RowTemplate>
-                <td>@context.Equity.Symbol</td>
-                <td>@context.Equity.SymbolName</td>
-                <td>@context.Percent</td>
-                <td>@context.LastPrice</td>
-            </RowTemplate>
-            <FooterTemplate>
-                <td colspan="2">
-                    @context.Count equities found. 
-                </td>
-            </FooterTemplate>
-        </DataGrid>
-
+<div>
+    <div class="row">
+        <div class="col-6">
+            <h4>Current Core Model</h4>
+        </div>
+        <div class="col-6" style="text-align:right;">
+            <span>Effective Date:@model.StartDate.ToShortDateString()</span>
+        </div>
     </div>
-    <div class="column">
-        <LineChart EquityList="@GetEquityList()" />
+
+    <div class="row">
+        <div class="column">
+            <DataGrid Items="@modelEquityList" TItem="ModelEquity">
+                <HeaderTemplate>
+                    <th>Symbol</th>
+                    <th>Name</th>
+                    <th>Percent</th>
+                    <th>Last Price</th>
+                    <th>Cost</th>
+                    <th>Current Value</th>
+                    <th>Gain/Loss</th>
+                </HeaderTemplate>
+                <RowTemplate>
+                    <td>@context.Equity.Symbol</td>
+                    <td>@context.Equity.SymbolName</td>
+                    <td>@Math.Round(context.Percent, 0)</td>
+                    <td>@context.LastPrice</td>
+                    <td>@context.Cost</td>
+                    <td>@context.CurrentValue</td>
+                    <td>@CalcGainLoss(context.CurrentValue, context.Cost) </td>
+                    
+                </RowTemplate>
+                <FooterTemplate>
+                    <td colspan="4">
+                        Equities in Model: @context.Count
+                    </td>
+                    <td>
+                        Total Cost: @totalCost
+                    </td>
+                    <td>
+                        Current Value: @totalValue
+                    </td>
+                    <td>
+                        Overall: @CalcGainLoss(totalValue,totalCost)
+                    </td>
+                </FooterTemplate>
+            </DataGrid>
+        </div>       
     </div>
 </div>
 
 @code
 {
 
-    private List<ModelEquity> modelEquityList = new List<ModelEquity>();
+private decimal totalValue = 0;
+private decimal totalCost = 0;
 
-    private string GetEquityList()
-    {
-        return "xlf,xle,xlk";
-    }
+private List<ModelEquity> modelEquityList = new List<ModelEquity>();
+private UserModel model = new UserModel();
 
-    protected override async Task OnInitAsync()
-    {
-        var response = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/model/getcore");
-   
-        modelEquityList = response.ToList();    
-    }
+private decimal CalcGainLoss(decimal current, decimal cost)
+{
+    return current - cost;
+}
+
+
+protected override async Task OnInitAsync()
+{
+
+    model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.CoreModelId}");
     
+    modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&date={DateTime.Now.Date}");
+
+   // modelEquityList = modelEquities.ToList();
+
+    totalValue =  modelEquityList.Sum(q => q.CurrentValue);
+    totalCost =  modelEquityList.Sum(q => q.Cost);
+}
+
 }

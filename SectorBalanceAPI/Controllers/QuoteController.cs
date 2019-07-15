@@ -78,12 +78,12 @@ namespace SectorBalanceAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetCoreByDate")]
+        [Route("GetModelByDate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ModelEquity>>> GetCoreByDatet(Guid coreGuid, DateTime date)
+        public async Task<ActionResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime date)
         {
-            ManagerResult<List<ModelEquity>> mrME = await umMgr.GetCoreByDate(coreGuid, date);
+            ManagerResult<List<ModelEquity>> mrME = await umMgr.GetModelByDate(modelId, date);
             if (!mrME.Success)
             {
                 return BadRequest(mrME);

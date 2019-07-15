@@ -31,27 +31,29 @@ Last Quote Update Date: @state.LastQuoteDate.ToShortDateString()
 @code
 {
 
-    protected override async Task OnInitAsync()
-    {
-        // stuff for testing - replace with a settings file
+protected override async Task OnInitAsync()
+{
+    // stuff for testing - replace with a settings file
 
-        state.APIUrl = "http://localhost:5000";
+    state.APIUrl = "http://localhost:5000";
 
-        state.APIKey = "A8F12BB0-535A-4117-BA0B-E5722DC50367";
+    state.APIKey = "A8F12BB0-535A-4117-BA0B-E5722DC50367";
 
-        state.UserName = "geoffb";
+    state.UserName = "geoffb";
 
-        state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");          //copied from db
+    state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");          //copied from db
 
-        state.CoreModelId = Guid.Parse("e81de052-9091-11e9-a901-0aefc68022c6");     //copied from db
+    state.CoreModelId = Guid.Parse("e81de052-9091-11e9-a901-0aefc68022c6");     //copied from db
 
-        state.LastQuoteDate = await httpClient.GetJsonAsync<DateTime>($"{state.APIUrl}/api/quote/getlastquotedate");
-    }
+    state.SPDRModelID = Guid.Parse("dd28331a-a689-11e9-9557-0aefc68022c6");
+
+    state.LastQuoteDate = await httpClient.GetJsonAsync<DateTime>($"{state.APIUrl}/api/quote/getlastquotedate");
+}
 
 
-    //protected async Task<List<Equity>> GetEquities()
-    //{
-    //    var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
-    //    return response.ToList();
-    //}
+//protected async Task<List<Equity>> GetEquities()
+//{
+//    var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
+//    return response.ToList();
+//}
 }

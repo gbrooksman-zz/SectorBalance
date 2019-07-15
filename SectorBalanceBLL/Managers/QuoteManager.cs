@@ -18,51 +18,13 @@ namespace SectorBalanceBLL
     {
         private readonly EquityManager eqMgr;
         private readonly EquityGroupManager eqGroupMgr;
-       // private readonly QuoteManager qMgr;
 
         public QuoteManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
             eqMgr = new EquityManager(_cache, _config);
-            eqGroupMgr = new EquityGroupManager(_cache, _config);
-          //  qMgr = new QuoteManager(_cache, _config);
+            eqGroupMgr = new EquityGroupManager(_cache, _config);         
         }
-
-        //public async Task<ManagerResult<List<ModelEquity>>> GetEquityGroupQuoteList(EquityGroup equityGroup, DateTime startdate, DateTime stopdate)
-        //{
-        //    ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
-                       
-        //    var mgrGroupItemsResult = await eqGroupMgr.GetGroupItemsList(equityGroup.Id);
-
-        //    foreach (EquityGroupItem equity in mgrGroupItemsResult.Entity)
-        //    {
-        //        mgrResult.Entity.AddRange(
-        //            GetByEquityIdAndDateRange(equity.Id, startdate, stopdate).Result.Entity);
-        //    }
-
-        //    return mgrResult;
-        //}
-
-        //public async Task<ManagerResult<List<PricedEquity>>> GetEquityGroupQuoteList(Guid equityGroupId, DateTime quoteDate)
-        //{
-        //    ManagerResult<List<PricedEquity>> mgrResult = new ManagerResult<List<PricedEquity>>();
-
-        //    List<PricedEquity> equityQuotes = new List<PricedEquity>();
-
-        //    using (NpgsqlConnection db = new NpgsqlConnection(base.connString))
-        //    {
-        //        var mgrGroupItemsResult = await eqGroupMgr.GetGroupItemsList(equityGroupId);
-
-        //        foreach (EquityGroupItem equity in mgrGroupItemsResult.Entity)
-        //        {
-        //            equityQuotes.Add(new PricedEquity { Equity = equity,
-        //                Quote = qMgr.GetByEquityIdAndDate(equity.Id, quoteDate).Result.Entity });
-
-        //        }
-        //    }
-
-        //    return mgrResult;
-        //}
-
+      
         public async Task<ManagerResult<List<Quote>>> GetByEquityIdAndDateRange(Guid equityId, DateTime startdate, DateTime stopdate)
         {
             ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
@@ -73,7 +35,6 @@ namespace SectorBalanceBLL
 
             return mgrResult;
         }
-
 
         public async Task<ManagerResult<Quote>> GetLast(Guid equityid)
         {
@@ -130,14 +91,14 @@ namespace SectorBalanceBLL
                                                                                 FROM quotes 
                                                                                 WHERE equity_id = @p1 
                                                                                 AND date = @p2",
-                                                                                new { p1 = equityId, p2 = tradeDate});
+                                                                                new { p1 = equityId, p2 = tradeDate.Date});
             }
 
             return mgrResult;
         }
 
 
-        public DateTime GetNearestQuoteDate(DateTime inDate)
+        internal DateTime GetNearestQuoteDate(DateTime inDate)
         {
             DateTime nearestDate = new DateTime();
             DateTime lookDate = inDate;
@@ -167,8 +128,7 @@ namespace SectorBalanceBLL
 
             return nearestDate.Date;
         }
-
-
+        
 
         #region crud
 

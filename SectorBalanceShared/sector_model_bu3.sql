@@ -3,9 +3,9 @@
 --
 
 -- Dumped from database version 11.2
--- Dumped by pg_dump version 11.2
+-- Dumped by pg_dump version 11.3
 
--- Started on 2019-05-27 17:39:16
+-- Started on 2019-07-14 21:56:48
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -14,6 +14,7 @@ SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
+SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
@@ -26,7 +27,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 
 
 --
--- TOC entry 3907 (class 0 OID 0)
+-- TOC entry 3903 (class 0 OID 0)
 -- Dependencies: 2
 -- Name: EXTENSION "uuid-ossp"; Type: COMMENT; Schema: -; Owner: 
 --
@@ -114,7 +115,10 @@ CREATE TABLE public.model_equities (
     updated_at timestamp(6) with time zone DEFAULT now() NOT NULL,
     created_at timestamp(6) with time zone DEFAULT now() NOT NULL,
     id uuid DEFAULT public.uuid_generate_v1() NOT NULL,
-    equity_id uuid NOT NULL
+    equity_id uuid NOT NULL,
+    cost money,
+    shares double precision,
+    version integer NOT NULL
 );
 
 
@@ -167,11 +171,12 @@ CREATE TABLE public.user_models (
     created_at timestamp(6) with time zone DEFAULT now() NOT NULL,
     updated_at timestamp(6) with time zone DEFAULT now() NOT NULL,
     active boolean DEFAULT true NOT NULL,
-    start_date date NOT NULL,
-    stop_date date NOT NULL,
-    start_value money NOT NULL,
-    stop_value money NOT NULL,
-    public boolean DEFAULT true NOT NULL
+    start_date date,
+    stop_date date,
+    start_value money,
+    stop_value money,
+    is_private boolean DEFAULT true NOT NULL,
+    version integer NOT NULL
 );
 
 
@@ -195,7 +200,7 @@ CREATE TABLE public.users (
 ALTER TABLE public.users OWNER TO gbrooksman;
 
 --
--- TOC entry 3760 (class 2606 OID 16540)
+-- TOC entry 3756 (class 2606 OID 16540)
 -- Name: equities equities_pkey; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
@@ -204,7 +209,7 @@ ALTER TABLE ONLY public.equities
 
 
 --
--- TOC entry 3766 (class 2606 OID 16473)
+-- TOC entry 3762 (class 2606 OID 16473)
 -- Name: equity_group_items equity_group_items_pkey; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
@@ -213,7 +218,7 @@ ALTER TABLE ONLY public.equity_group_items
 
 
 --
--- TOC entry 3762 (class 2606 OID 16465)
+-- TOC entry 3758 (class 2606 OID 16465)
 -- Name: equity_groups equity_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
@@ -222,7 +227,7 @@ ALTER TABLE ONLY public.equity_groups
 
 
 --
--- TOC entry 3764 (class 2606 OID 16496)
+-- TOC entry 3760 (class 2606 OID 16496)
 -- Name: equity_groups ix_equity_grouips_name; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
@@ -231,21 +236,12 @@ ALTER TABLE ONLY public.equity_groups
 
 
 --
--- TOC entry 3768 (class 2606 OID 16494)
+-- TOC entry 3764 (class 2606 OID 16494)
 -- Name: equity_group_items ix_group_equity_id; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
 ALTER TABLE ONLY public.equity_group_items
     ADD CONSTRAINT ix_group_equity_id UNIQUE (group_id, equity_id);
-
-
---
--- TOC entry 3756 (class 2606 OID 16498)
--- Name: model_equities ix_model_equities_model_equity; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
---
-
-ALTER TABLE ONLY public.model_equities
-    ADD CONSTRAINT ix_model_equities_model_equity UNIQUE (model_id, equity_id);
 
 
 --
@@ -258,21 +254,12 @@ ALTER TABLE ONLY public.users
 
 
 --
--- TOC entry 3752 (class 2606 OID 16524)
--- Name: user_models ix_user_models_user_id_name; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
---
-
-ALTER TABLE ONLY public.user_models
-    ADD CONSTRAINT ix_user_models_user_id_name UNIQUE (user_id, name);
-
-
---
--- TOC entry 3758 (class 2606 OID 16480)
+-- TOC entry 3754 (class 2606 OID 16615)
 -- Name: model_equities model_equities_pkey; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
 ALTER TABLE ONLY public.model_equities
-    ADD CONSTRAINT model_equities_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT model_equities_pkey PRIMARY KEY (id, version);
 
 
 --
@@ -285,7 +272,7 @@ ALTER TABLE ONLY public.quotes
 
 
 --
--- TOC entry 3770 (class 2606 OID 16535)
+-- TOC entry 3766 (class 2606 OID 16535)
 -- Name: user_model_comments user_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
@@ -294,12 +281,12 @@ ALTER TABLE ONLY public.user_model_comments
 
 
 --
--- TOC entry 3754 (class 2606 OID 16428)
+-- TOC entry 3752 (class 2606 OID 16619)
 -- Name: user_models user_models_pkey; Type: CONSTRAINT; Schema: public; Owner: gbrooksman
 --
 
 ALTER TABLE ONLY public.user_models
-    ADD CONSTRAINT user_models_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT user_models_pkey PRIMARY KEY (id, version);
 
 
 --
@@ -328,7 +315,7 @@ CREATE INDEX ix_quotes_equity_id_date ON public.quotes USING btree (equity_id, d
 
 
 --
--- TOC entry 3775 (class 2620 OID 16459)
+-- TOC entry 3771 (class 2620 OID 16459)
 -- Name: equities update_equities_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -336,7 +323,7 @@ CREATE TRIGGER update_equities_updated_at BEFORE UPDATE ON public.equities FOR E
 
 
 --
--- TOC entry 3776 (class 2620 OID 16468)
+-- TOC entry 3772 (class 2620 OID 16468)
 -- Name: equity_groups update_equities_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -344,7 +331,7 @@ CREATE TRIGGER update_equities_updated_at BEFORE UPDATE ON public.equity_groups 
 
 
 --
--- TOC entry 3778 (class 2620 OID 16476)
+-- TOC entry 3774 (class 2620 OID 16476)
 -- Name: equity_group_items update_equity_group_items_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -352,7 +339,7 @@ CREATE TRIGGER update_equity_group_items_updated_at BEFORE UPDATE ON public.equi
 
 
 --
--- TOC entry 3777 (class 2620 OID 16538)
+-- TOC entry 3773 (class 2620 OID 16538)
 -- Name: equity_groups update_equity_groups_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -360,7 +347,7 @@ CREATE TRIGGER update_equity_groups_updated_at BEFORE UPDATE ON public.equity_gr
 
 
 --
--- TOC entry 3774 (class 2620 OID 16537)
+-- TOC entry 3770 (class 2620 OID 16537)
 -- Name: model_equities update_model_equities_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -368,7 +355,7 @@ CREATE TRIGGER update_model_equities_updated_at BEFORE UPDATE ON public.model_eq
 
 
 --
--- TOC entry 3772 (class 2620 OID 16442)
+-- TOC entry 3768 (class 2620 OID 16442)
 -- Name: quotes update_quotes_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -376,7 +363,7 @@ CREATE TRIGGER update_quotes_updated_at BEFORE UPDATE ON public.quotes FOR EACH 
 
 
 --
--- TOC entry 3779 (class 2620 OID 16536)
+-- TOC entry 3775 (class 2620 OID 16536)
 -- Name: user_model_comments update_user_model_comments_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -384,7 +371,7 @@ CREATE TRIGGER update_user_model_comments_updated_at BEFORE UPDATE ON public.use
 
 
 --
--- TOC entry 3773 (class 2620 OID 16439)
+-- TOC entry 3769 (class 2620 OID 16439)
 -- Name: user_models update_user_models_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -392,7 +379,7 @@ CREATE TRIGGER update_user_models_updated_at BEFORE UPDATE ON public.user_models
 
 
 --
--- TOC entry 3771 (class 2620 OID 16436)
+-- TOC entry 3767 (class 2620 OID 16436)
 -- Name: users update_users_updated_at; Type: TRIGGER; Schema: public; Owner: gbrooksman
 --
 
@@ -400,7 +387,7 @@ CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON public.users FOR EACH RO
 
 
 --
--- TOC entry 3906 (class 0 OID 0)
+-- TOC entry 3902 (class 0 OID 0)
 -- Dependencies: 4
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: gbrooksman
 --
@@ -411,7 +398,7 @@ GRANT ALL ON SCHEMA public TO gbrooksman;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2019-05-27 17:39:19
+-- Completed on 2019-07-14 21:56:52
 
 --
 -- PostgreSQL database dump complete

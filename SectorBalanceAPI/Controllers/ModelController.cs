@@ -34,17 +34,15 @@ namespace SectorBalanceAPI.Controllers
 
             return Ok(mgrResult.Entity);
         }
+               
 
         [HttpGet]
-        [Route("GetCore")]
+        [Route("GetModel")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<Equity>> GetCore()
-        {
-            string strCoreGuid = config.GetSection("Settings").GetValue<string>("CoreGuid");
-            Guid coreGuid = Guid.Parse(strCoreGuid);
-
-            ManagerResult<List<ModelEquity>> mgrResult = await umMgr.GetCore(coreGuid);
+        public async Task<ActionResult<UserModel>> GetModel(Guid modelId)
+        { 
+            ManagerResult<UserModel> mgrResult = await umMgr.GetModel(modelId);
 
             if (!mgrResult.Success)
             {

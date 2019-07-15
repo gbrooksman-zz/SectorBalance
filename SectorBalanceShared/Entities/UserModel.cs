@@ -31,6 +31,8 @@ namespace SectorBalanceShared
 
         public int StopValue { get; set; }
 
+        public int Version { get; set; }
+
         public bool IsPrivate { get; set; }
     }
 }

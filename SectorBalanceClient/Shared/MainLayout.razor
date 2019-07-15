@@ -16,14 +16,13 @@
 
 @code
 {
-            MenuBuilder menuBuilderTop = new MenuBuilder();
-            MenuBuilder menuBuilderSecond = new MenuBuilder();
+    MenuBuilder menuBuilderTop = new MenuBuilder();
 
-            protected override void OnInit()
-            {
-                menuBuilderTop.AddItem(1, "Home", "/")
-                           .AddItem(2, "Current core Model", "coremodel")
-                           .AddItem(3, "Line Test", "linetest")
-                           .AddItem(4, "ETF List", "etflist");
-            }
-        }
+    protected override void OnInit()
+    {
+        menuBuilderTop.AddItem(1, "Home", "/")
+                   .AddItem(2, "Current Model", "coregroup")
+                   .AddItem(3, "Past Models", "corehistory")
+                   .AddItem(4, "ETF List", "etflist");
+    }
+}

@@ -44,29 +44,18 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<List<ModelEquity>>> GetCore(Guid guid)
+        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId)
         {
-            ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
+            ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
             try
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    List<ModelEquity> modelEquityList = db.QueryAsync<ModelEquity>(@" SELECT * 
-                                                    FROM model_equities 
-                                                    WHERE model_id = @p1",
-                                                    new { p1 = guid }).Result.ToList();
-
-                    foreach (ModelEquity modelEquity in modelEquityList)
-                    {
-                        modelEquity.Equity = eqMgr.Get(modelEquity.EquityID).Result.Entity;
-                        Quote quote =  qMgr.GetLast(modelEquity.EquityID).Result.Entity;
-                        if (quote != null)
-                        {
-                            modelEquity.LastPrice = quote.Price;
-                        }
-                    }
-
-                    mgrResult.Entity = modelEquityList;
+                    UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
+                                                    FROM user_models 
+                                                    WHERE id = @p1",
+                                                    new { p1 = modelId }).Result;
+                    mgrResult.Entity = model;
                 }
             }
             catch (Exception ex)
@@ -77,28 +66,32 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<List<ModelEquity>>> GetCoreByDate(Guid guid, DateTime quoteDate)
+        public async Task<ManagerResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime quoteDate)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
 
             try
             {
+                UserModel thisModel = GetModel(modelId).Result.Entity;
+
+                decimal startValue = thisModel.StartValue;
+               
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
                     List<ModelEquity> modelEquityList = db.QueryAsync<ModelEquity>(@" SELECT * 
                                                     FROM model_equities 
-                                                    WHERE model_id = @p1",
-                                                    new { p1 = guid }).Result.ToList();
+                                                    WHERE model_id = @p1 and version = @p2",
+                                                    new { p1 = modelId, p2 = thisModel.Version }).Result.ToList();
 
                     foreach (ModelEquity modelEquity in modelEquityList)
                     {
                         modelEquity.Equity = eqMgr.Get(modelEquity.EquityID).Result.Entity;
-                       // Quote quote = qMgr.GetLast(modelEquity.EquityID).Result.Entity;
                         Quote quote = qMgr.GetByEquityIdAndDate(modelEquity.EquityID, quoteDate).Result.Entity;
                         if (quote != null)
                         {
                             modelEquity.LastPrice = quote.Price;
-                            modelEquity.LastPriceDate = quoteDate;
+                            modelEquity.LastPriceDate = quote.Date;
+                            modelEquity.CurrentValue = Math.Round((modelEquity.Shares * quote.Price),2);                            
                         }
                     }
 
@@ -145,18 +138,20 @@ namespace SectorBalanceBLL
 
         #region model equities
 
-        public async Task<ManagerResult<ModelEquity>> Get(Guid modelequityId)
+        public async Task<ManagerResult<ModelEquity>> GetModelEquity(Guid modelEquityId, Guid modelId)
         {
             ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
 
             try
             {
+                UserModel thisModel = GetModel(modelId).Result.Entity;
+
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
                 {
                     mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
                                                             FROM model_equities 
-                                                            WHERE id = @p1",
-                                                            new { p1 = modelequityId });
+                                                            WHERE id = @p1 and version = @p2",
+                                                            new { p1 = modelEquityId, p2 = thisModel.Version });
                 }
             }
             catch (Exception ex)
@@ -167,7 +162,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<List<ModelEquity>>> GetEquityList(UserModel userModel)
+        public async Task<ManagerResult<List<ModelEquity>>> GetModelEquityList(UserModel userModel)
 
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
@@ -178,8 +173,8 @@ namespace SectorBalanceBLL
                 {
                     mgrResult.Entity = db.QueryAsync<ModelEquity>(@"SELECT * 
                                                             FROM model_equities 
-                                                            WHERE model = @p1 ", 
-                                                            new { p1 = userModel.Id } ).Result.ToList();
+                                                            WHERE model = @p1 and version = @p2", 
+                                                            new { p1 = userModel.Id, p2 = userModel.Version } ).Result.ToList();
                 }
             }
             catch(Exception ex)

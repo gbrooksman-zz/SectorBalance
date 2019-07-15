@@ -21,12 +21,7 @@ namespace SectorBalanceClient
         public List<UserModel> UserModels { get; set; }
         public DateTime LastQuoteDate { get; set; }
         public Guid CoreModelId { get; set; }
-
-
-
-
-
-
+        public Guid SPDRModelID {get; set;}
 
     }
 }

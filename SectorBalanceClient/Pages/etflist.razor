@@ -6,7 +6,7 @@
 
     <div>
         <div class="row">
-            <DataGrid Items="@pricedEquityList" TItem="ModelEquity">
+            <DataGrid Items="@equityList" TItem="ModelEquity">
                 <HeaderTemplate>
                     <th>Symbol</th>
                     <th>Name</th>
@@ -19,7 +19,7 @@
                 </RowTemplate>
                 <FooterTemplate>
                     <td>
-                        @context.Count equities found.
+                        @context.Count equities in list.
                     </td>
                     <td>
                         Prices as of: @state.LastQuoteDate.ToShortDateString()
@@ -27,48 +27,18 @@
                 </FooterTemplate>
             </DataGrid>
         </div>
-        <div class="row">
-            
-        </div>
     </div>
 
 
 @code
 {
+    private UserModel model = new UserModel();
+    private List<ModelEquity> equityList = new List<ModelEquity>();
 
-
-private List<ModelEquity> pricedEquityList = new List<ModelEquity>();
-
-
-protected override async Task OnInitAsync()
-{
-    await ListEquities();
-}
-
-private async Task ListEquities()
-{
-    var response = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getcorebydate?coreGuid={state.CoreModelId}&date={DateTime.Now}");
-
-    pricedEquityList = response.ToList();
-
-    state.ModelEquityList = pricedEquityList;
-
-}
-
-private async Task<PricedEquity> GetLastQuote(Guid equityid)
-{
-    var response = await httpClient.GetJsonAsync<Quote>($"{state.APIUrl}/api/quote/getlast?equityid={equityid}");
-    PricedEquity pe = new PricedEquity();
-    pe.LastPrice = response.Price;
-    pe.LastPriceDate = response.Date;
-    return pe;
-}
-
-internal class PricedEquity : Equity
-{
-    internal decimal LastPrice { get; set; }
-    internal DateTime LastPriceDate { get; set; }
-}
-
-
+    protected override async Task OnInitAsync()
+    {
+        model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.SPDRModelID}");
+  
+        equityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.SPDRModelID}&date={DateTime.Now.Date}");
+    }
 }
