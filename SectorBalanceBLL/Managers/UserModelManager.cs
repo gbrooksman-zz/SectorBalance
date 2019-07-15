@@ -49,6 +49,8 @@ namespace SectorBalanceBLL
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
             try
             {
+
+
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
                     UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
@@ -136,6 +138,16 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        internal async Task<ManagerResult<UserModel>> IncrementVersionAndSave(Guid modelId)
+        {
+            ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
+
+            UserModel thisModel = GetModel(modelId).Result.Entity;
+            thisModel.Version++;
+
+            return await Save(thisModel);
+        }
+
         #region model equities
 
         public async Task<ManagerResult<ModelEquity>> GetModelEquity(Guid modelEquityId, Guid modelId)
@@ -187,23 +199,23 @@ namespace SectorBalanceBLL
 
         #region CRUD
 
-        public async Task<ManagerResult<ModelEquity>> AddEquity(Guid userModelId, Guid equityId, int percent)
+        public async Task<ManagerResult<ModelEquity>> Save(ModelEquity modelEquity)
         {
             ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();           
             
             try
-            {   
-                ModelEquity modelEquity = new ModelEquity()
-                {
-                    ModelId = userModelId,
-                    EquityID = equityId,
-                    Percent = percent
-                };
-
+            {  
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    await db.InsertAsync(modelEquity); 
-                }                              
+                    if (modelEquity.Id != default)
+                    {
+                        await db.UpdateAsync(modelEquity);
+                    }
+                    else
+                    { 
+                        await db.InsertAsync(modelEquity);
+                    }
+                } 
 
                 mgrResult.Entity = modelEquity;
             }
@@ -214,36 +226,6 @@ namespace SectorBalanceBLL
 
             return mgrResult;
         }      
-
-        public async Task<ManagerResult<ModelEquity>> Update(Guid modelequityId, Guid userModelId, Guid equityId, int percent)
-        {
-            ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
-
-            try
-            {
-                ModelEquity modelEquity = new ModelEquity()
-                {
-                    Id = modelequityId,
-                    ModelId = userModelId,
-                    EquityID = equityId,
-                    Percent = percent                    
-                };
-
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    await db.UpdateAsync(modelEquity);
-                }
-
-                mgrResult.Entity = modelEquity;
-            }
-            catch (Exception ex)
-            {
-                mgrResult.Exception = ex;
-            }
-
-            return mgrResult;
-        }
-
 
         public async Task<ManagerResult<bool>> RemoveEquity(Guid modelequityId)
         {

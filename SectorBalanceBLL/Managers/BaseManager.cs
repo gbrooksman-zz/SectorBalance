@@ -42,5 +42,7 @@ namespace SectorBalanceBLL
         public static readonly string EQUITY = "equity";
 
         public static readonly string TRADING_DATES = "trading_dates";
+
+        public static readonly string MODEL_LIST = "model_list";
     }
 }

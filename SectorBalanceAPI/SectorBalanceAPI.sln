@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SectorBalanceShared", "..\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SectorBalanceBLL", "..\SectorBalanceBLL\SectorBalanceBLL.csproj", "{EDA204E2-96DB-48BB-B1DC-112EF9BAF8CF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SectorBalanceBLLTests", "..\SectorBalanceBLLTests\SectorBalanceBLLTests.csproj", "{F5F3B783-6369-4A54-9D24-E224799FCFA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{EDA204E2-96DB-48BB-B1DC-112EF9BAF8CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA204E2-96DB-48BB-B1DC-112EF9BAF8CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EDA204E2-96DB-48BB-B1DC-112EF9BAF8CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5F3B783-6369-4A54-9D24-E224799FCFA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5F3B783-6369-4A54-9D24-E224799FCFA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5F3B783-6369-4A54-9D24-E224799FCFA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5F3B783-6369-4A54-9D24-E224799FCFA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
