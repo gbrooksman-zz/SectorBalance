@@ -13,8 +13,8 @@ namespace SectorBalanceBLL
 {
     public class UserModelManager : BaseManager
     {
-        private EquityManager eqMgr;
-        private QuoteManager qMgr;
+        private readonly EquityManager eqMgr;
+        private readonly QuoteManager qMgr;
 
         public UserModelManager(IMemoryCache _cache, IConfiguration _config) : base(_cache, _config)
         {
@@ -22,7 +22,7 @@ namespace SectorBalanceBLL
             qMgr = new QuoteManager(_cache, _config);
         }
 
-        public async Task<ManagerResult<List<UserModel>>> GetModelList(User user)
+        public async Task<ManagerResult<List<UserModel>>> GetActiveModelList(User user)
         {
             ManagerResult<List<UserModel>> mgrResult = new ManagerResult<List<UserModel>>();
            
@@ -32,7 +32,7 @@ namespace SectorBalanceBLL
                 {
                     mgrResult.Entity = db.QueryAsync<UserModel>(@" SELECT * 
                                                     FROM user_models 
-                                                    WHERE user_id = @p1",
+                                                    WHERE user_id = @p1 and active = true",
                                                     new { p1 = user.Id }).Result.ToList();
                 }
             }
@@ -44,19 +44,17 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId)
+        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId, int versionNumber = 1)
         {
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
             try
             {
-
-
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
                     UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
                                                     FROM user_models 
-                                                    WHERE id = @p1",
-                                                    new { p1 = modelId }).Result;
+                                                    WHERE id = @p1 and version = @p2",
+                                                    new { p1 = modelId, p2 = versionNumber }).Result;
                     mgrResult.Entity = model;
                 }
             }
@@ -68,13 +66,57 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime quoteDate)
+        public async Task<ManagerResult<UserModel>> GetModelVersion(Guid modelId, int versionNumber)
+        {
+            ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
+                                                    FROM user_models 
+                                                    WHERE id = @p1 and version = @p2",
+                                                    new { p1 = modelId, p2 = versionNumber }).Result;
+                    mgrResult.Entity = model;
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
+        public async Task<ManagerResult<List<UserModel>>> GetModelVersions(Guid modelId)
+        {
+            ManagerResult<List<UserModel>> mgrResult = new ManagerResult<List<UserModel>>();
+
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    List<UserModel> modelList = db.QueryAsync<UserModel>(@" SELECT * 
+                                                    FROM user_models 
+                                                    WHERE id = @p1",
+                                                    new { p1 = modelId }).Result.ToList();
+                    mgrResult.Entity = modelList;
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+        public async Task<ManagerResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime quoteDate, int versionNumber = 1)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
 
             try
             {
-                UserModel thisModel = GetModel(modelId).Result.Entity;
+                UserModel thisModel = GetModel(modelId, versionNumber).Result.Entity;
 
                 decimal startValue = thisModel.StartValue;
                
@@ -83,7 +125,7 @@ namespace SectorBalanceBLL
                     List<ModelEquity> modelEquityList = db.QueryAsync<ModelEquity>(@" SELECT * 
                                                     FROM model_equities 
                                                     WHERE model_id = @p1 and version = @p2",
-                                                    new { p1 = modelId, p2 = thisModel.Version }).Result.ToList();
+                                                    new { p1 = modelId, p2 = versionNumber }).Result.ToList();
 
                     foreach (ModelEquity modelEquity in modelEquityList)
                     {
@@ -138,11 +180,11 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        internal async Task<ManagerResult<UserModel>> IncrementVersionAndSave(Guid modelId)
+        internal async Task<ManagerResult<UserModel>> IncrementVersionAndSave(Guid modelId, int currentVersion)
         {
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
 
-            UserModel thisModel = GetModel(modelId).Result.Entity;
+            UserModel thisModel = GetModel(modelId, currentVersion).Result.Entity;
             thisModel.Version++;
 
             return await Save(thisModel);
@@ -150,20 +192,18 @@ namespace SectorBalanceBLL
 
         #region model equities
 
-        public async Task<ManagerResult<ModelEquity>> GetModelEquity(Guid modelEquityId, Guid modelId)
+        public async Task<ManagerResult<ModelEquity>> GetModelEquity(Guid modelEquityId, int versionNumber = 1)
         {
             ManagerResult<ModelEquity> mgrResult = new ManagerResult<ModelEquity>();
 
             try
             {
-                UserModel thisModel = GetModel(modelId).Result.Entity;
-
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
                 {
                     mgrResult.Entity = await db.QueryFirstOrDefaultAsync<ModelEquity>(@" SELECT * 
                                                             FROM model_equities 
                                                             WHERE id = @p1 and version = @p2",
-                                                            new { p1 = modelEquityId, p2 = thisModel.Version });
+                                                            new { p1 = modelEquityId, p2 = versionNumber });
                 }
             }
             catch (Exception ex)
@@ -174,8 +214,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<List<ModelEquity>>> GetModelEquityList(UserModel userModel)
-
+        public async Task<ManagerResult<List<ModelEquity>>> GetModelEquityList(Guid modelId, int versionNumber = 1)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
            
@@ -186,7 +225,7 @@ namespace SectorBalanceBLL
                     mgrResult.Entity = db.QueryAsync<ModelEquity>(@"SELECT * 
                                                             FROM model_equities 
                                                             WHERE model = @p1 and version = @p2", 
-                                                            new { p1 = userModel.Id, p2 = userModel.Version } ).Result.ToList();
+                                                            new { p1 = modelId, p2 = versionNumber } ).Result.ToList();
                 }
             }
             catch(Exception ex)
@@ -227,7 +266,7 @@ namespace SectorBalanceBLL
             return mgrResult;
         }      
 
-        public async Task<ManagerResult<bool>> RemoveEquity(Guid modelequityId)
+        public async Task<ManagerResult<bool>> RemoveEquity(Guid modelEquityId)
         {
             ManagerResult<bool> mgrResult = new ManagerResult<bool>();
             
@@ -235,7 +274,7 @@ namespace SectorBalanceBLL
             {   
                 ModelEquity modelEquity = new ModelEquity()
                 {
-                    Id = modelequityId                    
+                    Id = modelEquityId                    
                 };
 
                 using NpgsqlConnection db = new NpgsqlConnection(connString);
