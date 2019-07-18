@@ -40,9 +40,9 @@ namespace SectorBalanceAPI.Controllers
         [Route("GetModel")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<UserModel>> GetModel(Guid modelId)
+        public async Task<ActionResult<UserModel>> GetModel(Guid modelId, int versionNumber = 1)
         { 
-            ManagerResult<UserModel> mgrResult = await umMgr.GetModel(modelId);
+            ManagerResult<UserModel> mgrResult = await umMgr.GetModel(modelId, versionNumber);
 
             if (!mgrResult.Success)
             {
@@ -53,6 +53,8 @@ namespace SectorBalanceAPI.Controllers
                 return Ok(mgrResult.Entity);
             }
         }
+
+       
 
         [HttpGet]
         [Route("GetModelVersions")]

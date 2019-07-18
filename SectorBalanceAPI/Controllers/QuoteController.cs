@@ -81,9 +81,9 @@ namespace SectorBalanceAPI.Controllers
         [Route("GetModelByDate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime date)
+        public async Task<ActionResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime date, int versionNumber)
         {
-            ManagerResult<List<ModelEquity>> mrME = await umMgr.GetModelByDate(modelId, date);
+            ManagerResult<List<ModelEquity>> mrME = await umMgr.GetModelByDate(modelId, date, versionNumber);
             if (!mrME.Success)
             {
                 return BadRequest(mrME);

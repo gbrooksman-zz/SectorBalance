@@ -110,6 +110,8 @@ namespace SectorBalanceBLL
 
             return mgrResult;
         }
+
+
         public async Task<ManagerResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime quoteDate, int versionNumber = 1)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();

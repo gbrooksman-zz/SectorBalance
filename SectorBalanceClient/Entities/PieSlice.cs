@@ -11,9 +11,9 @@ namespace SectorBalanceClient.Entities
 
         }
 
-        double percent;
+        decimal percent;
 
-        public double Percent { get { return percent; } set { percent = (value / 100); } }
+        public decimal Percent { get { return percent; } set { percent = (value / 100); } }
         public string Color { get; set; }
         public string Name { get; set; }
         public double StartingX { get; set; }

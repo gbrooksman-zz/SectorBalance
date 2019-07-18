@@ -3,51 +3,97 @@
 @inject HttpClient httpClient
 @using SectorBalanceClient
 @using SectorBalanceShared
+@using SectorBalanceClient.Entities
+@using SectorBalanceClient.Shared
 
-    <div>
-        <div class="row">
+@*<style>
+
+    div {
+        border: 1px solid #000000;
+    }
+
+    </style>*@
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
             <h3>Core Model History</h3>
         </div>
-        <div class="row">
+    </div>
+    <div class="row">
+        <div class="col-4">
             <DataGrid Items="@modelVersionList" TItem="UserModel">
                 <HeaderTemplate>
                     <th>Version</th>
                     <th>Start Date</th>
                     <th>Stop Date</th>
-                    <th>Show</th>
+                    <th>Action</th>
                 </HeaderTemplate>
                 <RowTemplate>
                     <td>@context.Version</td>
                     <td>@context.StartDate.ToShortDateString()</td>
                     <td>@FormatStopDate(context.StopDate, context.Active)</td>
-                    <td>a link</td>
+                    <td><button class="btn btn-primary" @onclick="@(() => ShowVersion(@context.Version, @context.StartDate))">Show</button></td>
                 </RowTemplate>
             </DataGrid>
         </div>
+        <div class="col-8">
+            <PieChart Height="400" Width="400" PieSlices="@modelSlices" />
+        </div>
     </div>
+
+</div>
 
 @code
 {
-protected string FormatStopDate(DateTime stopDate, bool isActive)
-{
-    string ret = stopDate == DateTime.MinValue ? "" : stopDate.ToShortDateString();
-    if (string.IsNullOrEmpty(ret) && isActive)
+
+    List<PieSlice> modelSlices = new List<PieSlice>();
+
+    UserModel model = new UserModel();
+
+    protected async Task ShowVersion(int versionNumber, DateTime quoteDate)
     {
-        ret = "(active)";
+        model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.CoreModelId}&versionNumber={versionNumber}");
+
+        List<ModelEquity> modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&versionNumber={versionNumber}&date={quoteDate}");
+
+        int i = 1;
+        modelSlices.Clear();
+        foreach (ModelEquity meq in modelEquityList)
+        {
+            modelSlices.Add(new PieSlice()
+            {
+                Name = meq.Equity.Symbol,
+                Percent = meq.Percent,
+                Color = ColorPicker.Get(i)
+            });
+            i++;
+        }
+
     }
 
-    return ret;
-}
 
-protected string IsActive(bool isActive)
-{
-    return isActive == true ? "(active)" : "";
-}
+    protected string FormatStopDate(DateTime stopDate, bool isActive)
+    {
+        string ret = stopDate == DateTime.MinValue ? "" : stopDate.ToShortDateString();
+        if (string.IsNullOrEmpty(ret) && isActive)
+        {
+            ret = "(active)";
+        }
 
-List<UserModel> modelVersionList = new List<UserModel>();
+        return ret;
+    }
 
-protected override async Task OnInitAsync()
-{
-    modelVersionList = await httpClient.GetJsonAsync<List<UserModel>>($"{state.APIUrl}/api/model/getmodelversions?modelId={state.CoreModelId}");
-}
+    protected string IsActive(bool isActive)
+    {
+        return isActive == true ? "(active)" : "";
+    }
+
+    List<UserModel> modelVersionList = new List<UserModel>();
+
+    protected override async Task OnInitAsync()
+    {
+        modelVersionList = await httpClient.GetJsonAsync<List<UserModel>>($"{state.APIUrl}/api/model/getmodelversions?modelId={state.CoreModelId}");
+
+    }
 }

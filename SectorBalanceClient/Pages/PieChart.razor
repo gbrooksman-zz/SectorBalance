@@ -39,7 +39,7 @@
     {
         RenderFragment frag = null;
 
-        double percentSum = 0;
+        decimal percentSum = 0;
         double startX = 1;
         double startY = 0;
 
@@ -73,16 +73,16 @@
 
     private string GetPath(PieSlice slice)
     {
-        int arcDirection = slice.Percent > .5 ? 1 : 0;
+        int arcDirection = slice.Percent > (decimal) .5 ? 1 : 0;
         return $"M {slice.StartingX} {slice.StartingY} A 1 1 0 {arcDirection} 1 {slice.EndingX} {slice.EndingY} L 0 0";
     }
 
-    private Point GetCoordinatesForPercent(double percent)
+    private Point GetCoordinatesForPercent(decimal percent)
     {
         return new Point()
         {
-            X = Math.Cos(2 * Math.PI * percent),
-            Y = Math.Sin(2 * Math.PI * percent)
+            X = Math.Cos(2 * Math.PI * (double) percent),
+            Y = Math.Sin(2 * Math.PI * (double) percent)
         };
     }
 
