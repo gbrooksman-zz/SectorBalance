@@ -16,3 +16,4 @@ logs
 
 /SectorBalanceAPI/appsettings.Development.json
 /SectorBalanceAPI/appsettings.json
+/SectorBalanceAPI/secretSettings.json

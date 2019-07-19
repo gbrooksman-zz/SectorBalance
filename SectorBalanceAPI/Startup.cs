@@ -18,6 +18,11 @@ namespace SectorBalanceAPI
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+
+            var builder = new ConfigurationBuilder();
+            builder.AddJsonFile($"secretSettings.json", optional: true, reloadOnChange: true);
+            builder.AddJsonFile($"appSettings.json", optional: true, reloadOnChange: true);
+            Configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -39,7 +44,7 @@ namespace SectorBalanceAPI
             {
                 options.AddPolicy(CORSPolicy,
                 builder =>
-                {
+                {                  
                     builder.WithOrigins("http://localhost:61428").AllowAnyHeader().AllowAnyOrigin().AllowAnyMethod();
                 });
             });
@@ -68,7 +73,7 @@ namespace SectorBalanceAPI
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+            });            
 
            
         }
