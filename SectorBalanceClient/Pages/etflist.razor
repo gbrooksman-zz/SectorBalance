@@ -3,31 +3,32 @@
 @inject HttpClient httpClient
 @using SectorBalanceClient
 @using SectorBalanceShared
+@using SectorBalanceClient.Pages.Components
 
-    <div>
-        <div class="row">
-            <DataGrid Items="@equityList" TItem="ModelEquity">
-                <HeaderTemplate>
-                    <th>Symbol</th>
-                    <th>Name</th>
-                    <th>Last Price</th>
-                </HeaderTemplate>
-                <RowTemplate>
-                    <td>@context.Equity.Symbol</td>
-                    <td>@context.Equity.SymbolName</td>
-                    <td>@context.LastPrice</td>
-                </RowTemplate>
-                <FooterTemplate>
-                    <td>
-                        @context.Count equities in list.
-                    </td>
-                    <td>
-                        Prices as of: @state.LastQuoteDate.ToShortDateString()
-                    </td>   
-                </FooterTemplate>
-            </DataGrid>
-        </div>
+<div>
+    <div class="row">
+        <DataGrid Items="@equityList" TItem="ModelEquity">
+            <HeaderTemplate>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Last Price</th>
+            </HeaderTemplate>
+            <RowTemplate>
+                <td>@context.Equity.Symbol</td>
+                <td>@context.Equity.SymbolName</td>
+                <td>@context.LastPrice</td>
+            </RowTemplate>
+            <FooterTemplate>
+                <td>
+                    @context.Count equities in list.
+                </td>
+                <td>
+                    Prices as of: @state.LastQuoteDate.ToShortDateString()
+                </td>
+            </FooterTemplate>
+        </DataGrid>
     </div>
+</div>
 
 
 @code
@@ -38,7 +39,7 @@
     protected override async Task OnInitAsync()
     {
         model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.SPDRModelID}");
-  
+
         equityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.SPDRModelID}&date={DateTime.Now.Date}");
     }
 }

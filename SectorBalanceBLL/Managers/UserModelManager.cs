@@ -66,6 +66,28 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId)
+        {
+            ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
+            try
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
+                                                    FROM user_models 
+                                                    WHERE id = @p1 ",
+                                                    new { p1 = modelId }).Result;
+                    mgrResult.Entity = model;
+                }
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+            }
+
+            return mgrResult;
+        }
+
         public async Task<ManagerResult<UserModel>> GetModelVersion(Guid modelId, int versionNumber)
         {
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();

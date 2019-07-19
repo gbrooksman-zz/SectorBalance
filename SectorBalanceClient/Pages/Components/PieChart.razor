@@ -101,7 +101,7 @@
     RenderFragment BuildLegendEntry(PieSlice slice) => builder =>
     {
         builder.OpenElement(1, "li");
-        builder.AddContent(2, slice.Name);
+        builder.AddContent(2, $"{slice.Name} :({slice.Percent * 100}%)");
         builder.CloseElement();
     };
 }

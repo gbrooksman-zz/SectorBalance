@@ -3,14 +3,15 @@
 @inject AppStateContainer state
 @inject HttpClient httpClient
 @using SectorBalanceClient.Entities
+@using SectorBalanceClient.Pages.Components
 
 <div>
-     <LineChart EquityList = "@GetEquityList()" 
-        Width="500" 
-        Height="300" 
-        Title="Our Stocks" 
-        HorizontalGridLines="10"
-        VerticalGridLines="10"/>
+    <LineChart EquityList="@GetEquityList()"
+               Width="500"
+               Height="300"
+               Title="Our Stocks"
+               HorizontalGridLines="10"
+               VerticalGridLines="10" />
 </div>
 
 @code

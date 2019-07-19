@@ -1,0 +1,56 @@
+@page "/modelequitygrid"
+@inject AppStateContainer state
+@inject HttpClient httpClient
+@using SectorBalanceClient
+@using SectorBalanceShared
+@using SectorBalanceClient.Shared
+
+
+<DataGrid Items="@ModelEquityList" TItem="ModelEquity">
+    <HeaderTemplate>
+        <th>Symbol</th>
+        <th>Name</th>
+        <th>Percent</th>
+        <th>Last Price</th>
+        <th>Cost</th>
+        <th>Current Value</th>
+        <th>Gain/Loss</th>
+    </HeaderTemplate>
+    <RowTemplate>
+        <td>@context.Equity.Symbol</td>
+        <td>@context.Equity.SymbolName</td>
+        <td>@Math.Round(context.Percent, 0)</td>
+        <td>@context.LastPrice</td>
+        <td>@context.Cost</td>
+        <td>@context.CurrentValue</td>
+        <td>@Utils.CalcGainLoss(context.CurrentValue, context.Cost) </td>
+    </RowTemplate>
+    <FooterTemplate>
+        <td colspan="4">
+            Equities in Model: @context.Count
+        </td>
+        <td>
+            Total Cost: @totalCost
+        </td>
+        <td>
+            Current Value: @totalValue
+        </td>
+        <td>
+            Overall: @Utils.CalcGainLoss(totalValue, totalCost)
+        </td>
+    </FooterTemplate>
+</DataGrid>
+
+
+
+@code
+{
+
+    [Parameter]
+    List<ModelEquity> ModelEquityList { get; set; }
+
+    decimal totalValue = 0;
+    decimal totalCost = 0;
+
+
+}

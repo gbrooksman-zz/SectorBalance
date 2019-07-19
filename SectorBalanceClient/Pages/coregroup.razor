@@ -3,8 +3,9 @@
 @inject HttpClient httpClient
 @using SectorBalanceClient
 @using SectorBalanceShared
+@using SectorBalanceClient.Pages.Components
 
-<style type="text/css">
+@*<style type="text/css">
     .small {
         font: 12px sans-serif;
     }
@@ -20,9 +21,9 @@
     .column {
         flex: 50%;
     }
-</style>
+</style>*@
 
-<div>
+<div class="container-fluid">
     <div class="row">
         <div class="col-6">
             <h4>Current Core Model</h4>
@@ -31,73 +32,29 @@
             <span>Effective Date:@model.StartDate.ToShortDateString()</span>
         </div>
     </div>
-
     <div class="row">
-        <div class="column">
-            <DataGrid Items="@modelEquityList" TItem="ModelEquity">
-                <HeaderTemplate>
-                    <th>Symbol</th>
-                    <th>Name</th>
-                    <th>Percent</th>
-                    <th>Last Price</th>
-                    <th>Cost</th>
-                    <th>Current Value</th>
-                    <th>Gain/Loss</th>
-                </HeaderTemplate>
-                <RowTemplate>
-                    <td>@context.Equity.Symbol</td>
-                    <td>@context.Equity.SymbolName</td>
-                    <td>@Math.Round(context.Percent, 0)</td>
-                    <td>@context.LastPrice</td>
-                    <td>@context.Cost</td>
-                    <td>@context.CurrentValue</td>
-                    <td>@CalcGainLoss(context.CurrentValue, context.Cost) </td>                    
-                </RowTemplate>
-                <FooterTemplate>
-                    <td colspan="4">
-                        Equities in Model: @context.Count
-                    </td>
-                    <td>
-                        Total Cost: @totalCost
-                    </td>
-                    <td>
-                        Current Value: @totalValue
-                    </td>
-                    <td>
-                        Overall: @CalcGainLoss(totalValue,totalCost)
-                    </td>
-                </FooterTemplate>
-            </DataGrid>
-        </div>       
+        <div class="col-12">
+            <ModelEquityGrid ModelEquityList="@modelEquityList" />
+        </div>
     </div>
 </div>
 
 @code
 {
+    decimal totalValue = 0;
+    decimal totalCost = 0;
 
-private decimal totalValue = 0;
-private decimal totalCost = 0;
+    List<ModelEquity> modelEquityList = new List<ModelEquity>();
+    UserModel model = new UserModel();
 
-private List<ModelEquity> modelEquityList = new List<ModelEquity>();
-private UserModel model = new UserModel();
+    protected override async Task OnInitAsync()
+    {
+        model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.CoreModelId}");
 
-private decimal CalcGainLoss(decimal current, decimal cost)
-{
-    return current - cost;
-}
+        modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&date={DateTime.Now.Date}&versionNumber={model.Version}");
 
-
-protected override async Task OnInitAsync()
-{
-
-    model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.CoreModelId}");
-    
-    modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&date={DateTime.Now.Date}");
-
-   // modelEquityList = modelEquities.ToList();
-
-    totalValue =  modelEquityList.Sum(q => q.CurrentValue);
-    totalCost =  modelEquityList.Sum(q => q.Cost);
-}
+        totalValue = modelEquityList.Sum(q => q.CurrentValue);
+        totalCost = modelEquityList.Sum(q => q.Cost);
+    }
 
 }

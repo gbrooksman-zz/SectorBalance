@@ -1,9 +1,8 @@
-﻿
-
-@page "/pietest"
+﻿@page "/pietest"
 @inject AppStateContainer state
 @inject HttpClient httpClient
 @using SectorBalanceClient.Entities
+@using SectorBalanceClient.Pages.Components
 
 <div>
     <PieChart Width="20%" PieSlices="@slices" />

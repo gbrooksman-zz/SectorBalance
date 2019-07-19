@@ -29,22 +29,22 @@ namespace SectorBalanceClient.Shared
                     colorName = "Gray";
                     break;
                 case 6:
-                    colorName = "LightRed";
+                    colorName = "Coral";
                     break;
                 case 7:
-                    colorName = "LightBlue";
+                    colorName = "Cyan";
                     break;
                 case 8:
-                    colorName = "LightGreen";
+                    colorName = "BurlyWood";
                     break;
                 case 9:
-                    colorName = "LightYellow";
+                    colorName = "CornSilk";
                     break;
                 case 10:
-                    colorName = "AliceBlue";
+                    colorName = "DarkCyan";
                     break;
                 default:
-                    colorName = "White";
+                    colorName = "Fuchsia";
                     break;
             }
 

@@ -5,19 +5,32 @@
 @using SectorBalanceShared
 @using SectorBalanceClient.Entities
 @using SectorBalanceClient.Shared
+@using SectorBalanceClient.Pages.Components
 
-@*<style>
+<style>
 
-    div {
+    /*div {
         border: 1px solid #000000;
-    }
+    }*/
 
-    </style>*@
+     .divVisible {
+      display: block;
+      }
+
+     .divHidden{
+      display: none;
+      }
+
+    </style>
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-4">
             <h3>Core Model History</h3>
+        </div>
+        <div class="col-8 @showDiv" >
+            <button style="padding:5px;" class="btn btn-link" @onclick="@(() => showPieChart = true)">Pie Chart</button>
+            <button style="padding:5px;" class="btn btn-link" @onclick="@(() => showPieChart = false)">Data table</button>
         </div>
     </div>
     <div class="row">
@@ -33,29 +46,42 @@
                     <td>@context.Version</td>
                     <td>@context.StartDate.ToShortDateString()</td>
                     <td>@FormatStopDate(context.StopDate, context.Active)</td>
-                    <td><button class="btn btn-primary" @onclick="@(() => ShowVersion(@context.Version, @context.StartDate))">Show</button></td>
+                    <td><button class="btn btn-primary" @onclick="@(() => ShowVersionInfo(@context))">Show</button></td>
                 </RowTemplate>
             </DataGrid>
         </div>
         <div class="col-8">
-            <PieChart Height="400" Width="400" PieSlices="@modelSlices" />
+            <div class="container-fluid">
+                <div class="row">
+                    @if (showPieChart)
+                    {
+                        <PieChart Height="300" Width="300" PieSlices="@modelSlices" />
+                    }
+                    else
+                    {
+                       <ModelEquityGrid ModelEquityList="@modelEquityList"/>
+                    }
+
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 @code
 {
-
     List<PieSlice> modelSlices = new List<PieSlice>();
+    List<ModelEquity> modelEquityList = new List<ModelEquity>();
+    bool showPieChart = true;
+   
+    string showDiv = "divHidden";
 
-    UserModel model = new UserModel();
 
-    protected async Task ShowVersion(int versionNumber, DateTime quoteDate)
+    protected async Task ShowVersionInfo(UserModel model)
     {
-        model = await httpClient.GetJsonAsync<UserModel>($"{state.APIUrl}/api/model/getmodel?modelId={state.CoreModelId}&versionNumber={versionNumber}");
+        showDiv = "divVisible";
 
-        List<ModelEquity> modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&versionNumber={versionNumber}&date={quoteDate}");
+        modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&versionNumber={model.Version}&date={model.StartDate}");
 
         int i = 1;
         modelSlices.Clear();
@@ -69,7 +95,6 @@
             });
             i++;
         }
-
     }
 
 
