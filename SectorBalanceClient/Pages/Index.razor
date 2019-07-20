@@ -2,58 +2,84 @@
 @inject AppStateContainer state
 @inject HttpClient httpClient
 @layout MainLayout
-Welcome to The Sector Model Guide. This site focuses on constructing an investment portfolio
-using nine ETF Sector Funds managed by State Street Global Advisors.
-This site is in no way affiliated with State Street Global Advisors and does not offer investment advice.
-This site is intended to describe the investment approach taken by the site authors and will in a future update
-allow readers to construct their own sector models as well as compare sector funds in various ways. Stay tuned.
+@using SectorBalanceClient.Entities
 
-The nine ETF sector funds that are the focus of this modeling process
-can be found by clicking the "ETF List" button above.
+    <div class="container-fluid">
+        <div class="row">
+            <p>
+                Welcome to The Sector Model Guide. This site focuses on constructing an investment portfolio
+                using nine ETF Sector Funds managed by State Street Global Advisors.
+                This site is in no way affiliated with State Street Global Advisors and does not offer investment advice.
+                This site is intended to describe the investment approach taken by the site authors and will in a future update
+                allow readers to construct their own sector models as well as compare sector funds in various ways. Stay tuned.
 
-<br />
+                The nine ETF sector funds that are the focus of this modeling process
+                can be found by clicking the "ETF List" button above.
+            </p>
+        </div>
+        <div class="row">
+            <h3>Developing the Core Model</h3>
+            <p>
+                The Core Model is made up of four or more of the nine available ETFs.
+                The selection of the particular sector and their relative weight in the overall modeling
+                is based on historical price movements of all nine of the ETFs, macroeconomic factors and analysis
+                of other factors.
+            </p>
+        </div>
+        <div class="row">
+            <a href="https://iexcloud.io">Data provided by IEX Cloud</a>
+            <br />
+            User: @state.UserName
+            <br />
+            Last Quote Update Date: @state.LastQuoteDate.ToShortDateString()
+            <br />
+            Content Items: @contentItems
+        </div>
+        <div class="row">
+            <table>
+                @foreach (ContentItem item in contentItemList)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Text</td>
+                        <td>@item.Comment</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
 
-<h3>Developing the Core Model</h3>
+    @code
+    {
+        int contentItems = 0;
 
-The Core Model is made up of four or more of the nine available ETFs.
-The selection of the particular sector and their relative weight in the overall modeling
-is based on historical price movements of all nine of the ETFs, macroeconomic factors and analysis
-of other factors.
+        List<ContentItem> contentItemList = new List<ContentItem>();
 
-<a href="https://iexcloud.io">Data provided by IEX Cloud</a>
-<br />
-User: @state.UserName
-<br />
-Last Quote Update Date: @state.LastQuoteDate.ToShortDateString()
+        protected override async Task OnInitAsync()
+        {
+            // stuff for testing - replace with a settings file
 
+            state.APIUrl = "http://localhost:5000";
 
+            state.APIKey = "A8F12BB0-535A-4117-BA0B-E5722DC50367";
 
-@code
-{
+            state.UserName = "geoffb";
 
-protected override async Task OnInitAsync()
-{
-    // stuff for testing - replace with a settings file
+            state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");          //copied from db
 
-    state.APIUrl = "http://localhost:5000";
+            state.CoreModelId = Guid.Parse("e81de052-9091-11e9-a901-0aefc68022c6");     //copied from db
 
-    state.APIKey = "A8F12BB0-535A-4117-BA0B-E5722DC50367";
+            state.SPDRModelID = Guid.Parse("dd28331a-a689-11e9-9557-0aefc68022c6");
 
-    state.UserName = "geoffb";
+            state.LastQuoteDate = await httpClient.GetJsonAsync<DateTime>($"{state.APIUrl}/api/quote/getlastquotedate");
 
-    state.UserId = Guid.Parse("85167398-7e35-11e9-92d7-0aefc68022c6");          //copied from db
+            var response = await httpClient.GetJsonAsync<List<ContentItem>>("content/content.json");
 
-    state.CoreModelId = Guid.Parse("e81de052-9091-11e9-a901-0aefc68022c6");     //copied from db
+            state.ContentItemList = response.ToList();
 
-    state.SPDRModelID = Guid.Parse("dd28331a-a689-11e9-9557-0aefc68022c6");
+            contentItemList = state.ContentItemList;
 
-    state.LastQuoteDate = await httpClient.GetJsonAsync<DateTime>($"{state.APIUrl}/api/quote/getlastquotedate");
-}
+            contentItems = contentItemList.Count;
 
-
-//protected async Task<List<Equity>> GetEquities()
-//{
-//    var response = await httpClient.GetJsonAsync<List<Equity>>($"{state.APIUrl}/api/equity/getlist");
-//    return response.ToList();
-//}
-}
+        }
+    }

@@ -49,10 +49,13 @@
 {
     [Parameter]
     RenderFragment HeaderTemplate { get; set; }
+
     [Parameter]
     RenderFragment<TItem> RowTemplate { get; set; }
+
     [Parameter]
     RenderFragment<IList<TItem>> FooterTemplate { get; set; }
+
     [Parameter]
     IList<TItem> Items { get; set; }
 }

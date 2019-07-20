@@ -55,13 +55,17 @@
                 <div class="row">
                     @if (showPieChart)
                     {
-                        <PieChart Height="300" Width="300" PieSlices="@modelSlices" />
+                        <div class="col-6">
+                            <PieChart Height="300" Width="300" PieSlices="@modelSlices" />
+                        </div>
+                        <div class="col-6">                            
+                            <DynamicContent ContentId="@modelVersionId" />
+                        </div>
                     }
                     else
                     {
-                       <ModelEquityGrid ModelEquityList="@modelEquityList"/>
+                        <ModelEquityGrid ModelEquityList="@modelEquityList" />
                     }
-
                 </div>
             </div>
         </div>
@@ -73,13 +77,16 @@
     List<PieSlice> modelSlices = new List<PieSlice>();
     List<ModelEquity> modelEquityList = new List<ModelEquity>();
     bool showPieChart = true;
-   
+
     string showDiv = "divHidden";
 
+    string modelVersionId = string.Empty;
 
     protected async Task ShowVersionInfo(UserModel model)
     {
         showDiv = "divVisible";
+
+        modelVersionId = model.ModelVersionId.ToString();
 
         modelEquityList = await httpClient.GetJsonAsync<List<ModelEquity>>($"{state.APIUrl}/api/quote/getmodelbydate?modelId={state.CoreModelId}&versionNumber={model.Version}&date={model.StartDate}");
 

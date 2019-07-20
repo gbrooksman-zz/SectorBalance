@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SectorBalanceShared;
+using SectorBalanceClient.Entities;
 
 namespace SectorBalanceClient
 {
@@ -22,6 +23,6 @@ namespace SectorBalanceClient
         public DateTime LastQuoteDate { get; set; }
         public Guid CoreModelId { get; set; }
         public Guid SPDRModelID {get; set;}
-
+        public List<ContentItem> ContentItemList { get; set; }
     }
 }

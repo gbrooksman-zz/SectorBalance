@@ -1,0 +1,32 @@
+  [
+    {
+      "id": "737f0ad4-aa7a-11e9-8966-0aefc68022c6",
+      "comment": "core model version 1",
+      "title": "Core Model version 1",
+      "text": "This is the initial model. It was created as a baseline model with 20% of five sector funds.The funds included in this model were Energy Select Sector SPDR Fund, Materials Select Sector SPDR Fund, Consumer Staples Select Sector SPDR Fund, Technology Select Sector SPDR Fund and Consumer Discretionary Select Sector SPDR Fund. "
+    },
+    {
+      "id": "737f0a8e-aa7a-11e9-8965-0aefc68022c6",
+      "comment": "core model version 2",
+      "title": "Core Model version 2",
+      "text": "This is the second model. It represented a change "
+    },
+    {
+      "id": "737f0a3e-aa7a-11e9-8964-0aefc68022c6",
+      "comment": "core model version 3",
+      "title": "Core Model version 3",
+      "text": "This is the third model, more changes"
+    },
+    {
+      "id": "737f09da-aa7a-11e9-8963-0aefc68022c6",
+      "comment": "core model version 4",
+      "title": "Core Model version 4",
+      "text": "This is the fourth model, more changes"
+    },
+    {
+      "id": "737f0930-aa7a-11e9-8962-0aefc68022c6",
+      "comment": "core model version 5",
+      "title": "Core Model version 5",
+      "text": "This is the fifth model, more changes"
+    }
+  ]

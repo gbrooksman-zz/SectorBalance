@@ -20,4 +20,10 @@
     <ProjectReference Include="..\SectorBalanceShared\SectorBalanceShared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\content\content.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

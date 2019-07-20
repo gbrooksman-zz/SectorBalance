@@ -34,5 +34,7 @@ namespace SectorBalanceShared
         public int Version { get; set; }
 
         public bool IsPrivate { get; set; }
+
+        public Guid ModelVersionId { get; set; }
     }
 }
