@@ -44,14 +44,24 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId, int versionNumber = 1)
+        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId, int versionNumber = 0)
         {
             ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
             try
-            {
+            {                
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
+
+                    if (versionNumber == 0)
+                    {
+                        versionNumber = db.QuerySingleAsync<int>(@" SELECT MAX(version) 
+                                                    FROM user_models 
+                                                    WHERE id = @p1 " ,
+                                                    new { p1 = modelId }).Result;
+                    }
+
+
+                    UserModel model = db.QuerySingleAsync<UserModel>(@" SELECT * 
                                                     FROM user_models 
                                                     WHERE id = @p1 and version = @p2",
                                                     new { p1 = modelId, p2 = versionNumber }).Result;
@@ -66,27 +76,27 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<UserModel>> GetModel(Guid modelId)
-        {
-            ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
-            try
-            {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
-                                                    FROM user_models 
-                                                    WHERE id = @p1 ",
-                                                    new { p1 = modelId }).Result;
-                    mgrResult.Entity = model;
-                }
-            }
-            catch (Exception ex)
-            {
-                mgrResult.Exception = ex;
-            }
+        //public async Task<ManagerResult<UserModel>> GetModel(Guid modelId)
+        //{
+        //    ManagerResult<UserModel> mgrResult = new ManagerResult<UserModel>();
+        //    try
+        //    {
+        //        using (NpgsqlConnection db = new NpgsqlConnection(connString))
+        //        {
+        //            UserModel model = db.QueryFirstOrDefaultAsync<UserModel>(@" SELECT * 
+        //                                            FROM user_models 
+        //                                            WHERE id = @p1 ",
+        //                                            new { p1 = modelId }).Result;
+        //            mgrResult.Entity = model;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        mgrResult.Exception = ex;
+        //    }
 
-            return mgrResult;
-        }
+        //    return mgrResult;
+        //}
 
         public async Task<ManagerResult<UserModel>> GetModelVersion(Guid modelId, int versionNumber)
         {
@@ -116,14 +126,7 @@ namespace SectorBalanceBLL
 
             try
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                {
-                    List<UserModel> modelList = db.QueryAsync<UserModel>(@" SELECT * 
-                                                    FROM user_models 
-                                                    WHERE id = @p1",
-                                                    new { p1 = modelId }).Result.ToList();
-                    mgrResult.Entity = modelList;
-                }
+                mgrResult.Entity = GetModelList(modelId);
             }
             catch (Exception ex)
             {
@@ -133,13 +136,36 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        private List<UserModel> GetModelList(Guid modelId)
+        {
+            List<UserModel> modelList = new List<UserModel>();
 
-        public async Task<ManagerResult<List<ModelEquity>>> GetModelByDate(Guid modelId, DateTime quoteDate, int versionNumber = 1)
+            using (NpgsqlConnection db = new NpgsqlConnection(connString))
+            {
+                modelList = db.QueryAsync<UserModel>(@" SELECT * 
+                                                    FROM user_models 
+                                                    WHERE id = @p1",
+                                                    new { p1 = modelId }).Result.ToList();
+            }
+
+            return modelList;
+        }
+
+
+        public async Task<bool> CheckDateRange(Guid modelId, DateTime startdate, DateTime stopdate)
+        {
+            List<UserModel> modelList = GetModelList(modelId);
+
+            return modelList.Where(m => m.StartDate >= startdate && m.StopDate <= stopdate).Any();
+        }
+
+
+        public async Task<ManagerResult<List<ModelEquity>>> GetModelEquityListByDate(Guid modelId, DateTime quoteDate, int versionNumber = 0)
         {
             ManagerResult<List<ModelEquity>> mgrResult = new ManagerResult<List<ModelEquity>>();
 
             try
-            {
+            {  
                 UserModel thisModel = GetModel(modelId, versionNumber).Result.Entity;
 
                 decimal startValue = thisModel.StartValue;
@@ -149,7 +175,7 @@ namespace SectorBalanceBLL
                     List<ModelEquity> modelEquityList = db.QueryAsync<ModelEquity>(@" SELECT * 
                                                     FROM model_equities 
                                                     WHERE model_id = @p1 and version = @p2",
-                                                    new { p1 = modelId, p2 = versionNumber }).Result.ToList();
+                                                    new { p1 = modelId, p2 = thisModel.Version }).Result.ToList();
 
                     foreach (ModelEquity modelEquity in modelEquityList)
                     {

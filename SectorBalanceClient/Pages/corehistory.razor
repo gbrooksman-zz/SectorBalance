@@ -6,6 +6,7 @@
 @using SectorBalanceClient.Entities
 @using SectorBalanceClient.Shared
 @using SectorBalanceClient.Pages.Components
+@using Services;
 
 <style>
 
@@ -59,7 +60,7 @@
                             <PieChart Height="300" Width="300" PieSlices="@modelSlices" />
                         </div>
                         <div class="col-6">                            
-                            <DynamicContent ContentId="@modelVersionId" />
+                           @modelVersionDescription
                         </div>
                     }
                     else
@@ -76,11 +77,14 @@
 {
     List<PieSlice> modelSlices = new List<PieSlice>();
     List<ModelEquity> modelEquityList = new List<ModelEquity>();
+    ContentService contentService = new ContentService();
     bool showPieChart = true;
 
     string showDiv = "divHidden";
 
     string modelVersionId = string.Empty;
+
+    string modelVersionDescription = string.Empty;
 
     protected async Task ShowVersionInfo(UserModel model)
     {
@@ -102,7 +106,11 @@
             });
             i++;
         }
+
+        modelVersionDescription = contentService.GetModelVersionDescription(model.Version);
     }
+
+   
 
 
     protected string FormatStopDate(DateTime stopDate, bool isActive)

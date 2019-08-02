@@ -21,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="wwwroot\content\content.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="wwwroot\content\" />
   </ItemGroup>
 
 </Project>
