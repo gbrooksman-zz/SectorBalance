@@ -41,6 +41,7 @@ namespace SectorBalanceBLL
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
             List<Quote> quoteList = await GetByEquityId(equityid);
+
             mgrResult.Entity = quoteList.OrderByDescending(q => q.Date).FirstOrDefault();           
 
             return mgrResult;
@@ -48,55 +49,33 @@ namespace SectorBalanceBLL
 
         public async Task<ManagerResult<DateTime>> GetLastQuoteDate()
         {
-            ManagerResult<DateTime> mgrResult = new ManagerResult<DateTime>();
-
-            mgrResult.Entity = await cache.GetOrCreateAsync<DateTime>(CacheKeys.LAST_QUOTE_DATE, entry =>
+            ManagerResult<DateTime> mgrResult = new ManagerResult<DateTime>
             {
-                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                Entity = await cache.GetOrCreateAsync<DateTime>(CacheKeys.LAST_QUOTE_DATE, entry =>
                 {
-                    return Task.FromResult(db.QueryFirstOrDefault<DateTime>
-                                                    (@"SELECT MAX(date) FROM quotes "));
-                }
-            });
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {
+                        return Task.FromResult(db.QueryFirstOrDefault<DateTime>
+                                                        (@"SELECT MAX(date) FROM quotes "));
+                    }
+                })
+            };
 
             return mgrResult;
         }
-
-        private async Task<List<Quote>> GetByEquityId(Guid equityId)
-        {
-            return await cache.GetOrCreateAsync<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
-                        {
-                            using (NpgsqlConnection db = new NpgsqlConnection(connString))
-                            {
-                                return Task.FromResult(db.Query<Quote>(@"   SELECT * 
-                                                                            FROM quotes 
-                                                                            WHERE equity_id = @p1",
-                                                                            new { p1 = equityId })
-                                                                            .OrderBy(q => q.Date)
-                                                                            .ToList());
-                            }
-                        });
-        }
-
-
+      
         public async Task<ManagerResult<Quote>> GetByEquityIdAndDate(Guid equityId, DateTime date)
         {
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();
 
             DateTime tradeDate = GetNearestQuoteDate(date);
 
-            using (NpgsqlConnection db = new NpgsqlConnection(connString))
-            {
-                mgrResult.Entity = await db.QueryFirstOrDefaultAsync<Quote>(@"  SELECT * 
-                                                                                FROM quotes 
-                                                                                WHERE equity_id = @p1 
-                                                                                AND date = @p2",
-                                                                                new { p1 = equityId, p2 = tradeDate.Date});
-            }
+            var quoteList = await GetByEquityId(equityId);
+
+            mgrResult.Entity = quoteList.Where(q => q.Date == date).FirstOrDefault();
 
             return mgrResult;
         }
-
 
         internal DateTime GetNearestQuoteDate(DateTime inDate)
         {
@@ -128,7 +107,23 @@ namespace SectorBalanceBLL
 
             return nearestDate.Date;
         }
-        
+
+        internal async Task<List<Quote>> GetByEquityId(Guid equityId)
+        {
+            return await cache.GetOrCreateAsync<List<Quote>>(CacheKeys.QUOTE_LIST + equityId, entry =>
+            {
+                using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                {
+                    return Task.FromResult(db.Query<Quote>(@"   SELECT * 
+                                                                    FROM quotes 
+                                                                    WHERE equity_id = @p1",
+                                                                new { p1 = equityId })
+                                                                .OrderBy(q => q.Date)
+                                                                .ToList());
+                }
+            });
+        }
+
 
         #region crud
 

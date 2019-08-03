@@ -3,6 +3,7 @@
 @inject HttpClient httpClient
 @using SectorBalanceClient.Entities
 @using SectorBalanceClient.Pages.Components
+@using SectorBalanceClient.Shared
 
 <div>
     <PieChart Width="20%" PieSlices="@slices" />
@@ -23,28 +24,28 @@
         {
             Name = "XLF",
             Percent = 15,
-            Color = "Red"
+            Color = ColorPicker.Get(1)
         });
 
         slices.Add(new PieSlice()
         {
             Name = "XLE",
             Percent = 20,
-            Color = "Yellow"
+            Color = ColorPicker.Get(2)
         });
 
         slices.Add(new PieSlice()
         {
             Name = "XLK",
             Percent = 60,
-            Color = "Green"
+            Color =ColorPicker.Get(3)
         });
 
         slices.Add(new PieSlice()
         {
             Name = "XLV",
             Percent = 5,
-            Color = "Blue"
+            Color = ColorPicker.Get(4)
         });
 
         return slices;
