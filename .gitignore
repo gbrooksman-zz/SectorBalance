@@ -13,7 +13,3 @@ logs
 /SectorBalanceAPI/.vs/SectorBalanceAPI/v16/Server/sqlite3/db.lock
 /SectorBalanceAPI/.vs/SectorBalanceAPI/v16/Server/sqlite3/storage.ide
 /SectorBalanceAPI/.vs/SectorBalanceAPI/v16/Server/sqlite3
-
-/SectorBalanceAPI/appsettings.Development.json
-/SectorBalanceAPI/appsettings.json
-/SectorBalanceAPI/secretSettings.json
