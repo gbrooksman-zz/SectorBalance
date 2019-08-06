@@ -1,4 +1,4 @@
-﻿@using SectorBalanceClient.Menu
+﻿@using SectorBalanceClient.Common.Menu
 @using Microsoft.AspNetCore.Components
 
 <style>
@@ -33,7 +33,7 @@ else
                 if (item.IsVisible)
                 {
                     <div class="menuitembox rounded">
-                        <AppMenuItem MenuItem="@item" IsEnabled="@item.IsEnabled" />
+                        <SectorBalanceClient.Common.Menu.AppMenuItem MenuItem="@item" IsEnabled="@item.IsEnabled" />
                     </div>
                 }
              }

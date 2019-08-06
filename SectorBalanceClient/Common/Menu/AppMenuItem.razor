@@ -1,4 +1,4 @@
-﻿@using SectorBalanceClient.Menu
+﻿@using SectorBalanceClient.Common.Menu
 @using Microsoft.AspNetCore.Components
 
 @if (ChildContent != null)
@@ -36,7 +36,7 @@ else
     public string Css { get; set; } = string.Empty;
 
     [Parameter]
-    public MenuItem menuItem { get; set; }
+    public SectorBalanceClient.Common.Menu.MenuItem menuItem { get; set; }
 
     protected string CssString
     {
