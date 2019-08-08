@@ -36,6 +36,24 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
+        public async Task<ManagerResult<List<Quote>>> GetBySymbolListAndDateRange(List<string> symbols, DateTime startdate, DateTime stopdate)
+        {
+            ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
+
+            mgrResult.Entity = new List<Quote>();
+
+            foreach (string symbol in symbols)
+            {
+                Equity equity = await eqMgr.GetBySymbol(symbol);
+
+                List<Quote> quoteList = await GetByEquityId(equity.Id);
+
+                mgrResult.Entity.AddRange(quoteList.Where(q => q.Date >= startdate && q.Date <= stopdate).ToList());
+            }
+
+            return mgrResult;
+        }
+
         public async Task<ManagerResult<Quote>> GetLast(Guid equityid)
         {
             ManagerResult<Quote> mgrResult = new ManagerResult<Quote>();

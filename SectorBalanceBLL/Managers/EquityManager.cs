@@ -96,30 +96,24 @@ namespace SectorBalanceBLL
             return mgrResult;
         }
 
-        public async Task<ManagerResult<Equity>> GetBySymbol(string symbol)
+        public async Task<Equity> GetBySymbol(string symbol)
         {
-            ManagerResult<Equity> mgrResult = new ManagerResult<Equity>();
-             
-            try
+            Equity equity = new Equity();
+           
+            equity = await cache.GetOrCreateAsync<Equity>(CacheKeys.EQUITY + symbol, entry =>
             {
                 using (NpgsqlConnection db = new NpgsqlConnection(connString))
                 {
-                    mgrResult.Entity = await db.QueryFirstOrDefaultAsync<Equity>(@"SELECT * 
-                                                FROM equities 
-                                                WHERE LOWER(symbol) = @p1 ",
-                                                new { p1 = symbol.ToLower() });
+                    return Task.FromResult(db.QueryFirstOrDefault<Equity>(@"SELECT * 
+                                            FROM equities 
+                                            WHERE LOWER(symbol) = @p1 ",
+                                            new { p1 = symbol.ToLower() }));
                 }
-            }
-            catch(Exception ex)
-            {
-                mgrResult.Exception = ex;
-                mgrResult.Message = "EquityManager::GetBySymbol";
-                Log.Error("EquityManager::GetBySymbol",ex);
-            }
-            
-            return mgrResult;
-        }
+            });
 
+            return equity;
+        }
+               
         #region CRUD
 
         public async Task<ManagerResult<Equity>> Save(Equity equity)

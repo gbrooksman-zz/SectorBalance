@@ -2,16 +2,8 @@
 @using SectorBalanceShared
 @using Microsoft.AspNetCore.Components
 @using SectorBalanceClient.Common
-
-<style type="text/css">
-    .small {
-        font: 8px sans-serif;
-    }
-
-    .normal {
-        font: 12px sans-serif;
-    }
-</style>
+@inject AppStateContainer state
+@inject HttpClient httpClient
 
 <figure>
 
@@ -24,11 +16,30 @@
         </defs>
 
         <rect width="100%" height="100%" fill="url(#grid)" stroke="gray" stroke-width="1" />
+
+        @DrawDataElements()
+
     </svg>
 </figure>
 
+<figcaption>
+    <ul>
+        @DrawLegend();
+    </ul>
+</figcaption>
+
+
 @code
 {
+    [Parameter]
+    public string EquityList { get; set; }
+
+    [Parameter]
+    public DateTime StartDate { get; set; }
+
+    [Parameter]
+    public DateTime EndDate { get; set; }
+
     [Parameter]
     protected string Width { get; set; }
 
@@ -47,10 +58,18 @@
     protected double gridWidth = 0;
     protected double gridHeight = 0;
 
-    protected override void OnInit()
+    List<Quote> quoteList = new List<Quote>();
+
+    protected override async Task OnInitAsync()
     {
         gridWidth = double.Parse(Width) / (double)HorizontalGridLines;
         gridHeight = double.Parse(Height) / (double)VerticalGridLines;
+
+        quoteList = await httpClient.GetJsonAsync<List<Quote>>($"{state.APIUrl}/api/quote/getrange?symbol=");
+
+
+
+
     }
 
 
@@ -64,12 +83,12 @@
         builder.CloseElement();
     };
 
-    RenderFragment BuildLegendPath(string legendPath, string legendText, int colorValue, int xCoord, int yCoord) => builder =>
+    RenderFragment BuildLegendPath(string legendPath, string color, int xCoord, int yCoord) => builder =>
     {
         builder.OpenElement(1, "path");
         builder.AddAttribute(2, "d", legendPath);
         builder.AddAttribute(3, "fill", "none");
-        builder.AddAttribute(4, "stroke", ColorPicker.Get(colorValue));
+        builder.AddAttribute(4, "stroke", color);
         builder.AddAttribute(5, "stroke-width", 2);
         builder.CloseElement();
     };
@@ -77,19 +96,37 @@
     RenderFragment BuildLegendText(string legendText, int xCoord, int yCoord) => builder =>
     {
         builder.OpenElement(1, "text");
-        builder.AddAttribute(2, "class", "small");
         builder.AddAttribute(3, "x", xCoord);
         builder.AddAttribute(4, "y", yCoord);
         builder.AddContent(5, legendText);
         builder.CloseElement();
     };
 
+    private RenderFragment DrawLegend()
+    {
+        RenderFragment frag = null;
+
+        string legendPath = string.Empty;
+
+        int xCoord = 0;
+        int yCoord = 0;
+        int i = 0;
+
+        foreach (string equity in EquityList.Split(",".ToCharArray()))
+        {
+            frag += BuildLegendPath(legendPath, ColorPicker.Get(i++), xCoord, yCoord);
+            frag += BuildLegendText(equity, xCoord, yCoord);
+        }
+
+        return frag;
+    }
+
     private RenderFragment DrawDataElements()
     {
         RenderFragment frag = null;
         int colorValue = 1;
-        int xCoord = 0;
-        int yCoord = 0;
+        // int xCoord = 0;
+        // int yCoord = 0;
         string linePath = string.Empty;
         string legendPath = string.Empty;
         string legendText = string.Empty;
@@ -102,38 +139,30 @@
                     linePath = "M 3 25 L 13 12 L 23 15 L 33 8 L 48 20";
                     legendPath = "M 4 1 L 8 1";
                     legendText = equity;
-                    xCoord = 2;
-                    yCoord = 1;
+                    //   xCoord = 2;
+                    //   yCoord = 1;
                     break;
                 case "xle":
                     linePath = "M 3 23 L 13 17 L 23 12 L 33 10 L 48 13";
                     legendPath = "M 4 3 L 8 3";
                     legendText = equity;
-                    xCoord = 2;
-                    yCoord = 3;
+                    //   xCoord = 2;
+                    //   yCoord = 3;
                     break;
                 case "xlk":
                     linePath = "M 3 21 L 13 15 L 23,10 L 33 12 L 48 16";
                     legendPath = "M 4 5 L 8 5";
                     legendText = equity;
-                    xCoord = 2;
-                    yCoord = 5;
+                    //   xCoord = 2;
+                    //  yCoord = 5;
                     break;
             }
 
             frag += BuildLines(linePath, colorValue);
-            frag += BuildLegendPath(legendPath, legendText, colorValue, xCoord, yCoord);
-            frag += BuildLegendText(legendText, xCoord, yCoord);
 
             colorValue++;
         }
 
         return frag;
     }
-
-    [Parameter]
-    public string EquityList { get; set; }
-
-
-
 }

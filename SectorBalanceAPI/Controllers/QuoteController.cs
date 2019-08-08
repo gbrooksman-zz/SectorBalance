@@ -35,15 +35,17 @@ namespace SectorBalanceAPI.Controllers
         public async Task<ActionResult<List<Quote>>> GetRange(string symbol, DateTime startdate, DateTime stopdate)
         {
             ManagerResult<List<Quote>> mrQuoteList = new ManagerResult<List<Quote>>();
-            ManagerResult<Equity> mrEquity = await eMgr.GetBySymbol(symbol);
+            Equity equity = await eMgr.GetBySymbol(symbol);
 
-            if (!mrEquity.Success)
+            if (equity == default)
             {
-                return BadRequest(mrEquity);
+                mrQuoteList.Success = false;
+                mrQuoteList.Message = $"Error fetching symbol: {symbol}";
+                mrQuoteList.Entity = new List<Quote>();
+                return BadRequest(mrQuoteList);
             }
             else
             {
-                Equity equity = mrEquity.Entity;
                 mrQuoteList = await qMgr.GetByEquityIdAndDateRange(equity.Id, startdate, stopdate);
                 if (!mrQuoteList.Success)
                 {
@@ -54,20 +56,44 @@ namespace SectorBalanceAPI.Controllers
         }
 
         [HttpGet]
+        [Route("GetRangeForList")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<Quote>>> GetRangeForList(string symbols, DateTime startdate, DateTime stopdate)
+        {
+            List<string> symbolList = new List<string>(symbols.Split(","));
+
+            ManagerResult<List<Quote>> mrQuoteList = await qMgr.GetBySymbolListAndDateRange(symbolList, startdate, stopdate);
+
+            if (!mrQuoteList.Success)
+            {
+                return BadRequest(mrQuoteList);
+            }
+            else
+            {
+                return Ok(mrQuoteList.Entity);
+            }
+        }
+
+        [HttpGet]
         [Route("GetDate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Quote>> GetDate(string symbol, DateTime date)
         {
-            ManagerResult<Equity> mrEquity = await eMgr.GetBySymbol(symbol);
-            ManagerResult<Quote> mrQuoteList;
-            if (!mrEquity.Success)
+            Equity equity = await eMgr.GetBySymbol(symbol);
+
+            ManagerResult<Quote> mrQuoteList = new ManagerResult<Quote>();
+
+            if (equity == default)
             {
-                return BadRequest(mrEquity);
+                mrQuoteList.Success = false;
+                mrQuoteList.Entity = new Quote();
+                mrQuoteList.Message = $"Error getting symbol: {symbol}";
+                return BadRequest(mrQuoteList);
             }
             else
-            {
-                Equity equity = mrEquity.Entity;
+            {               
                 mrQuoteList = await qMgr.GetByEquityIdAndDate(equity.Id, date);
                 if (!mrQuoteList.Success)
                 {

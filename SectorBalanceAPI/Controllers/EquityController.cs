@@ -38,10 +38,15 @@ namespace SectorBalanceAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<Equity>> GetBySymbol(string symbol)
         {
-            ManagerResult<Equity> mgrResult =  await eqMgr.GetBySymbol(symbol);
-
-            if (!mgrResult.Success)
+            ManagerResult<Equity> mgrResult = new ManagerResult<Equity>
             {
+                Entity = await eqMgr.GetBySymbol(symbol)
+            };
+
+            if (mgrResult.Entity == default)
+            {
+                mgrResult.Success = false;
+                mgrResult.Message = $"Error getting equity by symbol: {symbol}";
                 return BadRequest(mgrResult);
             }
             else
