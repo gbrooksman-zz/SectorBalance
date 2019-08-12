@@ -2,6 +2,8 @@
 @using SectorBalanceShared
 @using Microsoft.AspNetCore.Components
 @using SectorBalanceClient.Common
+@using SectorBalanceClient.Entities
+@using SectorBalanceClient.Services
 @inject AppStateContainer state
 @inject HttpClient httpClient
 
@@ -38,7 +40,7 @@
     public DateTime StartDate { get; set; }
 
     [Parameter]
-    public DateTime EndDate { get; set; }
+    public DateTime StopDate { get; set; }
 
     [Parameter]
     protected string Width { get; set; }
@@ -58,18 +60,34 @@
     protected double gridWidth = 0;
     protected double gridHeight = 0;
 
-    List<Quote> quoteList = new List<Quote>();
+    private EquityService eSvc;
+
+    private List<EquityQuotes> equitiesWithQuotes = new List<EquityQuotes>();
 
     protected override async Task OnInitAsync()
     {
         gridWidth = double.Parse(Width) / (double)HorizontalGridLines;
         gridHeight = double.Parse(Height) / (double)VerticalGridLines;
 
-        quoteList = await httpClient.GetJsonAsync<List<Quote>>($"{state.APIUrl}/api/quote/getrange?symbol=");
+        eSvc = new EquityService(httpClient, state);
+
+        List<EquityQuotes> equitiesWithQuotes = await eSvc.GetEquitiwsWithQuotes(EquityList, StartDate, StopDate);
+        
+        foreach (EquityQuotes equityquote in equitiesWithQuotes)
+        {
+            Equity equity = equityquote.Equity;
+            List<Quote> quotes = equityquote.Quotes;
+
+            var lowPrice = quotes.Min(q => q.Price);
+            var hiPrice = quotes.Max(q => q.Price);
+            var startPrice = quotes.FirstOrDefault().Price;
 
 
 
 
+
+
+        }
     }
 
 

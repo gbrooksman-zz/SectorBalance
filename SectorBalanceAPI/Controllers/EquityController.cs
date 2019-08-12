@@ -22,15 +22,27 @@ namespace SectorBalanceAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetList")]
+        [Route("GetAll")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<Equity>>> GetList()
+        public async Task<ActionResult<List<Equity>>> GetAll()
         {
-            ManagerResult<List<Equity>> mgrResult =  await eqMgr.GetList();
+            ManagerResult<List<Equity>> mgrResult =  await eqMgr.GetAll();
            
             return Ok(mgrResult.Entity);
         }
+
+        [HttpGet]
+        [Route("GetList")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<Equity>>> GetList(string symbols)
+        {
+            ManagerResult<List<Equity>> mgrResult = await eqMgr.GetList(symbols);
+
+            return Ok(mgrResult.Entity);
+        }
+
 
         [HttpGet]
         [Route("GetBySymbol")]

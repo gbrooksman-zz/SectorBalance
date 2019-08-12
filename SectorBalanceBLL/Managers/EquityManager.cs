@@ -46,7 +46,7 @@ namespace SectorBalanceBLL
         }
 
 
-        public async Task<ManagerResult<List<Equity>>> GetList()
+        public async Task<ManagerResult<List<Equity>>> GetAll()
         {
             ManagerResult<List<Equity>> mgrResult = new ManagerResult<List<Equity>>();
             List<Equity> equityList = new List<Equity>();
@@ -71,6 +71,60 @@ namespace SectorBalanceBLL
             }
             
             return mgrResult;
+        }
+
+
+        /// <summary>
+        /// handles a comma-delimited list of symbols
+        /// </summary>
+        /// <param name="symbols"></param>
+        /// <returns></returns>
+        public async Task<ManagerResult<List<Equity>>> GetList(string symbols)
+        {
+            ManagerResult<List<Equity>> mgrResult = new ManagerResult<List<Equity>>();
+
+            List<string> symbolList = new List<string>(symbols.Split(",".ToCharArray()));
+
+            try
+            {
+                List<Equity> equityList = await this.GetAllEquities();
+
+                var equiyMatches = from equity in equityList
+                                      where symbolList.Contains(equity.Symbol)
+                                      select equity;
+
+                mgrResult.Entity = (List<Equity>) equiyMatches;
+            }
+            catch (Exception ex)
+            {
+                mgrResult.Exception = ex;
+                mgrResult.Message = "EquityManager::GetList";
+                Log.Error("EquityManager::GetList", ex);
+            }
+
+            return mgrResult;
+        }
+
+        private async Task<List<Equity>> GetAllEquities()
+        {           
+            List<Equity> equityList = new List<Equity>();
+
+            try
+            {
+                equityList = await cache.GetOrCreateAsync<List<Equity>>(CacheKeys.EQUITY_LIST, entry =>
+                {
+                    using (NpgsqlConnection db = new NpgsqlConnection(connString))
+                    {
+                        return Task.FromResult(db.Query<Equity>("SELECT * FROM equities").ToList());
+                    }
+                });              
+            }
+            catch (Exception ex)
+            {
+                Log.Error("EquityManager::GetList", ex);
+            }
+
+            return equityList;
         }
 
         public async Task<ManagerResult<Equity>> Get(Guid equityId)

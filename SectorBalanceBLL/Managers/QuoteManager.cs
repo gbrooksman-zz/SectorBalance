@@ -38,9 +38,10 @@ namespace SectorBalanceBLL
 
         public async Task<ManagerResult<List<Quote>>> GetBySymbolListAndDateRange(List<string> symbols, DateTime startdate, DateTime stopdate)
         {
-            ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>();
-
-            mgrResult.Entity = new List<Quote>();
+            ManagerResult<List<Quote>> mgrResult = new ManagerResult<List<Quote>>
+            {
+                Entity = new List<Quote>()
+            };
 
             foreach (string symbol in symbols)
             {
